@@ -1,0 +1,180 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Code2,
+  FileText,
+  MessageSquare,
+  BarChart3,
+  Users,
+  PenTool,
+  FolderKanban,
+  Zap,
+  Brain,
+  LineChart,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+interface SidebarProps {
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
+  className?: string;
+  onClose?: () => void;
+  isMobile?: boolean;
+}
+
+const navigation = [
+  {
+    title: "Overview",
+    items: [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: "Products",
+    items: [
+      { name: "Code Vault", href: "/vault", icon: Code2 },
+      { name: "Landing Pages", href: "/landing", icon: FileText },
+      { name: "Feedback", href: "/feedback", icon: MessageSquare },
+      { name: "Command Center", href: "/command", icon: BarChart3 },
+      { name: "CRM", href: "/crm", icon: Users },
+      { name: "Content Engine", href: "/content", icon: PenTool },
+      { name: "Projects", href: "/projects", icon: FolderKanban },
+      { name: "Automations", href: "/automations", icon: Zap },
+      { name: "AI Advisor", href: "/advisor", icon: Brain },
+      { name: "Analytics", href: "/analytics", icon: LineChart },
+    ],
+  },
+  {
+    title: "Account",
+    items: [
+      { name: "Settings", href: "/settings", icon: Settings },
+    ],
+  },
+];
+
+export function Sidebar({
+  collapsed,
+  onCollapsedChange,
+  className,
+  onClose,
+  isMobile,
+}: SidebarProps) {
+  const pathname = usePathname();
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-30 flex flex-col border-r bg-card transition-all duration-300",
+          collapsed ? "w-[70px]" : "w-[260px]",
+          className
+        )}
+      >
+        {/* Logo */}
+        <div className="flex h-16 items-center justify-between px-4 border-b">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-lg">S</span>
+            </div>
+            {!collapsed && (
+              <span className="font-semibold text-lg truncate">Solo Founder OS</span>
+            )}
+          </Link>
+          {isMobile && onClose && (
+            <Button variant="ghost" size="icon-sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <ScrollArea className="flex-1 py-4">
+          <nav className="space-y-6 px-2">
+            {navigation.map((group) => (
+              <div key={group.title}>
+                {!collapsed && (
+                  <h4 className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {group.title}
+                  </h4>
+                )}
+                <div className="space-y-1">
+                  {group.items.map((item) => {
+                    const isActive =
+                      pathname === item.href ||
+                      pathname.startsWith(`${item.href}/`);
+
+                    const linkContent = (
+                      <Link
+                        href={item.href}
+                        onClick={() => isMobile && onClose?.()}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                          collapsed && "justify-center px-2"
+                        )}
+                      >
+                        <item.icon className={cn("h-5 w-5 flex-shrink-0")} />
+                        {!collapsed && <span className="truncate">{item.name}</span>}
+                      </Link>
+                    );
+
+                    if (collapsed) {
+                      return (
+                        <Tooltip key={item.href}>
+                          <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                          <TooltipContent side="right" sideOffset={10}>
+                            {item.name}
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    }
+
+                    return <div key={item.href}>{linkContent}</div>;
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+        </ScrollArea>
+
+        {/* Collapse Button (Desktop only) */}
+        {!isMobile && (
+          <div className="border-t p-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-center"
+              onClick={() => onCollapsedChange(!collapsed)}
+            >
+              {collapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <>
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  <span>Collapse</span>
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+      </aside>
+    </TooltipProvider>
+  );
+}

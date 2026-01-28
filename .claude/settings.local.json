@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /b \"C:\\\\Users\\\\cja86\\\\Desktop\\\\Solo-Founder-OS\\\\app\\\\api\")",
+      "Bash(dir /s /b \"C:\\\\Users\\\\cja86\\\\Desktop\\\\Solo-Founder-OS\\\\app\\\\api\")",
+      "Bash(findstr:*)",
+      "Bash(npx next lint:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run lint)",
+      "Bash(npx --no-install next lint:*)",
+      "Bash(npm install)",
+      "Bash(npx supabase migration repair:*)",
+      "Bash(npx supabase:*)",
+      "Bash(1 <<'EOSQL'\n-- Invoices enums \\(skip if exist\\)\nDO $ BEGIN CREATE TYPE invoice_status AS ENUM \\('draft', 'sent', 'viewed', 'paid', 'overdue', 'cancelled', 'refunded'\\); EXCEPTION WHEN duplicate_object THEN NULL; END $;\nDO $ BEGIN CREATE TYPE invoice_item_type AS ENUM \\('service', 'product', 'expense', 'discount', 'tax'\\); EXCEPTION WHEN duplicate_object THEN NULL; END $;\nDO $ BEGIN CREATE TYPE payment_method AS ENUM \\('stripe', 'paypal', 'bank_transfer', 'cash', 'check', 'other'\\); EXCEPTION WHEN duplicate_object THEN NULL; END $;\nEOSQL)",
+      "Bash(where:*)",
+      "Bash(supabase projects list:*)",
+      "Bash(powershell -Command \"Get-ChildItem -Path $env:APPDATA, $env:LOCALAPPDATA, $env:USERPROFILE -Recurse -Include ''*supabase*'' -Directory -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName\")",
+      "Bash(powershell -File:*)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\cja86\\\\AppData\\\\*access-token*\")",
+      "Bash(supabase db push:*)",
+      "Bash(supabase projects api-keys:*)",
+      "Bash(powershell -Command \"Get-Content \\(Join-Path $env:APPDATA ''supabase'' ''access-token''\\) -ErrorAction SilentlyContinue; Get-Content \\(Join-Path $env:USERPROFILE ''.supabase'' ''access-token''\\) -ErrorAction SilentlyContinue; Get-ChildItem -Path $env:APPDATA -Recurse -Filter ''credentials.json'' -ErrorAction SilentlyContinue | ForEach-Object { $_FullName }\")",
+      "Bash(dir /s /b \"C:\\\\Users\\\\cja86\\\\AppData\\\\*supabase*\")",
+      "Bash(1 <<'PS1'\n# Supabase CLI on scoop stores credentials in the settings file\n$paths = @\\(\n    \"$env:APPDATA\\\\supabase\",\n    \"$env:LOCALAPPDATA\\\\supabase\", \n    \"$env:USERPROFILE\\\\.supabase\",\n    \"$env:USERPROFILE\\\\scoop\\\\persist\\\\supabase\",\n    \"$env:USERPROFILE\\\\scoop\\\\apps\\\\supabase\"\n\\)\nforeach \\($p in $paths\\) {\n    if \\(Test-Path $p\\) { Write-Host \"FOUND: $p\"; Get-ChildItem $p -Recurse | ForEach-Object { $_.FullName } }\n}\n# Also check for settings.json which newer supabase CLIs use\n$settingsPath = \"$env:USERPROFILE\\\\AppData\\\\Roaming\\\\supabase\"\nif \\(Test-Path $settingsPath\\) { Write-Host \"Settings: $settingsPath\" }\n# Check XDG\n$xdg = $env:XDG_CONFIG_HOME\nif \\($xdg\\) { Write-Host \"XDG: $xdg\" }\n# Try common linux-like paths under user profile\n$linuxPaths = @\\(\"$env:USERPROFILE\\\\.config\\\\supabase\", \"$env:USERPROFILE\\\\.local\\\\share\\\\supabase\"\\)\nforeach \\($p in $linuxPaths\\) {\n    if \\(Test-Path $p\\) { Write-Host \"FOUND: $p\"; Get-ChildItem $p -Recurse | ForEach-Object { $_.FullName } }\n}\nPS1)",
+      "Bash(cut:*)",
+      "Bash(npx supabase@2.72.8 gen types typescript:*)",
+      "Bash(git -C C:Userscja86DesktopSolo-Founder-OS log --oneline -5)",
+      "Bash(done)",
+      "Bash(dir \"C:\\\\Users\\\\cja86\\\\Desktop\\\\Solo-Founder-OS\\\\app\\\\\\(dashboard\\)\\\\landing\")",
+      "Bash(ls:*)"
+    ]
+  }
+}
