@@ -20,8 +20,8 @@ export async function GET(
     }
 
     // Check if user is a member of this workspace
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -32,8 +32,8 @@ export async function GET(
     }
 
     // Get all members with profile info
-    const { data: members, error: membersError } = await supabase
-      .from('workspace_members')
+    const { data: members, error: membersError } = await (supabase
+      .from('workspace_members') as any)
       .select(`
         id,
         workspace_id,
@@ -112,8 +112,8 @@ export async function PATCH(
     }
 
     // Get current user's role
-    const { data: currentMember } = await supabase
-      .from('workspace_members')
+    const { data: currentMember } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -129,8 +129,8 @@ export async function PATCH(
     }
 
     // Get target member's role
-    const { data: targetMember } = await supabase
-      .from('workspace_members')
+    const { data: targetMember } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId)
@@ -155,8 +155,8 @@ export async function PATCH(
     if (role) updateData.role = role;
     if (permissions) updateData.permissions = permissions;
 
-    const { error: updateError } = await supabase
-      .from('workspace_members')
+    const { error: updateError } = await (supabase
+      .from('workspace_members') as any)
       .update(updateData)
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId);
@@ -202,8 +202,8 @@ export async function DELETE(
     }
 
     // Get current user's role
-    const { data: currentMember } = await supabase
-      .from('workspace_members')
+    const { data: currentMember } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -216,8 +216,8 @@ export async function DELETE(
     const isSelf = user.id === targetUserId;
 
     // Get target member
-    const { data: targetMember } = await supabase
-      .from('workspace_members')
+    const { data: targetMember } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId)
@@ -251,8 +251,8 @@ export async function DELETE(
     }
 
     // Remove member
-    const { error: deleteError } = await supabase
-      .from('workspace_members')
+    const { error: deleteError } = await (supabase
+      .from('workspace_members') as any)
       .delete()
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId);

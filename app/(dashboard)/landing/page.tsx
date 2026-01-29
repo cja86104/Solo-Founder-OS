@@ -5,6 +5,7 @@ import { Plus, FileText, Eye, Users, MousePointerClick } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LandingPageCard } from "@/components/landing/landing-page-card";
+import type { LandingPage } from "@/types/landing";
 
 export const metadata: Metadata = {
   title: "Landing Pages",
@@ -25,7 +26,7 @@ export default async function LandingPagesPage() {
     .from("landing_pages")
     .select("*")
     .eq("user_id", user.id)
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false }) as { data: LandingPage[] | null };
 
   // Fetch lead counts
   const { data: leadCounts } = await supabase

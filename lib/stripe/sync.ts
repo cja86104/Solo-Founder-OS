@@ -49,8 +49,8 @@ export async function syncStripeCustomers(options: SyncOptions): Promise<SyncRes
   };
 
   // Create sync log entry
-  const { data: syncLog, error: logError } = await supabase
-    .from('stripe_sync_log')
+  const { data: syncLog, error: logError } = await (supabase
+    .from('stripe_sync_log') as any)
     .insert({
       workspace_id: workspaceId,
       sync_type: 'customers',
@@ -120,8 +120,8 @@ export async function syncStripeCustomers(options: SyncOptions): Promise<SyncRes
     result.duration_ms = Date.now() - startTime;
 
     // Update sync log
-    await supabase
-      .from('stripe_sync_log')
+    await (supabase
+      .from('stripe_sync_log') as any)
       .update({
         status: 'completed',
         records_synced: result.records_synced,
@@ -139,8 +139,8 @@ export async function syncStripeCustomers(options: SyncOptions): Promise<SyncRes
     result.errors.push(`Sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     result.duration_ms = Date.now() - startTime;
 
-    await supabase
-      .from('stripe_sync_log')
+    await (supabase
+      .from('stripe_sync_log') as any)
       .update({
         status: 'failed',
         error_message: result.errors.join('; '),
@@ -173,8 +173,8 @@ export async function syncStripeSubscriptions(options: SyncOptions): Promise<Syn
   };
 
   // Create sync log entry
-  const { data: syncLog, error: logError } = await supabase
-    .from('stripe_sync_log')
+  const { data: syncLog, error: logError } = await (supabase
+    .from('stripe_sync_log') as any)
     .insert({
       workspace_id: workspaceId,
       sync_type: 'subscriptions',
@@ -240,8 +240,8 @@ export async function syncStripeSubscriptions(options: SyncOptions): Promise<Syn
     result.duration_ms = Date.now() - startTime;
 
     // Update sync log
-    await supabase
-      .from('stripe_sync_log')
+    await (supabase
+      .from('stripe_sync_log') as any)
       .update({
         status: 'completed',
         records_synced: result.records_synced,
@@ -259,8 +259,8 @@ export async function syncStripeSubscriptions(options: SyncOptions): Promise<Syn
     result.errors.push(`Sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     result.duration_ms = Date.now() - startTime;
 
-    await supabase
-      .from('stripe_sync_log')
+    await (supabase
+      .from('stripe_sync_log') as any)
       .update({
         status: 'failed',
         error_message: result.errors.join('; '),
@@ -293,8 +293,8 @@ export async function syncStripeData(options: SyncOptions): Promise<SyncResult> 
   };
 
   // Create sync log entry
-  const { data: syncLog, error: logError } = await supabase
-    .from('stripe_sync_log')
+  const { data: syncLog, error: logError } = await (supabase
+    .from('stripe_sync_log') as any)
     .insert({
       workspace_id: workspaceId,
       sync_type: 'full',
@@ -336,8 +336,8 @@ export async function syncStripeData(options: SyncOptions): Promise<SyncResult> 
     result.success = result.records_failed === 0;
 
     // Update sync log
-    await supabase
-      .from('stripe_sync_log')
+    await (supabase
+      .from('stripe_sync_log') as any)
       .update({
         status: result.success ? 'completed' : 'failed',
         records_synced: result.records_synced,
@@ -355,8 +355,8 @@ export async function syncStripeData(options: SyncOptions): Promise<SyncResult> 
     result.errors.push(`Full sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     result.duration_ms = Date.now() - startTime;
 
-    await supabase
-      .from('stripe_sync_log')
+    await (supabase
+      .from('stripe_sync_log') as any)
       .update({
         status: 'failed',
         error_message: result.errors.join('; '),
@@ -388,13 +388,14 @@ interface SubscriptionUpsertResult {
  */
 export async function upsertCustomer(
   workspaceId: string,
-  stripeCustomer: Stripe.Customer
+  stripeCustomer: Stripe.Customer,
+  dbClient?: any
 ): Promise<UpsertResult> {
-  const supabase = await createClient();
+  const supabase = dbClient || await createClient();
 
   // Check if customer exists
-  const { data: existing } = await supabase
-    .from('customers')
+  const { data: existing } = await (supabase
+    .from('customers') as any)
     .select('id')
     .eq('stripe_customer_id', stripeCustomer.id)
     .single();
@@ -439,8 +440,8 @@ export async function upsertCustomer(
   };
 
   if (existing) {
-    const { error } = await supabase
-      .from('customers')
+    const { error } = await (supabase
+      .from('customers') as any)
       .update(customerData)
       .eq('id', existing.id);
 
@@ -448,8 +449,8 @@ export async function upsertCustomer(
 
     return { customerId: existing.id, created: false };
   } else {
-    const { data, error } = await supabase
-      .from('customers')
+    const { data, error } = await (supabase
+      .from('customers') as any)
       .insert(customerData)
       .select('id')
       .single();
@@ -466,13 +467,14 @@ export async function upsertCustomer(
 export async function upsertSubscription(
   workspaceId: string,
   customerId: string,
-  stripeSubscription: Stripe.Subscription
+  stripeSubscription: Stripe.Subscription,
+  dbClient?: any
 ): Promise<SubscriptionUpsertResult> {
-  const supabase = await createClient();
+  const supabase = dbClient || await createClient();
 
   // Check if subscription exists
-  const { data: existing } = await supabase
-    .from('subscriptions')
+  const { data: existing } = await (supabase
+    .from('stripe_subscriptions') as any)
     .select('id')
     .eq('stripe_subscription_id', stripeSubscription.id)
     .single();
@@ -520,8 +522,8 @@ export async function upsertSubscription(
   };
 
   if (existing) {
-    const { error } = await supabase
-      .from('subscriptions')
+    const { error } = await (supabase
+      .from('stripe_subscriptions') as any)
       .update(subscriptionData)
       .eq('id', existing.id);
 
@@ -529,8 +531,8 @@ export async function upsertSubscription(
 
     return { subscriptionId: existing.id, created: false };
   } else {
-    const { data, error } = await supabase
-      .from('subscriptions')
+    const { data, error } = await (supabase
+      .from('stripe_subscriptions') as any)
       .insert(subscriptionData as any)
       .select('id')
       .single();
@@ -550,12 +552,13 @@ export async function upsertSubscription(
  */
 export async function recordRevenueEvent(
   workspaceId: string,
-  input: RecordRevenueEventInput
+  input: RecordRevenueEventInput,
+  dbClient?: any
 ): Promise<string> {
-  const supabase = await createClient();
+  const supabase = dbClient || await createClient();
 
-  const { data, error } = await supabase
-    .from('revenue_events')
+  const { data, error } = await (supabase
+    .from('revenue_events') as any)
     .insert({
       workspace_id: workspaceId,
       customer_id: input.customer_id,
@@ -589,13 +592,13 @@ export async function recordRevenueEvent(
 /**
  * Update MRR history for a workspace
  */
-export async function updateMRRHistory(workspaceId: string): Promise<void> {
-  const supabase = await createClient();
+export async function updateMRRHistory(workspaceId: string, dbClient?: any): Promise<void> {
+  const supabase = dbClient || await createClient();
   const today = new Date().toISOString().split('T')[0];
 
   // Get current totals
-  const { data: customers } = await supabase
-    .from('customers')
+  const { data: customers } = await (supabase
+    .from('customers') as any)
     .select('mrr, status')
     .eq('workspace_id', workspaceId);
 
@@ -618,8 +621,8 @@ export async function updateMRRHistory(workspaceId: string): Promise<void> {
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-  const { data: previousRecord } = await supabase
-    .from('mrr_history')
+  const { data: previousRecord } = await (supabase
+    .from('mrr_history') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('period_date', yesterdayStr)
@@ -632,8 +635,8 @@ export async function updateMRRHistory(workspaceId: string): Promise<void> {
   const churnRate = totalCustomers > 0 ? (churnedCustomers / totalCustomers) * 100 : 0;
 
   // Upsert today's record
-  const { error } = await supabase
-    .from('mrr_history')
+  const { error } = await (supabase
+    .from('mrr_history') as any)
     .upsert(
       {
         workspace_id: workspaceId,
@@ -666,26 +669,27 @@ export async function updateMRRHistory(workspaceId: string): Promise<void> {
  */
 export async function handleStripeWebhook(
   workspaceId: string,
-  event: Stripe.Event
+  event: Stripe.Event,
+  dbClient?: any
 ): Promise<void> {
   switch (event.type) {
     case 'customer.created':
     case 'customer.updated':
-      await handleCustomerEvent(workspaceId, event.data.object as Stripe.Customer);
+      await handleCustomerEvent(workspaceId, event.data.object as Stripe.Customer, dbClient);
       break;
 
     case 'customer.subscription.created':
     case 'customer.subscription.updated':
     case 'customer.subscription.deleted':
-      await handleSubscriptionEvent(workspaceId, event.data.object as Stripe.Subscription, event.type);
+      await handleSubscriptionEvent(workspaceId, event.data.object as Stripe.Subscription, event.type, dbClient);
       break;
 
     case 'invoice.paid':
-      await handleInvoicePaid(workspaceId, event.data.object as Stripe.Invoice);
+      await handleInvoicePaid(workspaceId, event.data.object as Stripe.Invoice, dbClient);
       break;
 
     case 'invoice.payment_failed':
-      await handlePaymentFailed(workspaceId, event.data.object as Stripe.Invoice);
+      await handlePaymentFailed(workspaceId, event.data.object as Stripe.Invoice, dbClient);
       break;
 
     default:
@@ -694,10 +698,10 @@ export async function handleStripeWebhook(
   }
 
   // Update MRR history after any event
-  await updateMRRHistory(workspaceId);
+  await updateMRRHistory(workspaceId, dbClient);
 }
 
-async function handleCustomerEvent(workspaceId: string, customer: Stripe.Customer): Promise<void> {
+async function handleCustomerEvent(workspaceId: string, customer: Stripe.Customer, dbClient?: any): Promise<void> {
   // Fetch full customer with subscriptions
   const fullCustomer = await stripe.customers.retrieve(customer.id, {
     expand: ['subscriptions'],
@@ -705,19 +709,20 @@ async function handleCustomerEvent(workspaceId: string, customer: Stripe.Custome
 
   if (fullCustomer.deleted) return;
 
-  await upsertCustomer(workspaceId, fullCustomer as Stripe.Customer);
+  await upsertCustomer(workspaceId, fullCustomer as Stripe.Customer, dbClient);
 }
 
 async function handleSubscriptionEvent(
   workspaceId: string,
   subscription: Stripe.Subscription,
-  eventType: string
+  eventType: string,
+  dbClient?: any
 ): Promise<void> {
-  const supabase = await createClient();
+  const supabase = dbClient || await createClient();
 
   // Get or create customer
-  const { data: customer } = await supabase
-    .from('customers')
+  const { data: customer } = await (supabase
+    .from('customers') as any)
     .select('id')
     .eq('stripe_customer_id', subscription.customer as string)
     .single();
@@ -728,12 +733,12 @@ async function handleSubscriptionEvent(
       expand: ['subscriptions'],
     });
     if (!stripeCustomer.deleted) {
-      await upsertCustomer(workspaceId, stripeCustomer as Stripe.Customer);
+      await upsertCustomer(workspaceId, stripeCustomer as Stripe.Customer, dbClient);
     }
     return;
   }
 
-  await upsertSubscription(workspaceId, customer.id, subscription);
+  await upsertSubscription(workspaceId, customer.id, subscription, dbClient);
 
   // Record revenue event
   const price = subscription.items.data[0]?.price;
@@ -754,14 +759,14 @@ async function handleSubscriptionEvent(
     mrr_impact: eventType_ === 'churn' ? -mrr : mrr,
     plan_to: price?.nickname || undefined,
     status: 'succeeded',
-  });
+  }, dbClient);
 }
 
-async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice): Promise<void> {
-  const supabase = await createClient();
+async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice, dbClient?: any): Promise<void> {
+  const supabase = dbClient || await createClient();
 
-  const { data: customer } = await supabase
-    .from('customers')
+  const { data: customer } = await (supabase
+    .from('customers') as any)
     .select('id, payment_count')
     .eq('stripe_customer_id', invoice.customer as string)
     .single();
@@ -769,8 +774,8 @@ async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice): 
   if (!customer) return;
 
   // Update customer payment info
-  await supabase
-    .from('customers')
+  await (supabase
+    .from('customers') as any)
     .update({
       last_payment_date: new Date().toISOString(),
       last_invoice_date: new Date().toISOString(),
@@ -785,14 +790,14 @@ async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice): 
     event_type: 'payment',
     amount: (invoice.amount_paid || 0) / 100,
     status: 'succeeded',
-  });
+  }, dbClient);
 }
 
-async function handlePaymentFailed(workspaceId: string, invoice: Stripe.Invoice): Promise<void> {
-  const supabase = await createClient();
+async function handlePaymentFailed(workspaceId: string, invoice: Stripe.Invoice, dbClient?: any): Promise<void> {
+  const supabase = dbClient || await createClient();
 
-  const { data: customer } = await supabase
-    .from('customers')
+  const { data: customer } = await (supabase
+    .from('customers') as any)
     .select('id, failed_payment_count')
     .eq('stripe_customer_id', invoice.customer as string)
     .single();
@@ -800,8 +805,8 @@ async function handlePaymentFailed(workspaceId: string, invoice: Stripe.Invoice)
   if (!customer) return;
 
   // Update customer failed payment count
-  await supabase
-    .from('customers')
+  await (supabase
+    .from('customers') as any)
     .update({
       failed_payment_count: (customer.failed_payment_count || 0) + 1,
     })
@@ -815,7 +820,7 @@ async function handlePaymentFailed(workspaceId: string, invoice: Stripe.Invoice)
     amount: (invoice.amount_due || 0) / 100,
     status: 'failed',
     failure_reason: invoice.last_finalization_error?.message || 'Payment failed',
-  });
+  }, dbClient);
 }
 
 // ============================================================================

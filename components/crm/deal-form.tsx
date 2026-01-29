@@ -71,6 +71,7 @@ interface DealFormProps {
   deal?: Deal | null;
   stages: PipelineStage[];
   contacts?: Contact[];
+  initialStageId?: string;
   onSubmit: (data: CreateDealInput) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -80,6 +81,7 @@ export function DealForm({
   deal,
   stages,
   contacts = [],
+  initialStageId,
   onSubmit,
   onCancel,
   isSubmitting = false,
@@ -92,7 +94,7 @@ export function DealForm({
       name: deal?.name || '',
       value: deal?.value || 0,
       currency: deal?.currency || 'USD',
-      stage_id: deal?.stage_id || stages[0]?.id || '',
+      stage_id: deal?.stage_id || initialStageId || stages[0]?.id || '',
       probability: deal?.probability || 50,
       contact_id: deal?.contact_id || '',
       company: deal?.company || '',
@@ -429,6 +431,7 @@ interface DealFormDialogProps {
   deal?: Deal | null;
   stages: PipelineStage[];
   contacts?: Contact[];
+  initialStageId?: string;
   onSubmit: (data: CreateDealInput) => Promise<void>;
 }
 
@@ -438,6 +441,7 @@ export function DealFormDialog({
   deal,
   stages,
   contacts = [],
+  initialStageId,
   onSubmit,
 }: DealFormDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -468,6 +472,7 @@ export function DealFormDialog({
           deal={deal}
           stages={stages}
           contacts={contacts}
+          initialStageId={initialStageId}
           onSubmit={handleSubmit}
           onCancel={() => onOpenChange(false)}
           isSubmitting={isSubmitting}

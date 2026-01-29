@@ -30,23 +30,23 @@ export async function GET(request: NextRequest) {
 
     if (data.user) {
       // Check if profile exists, if not create one
-      const { data: existingProfile } = await supabase
-        .from("profiles")
+      const { data: existingProfile } = await (supabase
+        .from("profiles") as any)
         .select("id")
         .eq("id", data.user.id)
         .single();
 
       if (!existingProfile) {
         // Create profile from OAuth data
-        const { error: profileError } = await supabase.from("profiles").insert({
+        const { error: profileError } = await (supabase.from("profiles") as any).insert({
           id: data.user.id,
           email: data.user.email!,
-          full_name: data.user.user_metadata?.full_name || 
-                     data.user.user_metadata?.name || 
-                     data.user.email?.split("@")[0] || 
+          full_name: data.user.user_metadata?.full_name ||
+                     data.user.user_metadata?.name ||
+                     data.user.email?.split("@")[0] ||
                      "User",
-          avatar_url: data.user.user_metadata?.avatar_url || 
-                      data.user.user_metadata?.picture || 
+          avatar_url: data.user.user_metadata?.avatar_url ||
+                      data.user.user_metadata?.picture ||
                       null,
         });
 
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Create starter subscription for new users
-        const { error: subscriptionError } = await supabase.from("subscriptions").insert({
+        const { error: subscriptionError } = await (supabase.from("subscriptions") as any).insert({
           user_id: data.user.id,
           plan: "free",
           status: "active",

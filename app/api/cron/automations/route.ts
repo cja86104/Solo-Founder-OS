@@ -10,19 +10,22 @@ export async function GET(request: NextRequest) {
   try {
     // Verify cron secret
     const cronSecret = process.env.CRON_SECRET;
-    if (cronSecret) {
-      const auth = request.headers.get('authorization');
-      if (auth !== `Bearer ${cronSecret}`) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
+    if (!cronSecret) {
+      console.error('CRON_SECRET environment variable is not configured');
+      return NextResponse.json({ error: 'Cron endpoint not configured' }, { status: 401 });
+    }
+
+    const auth = request.headers.get('authorization');
+    if (auth !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const supabase = await createClient();
     const now = new Date();
 
     // Find schedules that are due, joined with their active automations
-    const { data: dueSchedules, error: queryError } = await supabase
-      .from('automation_schedules')
+    const { data: dueSchedules, error: queryError } = await (supabase
+      .from('automation_schedules') as any)
       .select(`
         id,
         automation_id,
@@ -51,8 +54,8 @@ export async function GET(request: NextRequest) {
 
       try {
         // Create a run record
-        const { error: runError } = await supabase
-          .from('automation_runs')
+        const { error: runError } = await (supabase
+          .from('automation_runs') as any)
           .insert({
             automation_id: automation.id,
             workspace_id: automation.workspace_id,
@@ -76,8 +79,8 @@ export async function GET(request: NextRequest) {
         // A full cron parser (e.g. cron-parser npm) can be added later for accuracy.
         const nextRun = computeNextRun(schedule.cron_expression, now);
 
-        await supabase
-          .from('automation_schedules')
+        await (supabase
+          .from('automation_schedules') as any)
           .update({
             next_run_at: nextRun.toISOString(),
             last_run_at: now.toISOString(),

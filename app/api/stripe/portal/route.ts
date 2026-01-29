@@ -15,8 +15,8 @@ export async function POST() {
     }
 
     // Get Stripe customer ID
-    const { data: subscription } = await supabase
-      .from("subscriptions")
+    const { data: subscription } = await (supabase
+      .from("subscriptions") as any)
       .select("stripe_customer_id")
       .eq("user_id", user.id)
       .single();

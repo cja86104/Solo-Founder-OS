@@ -21,24 +21,24 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
     
     // Verify the page exists and is published, and get workspace_id
-    const { data: page, error: pageError } = await supabase
-      .from('landing_pages')
+    const { data: page, error: pageError } = await (supabase
+      .from('landing_pages') as any)
       .select('id, workspace_id, user_id')
       .eq('id', validatedData.pageId)
       .eq('status', 'published')
       .single()
-    
+
     if (pageError || !page) {
       return NextResponse.json(
         { error: 'Page not found or not published' },
         { status: 404 }
       )
     }
-    
+
     // Check for duplicate submission (same email within last hour)
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-    const { data: existingLead } = await supabase
-      .from('landing_page_leads')
+    const { data: existingLead } = await (supabase
+      .from('landing_page_leads') as any)
       .select('id')
       .eq('page_id', validatedData.pageId)
       .eq('email', validatedData.email)
@@ -74,12 +74,12 @@ export async function POST(request: NextRequest) {
     }
     
     // Insert the lead
-    const { data: lead, error: insertError } = await supabase
-      .from('landing_page_leads')
+    const { data: lead, error: insertError } = await (supabase
+      .from('landing_page_leads') as any)
       .insert(leadData as any)
       .select()
       .single()
-    
+
     if (insertError) {
       console.error('Error inserting lead:', insertError)
       return NextResponse.json(
@@ -87,9 +87,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-    
+
     // Track conversion event
-    await supabase.from('landing_page_analytics').insert({
+    await (supabase.from('landing_page_analytics') as any).insert({
       page_id: validatedData.pageId,
       event_type: 'conversion',
       event_data: {
@@ -143,23 +143,23 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const { data: page } = await supabase
-      .from('landing_pages')
+    const { data: page } = await (supabase
+      .from('landing_pages') as any)
       .select('id, user_id')
       .eq('id', pageId)
       .eq('user_id', user.id)
       .single()
-    
+
     if (!page) {
       return NextResponse.json(
         { error: 'Page not found or access denied' },
         { status: 404 }
       )
     }
-    
+
     // Fetch leads
-    const { data: leads, error } = await supabase
-      .from('landing_page_leads')
+    const { data: leads, error } = await (supabase
+      .from('landing_page_leads') as any)
       .select('*')
       .eq('page_id', pageId)
       .order('created_at', { ascending: false })

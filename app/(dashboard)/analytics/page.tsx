@@ -130,11 +130,6 @@ export default function AnalyticsPage() {
     fetchData();
   }, [fetchData]);
 
-  // Handle export
-  const handleExport = () => {
-    toast.info('Export functionality coming soon');
-  };
-
   // Handle settings
   const handleSettings = () => {
     router.push('/settings/analytics');
@@ -209,9 +204,6 @@ export default function AnalyticsPage() {
           </Select>
           <Button variant="outline" size="icon" onClick={fetchData}>
             <RefreshCw className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={handleExport}>
-            <Download className="h-4 w-4" />
           </Button>
         </div>
       </div>

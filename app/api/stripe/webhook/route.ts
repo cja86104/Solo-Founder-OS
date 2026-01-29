@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe/config";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { handleStripeWebhook } from "@/lib/stripe/sync";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -39,8 +40,8 @@ export async function POST(request: NextRequest) {
 
         if (session.mode === "payment") {
           // Lifetime purchase
-          await supabase
-            .from("subscriptions")
+          await (supabase
+            .from("subscriptions") as any)
             .update({
               plan: "lifetime",
               status: "active",
@@ -57,8 +58,8 @@ export async function POST(request: NextRequest) {
         const customerId = subscription.customer as string;
 
         // Find user by customer ID
-        const { data: existingSub } = await supabase
-          .from("subscriptions")
+        const { data: existingSub } = await (supabase
+          .from("subscriptions") as any)
           .select("user_id")
           .eq("stripe_customer_id", customerId)
           .single();
@@ -80,8 +81,8 @@ export async function POST(request: NextRequest) {
           paused: "paused",
         };
 
-        await supabase
-          .from("subscriptions")
+        await (supabase
+          .from("subscriptions") as any)
           .update({
             plan: "pro",
             status: statusMap[subscription.status] || subscription.status,
@@ -104,8 +105,8 @@ export async function POST(request: NextRequest) {
         const customerId = subscription.customer as string;
 
         // Find user by customer ID
-        const { data: existingSub } = await supabase
-          .from("subscriptions")
+        const { data: existingSub } = await (supabase
+          .from("subscriptions") as any)
           .select("user_id")
           .eq("stripe_customer_id", customerId)
           .single();
@@ -116,8 +117,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Downgrade to free
-        await supabase
-          .from("subscriptions")
+        await (supabase
+          .from("subscriptions") as any)
           .update({
             plan: "free",
             status: "canceled",
@@ -132,11 +133,7 @@ export async function POST(request: NextRequest) {
       }
 
       case "invoice.payment_succeeded": {
-        const invoice = event.data.object as Stripe.Invoice;
-        const customerId = invoice.customer as string;
-
-        // Log successful payment
-        console.log("Payment succeeded for customer:", customerId);
+        // Payment succeeded - no action needed, subscription status handled by other events
         break;
       }
 
@@ -145,25 +142,61 @@ export async function POST(request: NextRequest) {
         const customerId = invoice.customer as string;
 
         // Find user and mark subscription as past_due
-        const { data: existingSub } = await supabase
-          .from("subscriptions")
+        const { data: existingSub } = await (supabase
+          .from("subscriptions") as any)
           .select("user_id")
           .eq("stripe_customer_id", customerId)
           .single();
 
         if (existingSub) {
-          await supabase
-            .from("subscriptions")
+          await (supabase
+            .from("subscriptions") as any)
             .update({ status: "past_due" })
             .eq("user_id", existingSub.user_id);
         }
 
-        console.log("Payment failed for customer:", customerId);
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        // Unhandled event types are ignored
+    }
+
+    // Sync to Command Center tables if this is a customer/subscription/invoice event
+    const commandCenterEvents = [
+      'customer.created', 'customer.updated',
+      'customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted',
+      'invoice.paid', 'invoice.payment_failed',
+    ];
+
+    if (commandCenterEvents.includes(event.type)) {
+      try {
+        // Look up workspace_id from the customers table via stripe_customer_id
+        let stripeCustomerId: string | null = null;
+
+        if (event.type.startsWith('customer.subscription.')) {
+          stripeCustomerId = (event.data.object as Stripe.Subscription).customer as string;
+        } else if (event.type.startsWith('invoice.')) {
+          stripeCustomerId = (event.data.object as Stripe.Invoice).customer as string;
+        } else if (event.type.startsWith('customer.')) {
+          stripeCustomerId = (event.data.object as Stripe.Customer).id;
+        }
+
+        if (stripeCustomerId) {
+          const { data: cmdCustomer } = await (supabase
+            .from('customers') as any)
+            .select('workspace_id')
+            .eq('stripe_customer_id', stripeCustomerId)
+            .single();
+
+          if (cmdCustomer?.workspace_id) {
+            await handleStripeWebhook(cmdCustomer.workspace_id, event, supabase);
+          }
+        }
+      } catch (syncError) {
+        // Command Center sync failure should not break billing webhook
+        console.error('Command Center sync error (non-fatal):', syncError);
+      }
     }
 
     return NextResponse.json({ received: true });

@@ -76,10 +76,10 @@ export default function AutomationRunsPage() {
   const [automation, setAutomation] = useState<Automation | null>(null);
   const [runs, setRuns] = useState<AutomationRun[]>([]);
   const [runStats, setRunStats] = useState<{
-    total: number;
+    total_runs: number;
     completed: number;
     failed: number;
-    avg_duration: number;
+    avg_duration_ms: number;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -138,8 +138,8 @@ export default function AutomationRunsPage() {
 
       const data = await response.json();
       setRuns(data.runs || []);
-      setTotalRuns(data.stats?.total || 0);
-      setRunStats(data.stats || null);
+      setTotalRuns(data.summary?.total_runs || 0);
+      setRunStats(data.summary || null);
     } catch (error) {
       console.error('Error fetching runs:', error);
       toast.error('Failed to load runs');
@@ -203,7 +203,7 @@ export default function AutomationRunsPage() {
       const response = await fetch(`/api/automations/runs/${run.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'cancelled' }),
+        body: JSON.stringify({ action: 'cancel' }),
       });
 
       if (!response.ok) throw new Error('Failed to cancel run');
@@ -335,7 +335,7 @@ export default function AutomationRunsPage() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          {can('content.update') && automation.status !== 'archived' && (
+          {can('automations.update') && automation.status !== 'archived' && (
             <Button onClick={handleRunNow}>
               <Play className="h-4 w-4 mr-2" />
               Run Now
@@ -352,7 +352,7 @@ export default function AutomationRunsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Runs</p>
-                  <p className="text-2xl font-bold">{runStats.total}</p>
+                  <p className="text-2xl font-bold">{runStats.total_runs}</p>
                 </div>
                 <Activity className="h-8 w-8 text-muted-foreground" />
               </div>
@@ -385,7 +385,7 @@ export default function AutomationRunsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Avg Duration</p>
-                  <p className="text-2xl font-bold">{Math.round(runStats.avg_duration)}ms</p>
+                  <p className="text-2xl font-bold">{Math.round(runStats.avg_duration_ms)}ms</p>
                 </div>
                 <Clock className="h-8 w-8 text-muted-foreground" />
               </div>

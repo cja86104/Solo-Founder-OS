@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -35,15 +35,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    const { data: widgets, error } = await supabase
-      .from('feedback_widgets')
+    const { data: widgets, error } = await (supabase
+      .from('feedback_widgets') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    return NextResponse.json({ widgets: widgets || [] });
+    // Map 'domains' DB column to 'allowed_domains' for frontend
+    const mapped = (widgets || []).map((w: any) => ({
+      ...w,
+      allowed_domains: w.domains || [],
+    }));
+
+    return NextResponse.json({ widgets: mapped });
   } catch (error) {
     console.error('Error fetching widgets:', error);
     return NextResponse.json(
@@ -70,9 +76,20 @@ export async function POST(request: NextRequest) {
     const {
       workspace_id,
       name,
+      slug,
       description,
+      theme,
+      primary_color,
+      position,
+      title,
+      placeholder,
+      success_message,
+      allow_attachments,
+      require_email,
+      show_emoji_rating,
+      categories,
+      allowed_domains,
       domains,
-      settings,
     } = body;
 
     if (!workspace_id || !name) {
@@ -83,8 +100,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -94,15 +111,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { data: widget, error } = await supabase
-      .from('feedback_widgets')
+    const { data: widget, error } = await (supabase
+      .from('feedback_widgets') as any)
       .insert({
         workspace_id,
         user_id: user.id,
         name,
+        slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30),
         description: description || null,
-        domains: domains || [],
-        settings: settings || {},
+        theme: theme || 'auto',
+        primary_color: primary_color || '#6366f1',
+        position: position || 'bottom-right',
+        title: title || 'Send us feedback',
+        placeholder: placeholder || "What's on your mind?",
+        success_message: success_message || 'Thank you for your feedback!',
+        allow_attachments: allow_attachments ?? false,
+        require_email: require_email ?? false,
+        show_emoji_rating: show_emoji_rating ?? true,
+        categories: categories || ['bug', 'feature', 'question', 'other'],
+        domains: allowed_domains || domains || [],
         is_active: true,
       })
       .select()
@@ -134,7 +161,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { widget_id, name, description, domains, settings, is_active } = body;
+    const { widget_id, ...fields } = body;
 
     if (!widget_id) {
       return NextResponse.json(
@@ -144,8 +171,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Get widget to check workspace
-    const { data: existing } = await supabase
-      .from('feedback_widgets')
+    const { data: existing } = await (supabase
+      .from('feedback_widgets') as any)
       .select('workspace_id')
       .eq('id', widget_id)
       .single();
@@ -155,8 +182,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', existing.workspace_id)
       .eq('user_id', user.id)
@@ -166,16 +193,22 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    // Build update
+    // Build update from all allowed fields
     const updateData: Record<string, unknown> = {};
-    if (name !== undefined) updateData.name = name;
-    if (description !== undefined) updateData.description = description;
-    if (domains !== undefined) updateData.domains = domains;
-    if (settings !== undefined) updateData.settings = settings;
-    if (is_active !== undefined) updateData.is_active = is_active;
+    const allowedFields = [
+      'name', 'slug', 'description', 'theme', 'primary_color', 'position',
+      'title', 'placeholder', 'success_message', 'allow_attachments',
+      'require_email', 'show_emoji_rating', 'categories', 'is_active',
+    ];
+    for (const field of allowedFields) {
+      if (fields[field] !== undefined) updateData[field] = fields[field];
+    }
+    // Map allowed_domains -> domains
+    if (fields.allowed_domains !== undefined) updateData.domains = fields.allowed_domains;
+    if (fields.domains !== undefined) updateData.domains = fields.domains;
 
-    const { data: widget, error } = await supabase
-      .from('feedback_widgets')
+    const { data: widget, error } = await (supabase
+      .from('feedback_widgets') as any)
       .update(updateData)
       .eq('id', widget_id)
       .select()
@@ -216,8 +249,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get widget to check workspace
-    const { data: existing } = await supabase
-      .from('feedback_widgets')
+    const { data: existing } = await (supabase
+      .from('feedback_widgets') as any)
       .select('workspace_id')
       .eq('id', widgetId)
       .single();
@@ -227,8 +260,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check membership - only admins/owners can delete
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', existing.workspace_id)
       .eq('user_id', user.id)
@@ -238,8 +271,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { error } = await supabase
-      .from('feedback_widgets')
+    const { error } = await (supabase
+      .from('feedback_widgets') as any)
       .delete()
       .eq('id', widgetId);
 

@@ -34,7 +34,11 @@ export type Permission =
   | 'projects.view'
   | 'feedback.view'
   | 'feedback.respond'
-  | 'feedback.manage';
+  | 'feedback.manage'
+  | 'automations.view'
+  | 'automations.create'
+  | 'automations.update'
+  | 'automations.delete';
 
 export interface UsePermissionsReturn {
   role: Role | null;
@@ -79,6 +83,7 @@ const ROLE_PERMISSIONS: Record<Role, string[]> = {
     'content.*',
     'projects.*',
     'feedback.*',
+    'automations.*',
   ],
   editor: [
     'products.create',
@@ -99,6 +104,9 @@ const ROLE_PERMISSIONS: Record<Role, string[]> = {
     'projects.view',
     'feedback.view',
     'feedback.respond',
+    'automations.view',
+    'automations.create',
+    'automations.update',
   ],
   viewer: [
     'products.view',
@@ -107,6 +115,7 @@ const ROLE_PERMISSIONS: Record<Role, string[]> = {
     'content.view',
     'projects.view',
     'feedback.view',
+    'automations.view',
   ],
 };
 

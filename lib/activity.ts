@@ -13,8 +13,8 @@ export async function logActivity(
   input: CreateActivityInput
 ): Promise<{ activity: Record<string, unknown> | null; error: string | null }> {
   try {
-    const { data, error } = await supabase
-      .from('activities')
+    const { data, error } = await (supabase
+      .from('activities') as any)
       .insert({
         workspace_id: input.workspace_id,
         user_id: input.actor_id || null,
@@ -45,8 +45,8 @@ export async function getActivities(
   const { page, pageSize } = pagination;
   const offset = (page - 1) * pageSize;
 
-  let query = supabase
-    .from('activities')
+  let query = (supabase
+    .from('activities') as any)
     .select('*', { count: 'exact' })
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false });
@@ -95,20 +95,20 @@ export async function getActivitySummary(
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const { count: todayCount } = await supabase
-    .from('activities')
+  const { count: todayCount } = await (supabase
+    .from('activities') as any)
     .select('*', { count: 'exact', head: true })
     .eq('workspace_id', workspaceId)
     .gte('created_at', startOfDay);
 
-  const { count: weekCount } = await supabase
-    .from('activities')
+  const { count: weekCount } = await (supabase
+    .from('activities') as any)
     .select('*', { count: 'exact', head: true })
     .eq('workspace_id', workspaceId)
     .gte('created_at', startOfWeek);
 
-  const { data: recentActivities } = await supabase
-    .from('activities')
+  const { data: recentActivities } = await (supabase
+    .from('activities') as any)
     .select('id, action, created_at')
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false })
@@ -130,8 +130,8 @@ export async function getAuditLogs(
   const { page, pageSize } = pagination;
   const offset = (page - 1) * pageSize;
 
-  let query = supabase
-    .from('activities')
+  let query = (supabase
+    .from('activities') as any)
     .select('*', { count: 'exact' })
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false });
@@ -172,8 +172,8 @@ export async function logAuditEvent(
   supabase: SupabaseClient,
   input: CreateAuditLogInput
 ): Promise<void> {
-  await supabase
-    .from('activities')
+  await (supabase
+    .from('activities') as any)
     .insert({
       workspace_id: input.workspace_id || '',
       user_id: input.user_id || null,

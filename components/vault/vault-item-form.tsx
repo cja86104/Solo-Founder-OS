@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, X, Plus } from "lucide-react";
+import { Loader2, X, Plus, FolderPlus } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
+import { useWorkspace } from "@/lib/workspace-context";
 import { vaultItemSchema, type VaultItemInput } from "@/lib/validations/vault";
-import { LANGUAGES, ITEM_TYPES } from "@/types/vault";
+import { LANGUAGES, ITEM_TYPES, COLLECTION_COLORS } from "@/types/vault";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,9 +30,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 interface VaultItemFormProps {
   collections: Array<{ id: string; name: string; color: string | null; icon: string | null }>;
@@ -48,11 +58,17 @@ interface VaultItemFormProps {
   };
 }
 
-export function VaultItemForm({ collections, initialData }: VaultItemFormProps) {
+export function VaultItemForm({ collections: initialCollections, initialData }: VaultItemFormProps) {
   const router = useRouter();
   const supabase = createClient();
+  const { currentWorkspace } = useWorkspace();
   const [isLoading, setIsLoading] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [collections, setCollections] = useState(initialCollections);
+  const [showNewCollection, setShowNewCollection] = useState(false);
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [newCollectionColor, setNewCollectionColor] = useState<string>(COLLECTION_COLORS[0]);
+  const [isCreatingCollection, setIsCreatingCollection] = useState(false);
 
   const isEditing = !!initialData;
 
@@ -88,6 +104,51 @@ export function VaultItemForm({ collections, initialData }: VaultItemFormProps) 
     );
   };
 
+  const handleCreateCollection = async () => {
+    if (!newCollectionName.trim()) return;
+
+    setIsCreatingCollection(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in");
+        return;
+      }
+
+      if (!currentWorkspace) {
+        toast.error("No workspace selected");
+        return;
+      }
+
+      const { data, error } = await (supabase.from("vault_collections") as any)
+        .insert({
+          workspace_id: currentWorkspace.id,
+          user_id: user.id,
+          name: newCollectionName.trim(),
+          color: newCollectionColor,
+          is_public: false,
+        })
+        .select("id, name, color, icon")
+        .single();
+
+      if (error) throw error;
+
+      // Add to local list and auto-select it
+      setCollections((prev) => [...prev, data]);
+      form.setValue("collection_id", data.id);
+
+      toast.success(`Collection "${data.name}" created`);
+      setShowNewCollection(false);
+      setNewCollectionName("");
+      setNewCollectionColor(COLLECTION_COLORS[0]);
+    } catch (error) {
+      toast.error("Failed to create collection");
+      console.error(error);
+    } finally {
+      setIsCreatingCollection(false);
+    }
+  };
+
   async function onSubmit(data: VaultItemInput) {
     setIsLoading(true);
 
@@ -101,7 +162,13 @@ export function VaultItemForm({ collections, initialData }: VaultItemFormProps) 
         return;
       }
 
+      if (!currentWorkspace) {
+        toast.error("No workspace selected");
+        return;
+      }
+
       const itemData = {
+        workspace_id: currentWorkspace.id,
         user_id: user.id,
         title: data.title,
         description: data.description || null,
@@ -119,20 +186,29 @@ export function VaultItemForm({ collections, initialData }: VaultItemFormProps) 
           .update(itemData)
           .eq("id", initialData.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Vault update error:", error.message, error.code, error.details, error.hint);
+          toast.error(error.message || "Failed to update item");
+          return;
+        }
         toast.success("Item updated successfully");
       } else {
         const { error } = await (supabase.from("vault_items") as any).insert(itemData);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Vault insert error:", error.message, error.code, error.details, error.hint);
+          toast.error(error.message || "Failed to create item");
+          return;
+        }
         toast.success("Item created successfully");
       }
 
       router.push("/vault");
       router.refresh();
-    } catch (error) {
-      toast.error(isEditing ? "Failed to update item" : "Failed to create item");
-      console.error(error);
+    } catch (error: any) {
+      const msg = error?.message || "Unknown error";
+      toast.error(isEditing ? `Failed to update: ${msg}` : `Failed to create: ${msg}`);
+      console.error("Vault submit error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -276,35 +352,111 @@ export function VaultItemForm({ collections, initialData }: VaultItemFormProps) 
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Collection (optional)</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value || undefined}
-                    disabled={isLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="No collection" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none">No collection</SelectItem>
-                      {collections.map((col) => (
-                        <SelectItem key={col.id} value={col.id}>
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="h-3 w-3 rounded-full"
-                              style={{ backgroundColor: col.color || undefined }}
-                            />
-                            {col.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex gap-2">
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || "none"}
+                      disabled={isLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="No collection" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">No collection</SelectItem>
+                        {collections.map((col) => (
+                          <SelectItem key={col.id} value={col.id}>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="h-3 w-3 rounded-full shrink-0"
+                                style={{ backgroundColor: col.color || undefined }}
+                              />
+                              {col.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="shrink-0"
+                      onClick={() => setShowNewCollection(true)}
+                      disabled={isLoading}
+                    >
+                      <FolderPlus className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* New Collection Dialog */}
+            <Dialog open={showNewCollection} onOpenChange={setShowNewCollection}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create Collection</DialogTitle>
+                  <DialogDescription>
+                    Create a new collection to organize your vault items
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-2">
+                  <div className="space-y-2">
+                    <FormLabel>Name</FormLabel>
+                    <Input
+                      placeholder="e.g., React Hooks, AI Prompts"
+                      value={newCollectionName}
+                      onChange={(e) => setNewCollectionName(e.target.value)}
+                      disabled={isCreatingCollection}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleCreateCollection();
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel>Color</FormLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {COLLECTION_COLORS.map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setNewCollectionColor(color)}
+                          className={cn(
+                            "h-8 w-8 rounded-full transition-transform hover:scale-110",
+                            newCollectionColor === color && "ring-2 ring-offset-2 ring-primary"
+                          )}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowNewCollection(false)}
+                    disabled={isCreatingCollection}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleCreateCollection}
+                    disabled={isCreatingCollection || !newCollectionName.trim()}
+                  >
+                    {isCreatingCollection && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Create
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             {/* Tags */}
             <div className="space-y-2">

@@ -16,7 +16,10 @@ export const vaultItemSchema = z.object({
   type: z.enum(["snippet", "prompt", "component", "template", "note"]),
   language: z.string().optional(),
   tags: z.array(z.string()).max(10, "Maximum 10 tags allowed").optional(),
-  collection_id: z.string().uuid().optional().nullable(),
+  collection_id: z.preprocess(
+    (val) => (val === 'none' || val === '' ? undefined : val),
+    z.string().uuid().optional().nullable()
+  ),
   is_public: z.boolean().optional(),
 });
 

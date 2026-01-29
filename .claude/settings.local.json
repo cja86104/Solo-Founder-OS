@@ -27,7 +27,12 @@
       "Bash(git -C C:Userscja86DesktopSolo-Founder-OS log --oneline -5)",
       "Bash(done)",
       "Bash(dir \"C:\\\\Users\\\\cja86\\\\Desktop\\\\Solo-Founder-OS\\\\app\\\\\\(dashboard\\)\\\\landing\")",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(npx next build:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ]
   }
 }

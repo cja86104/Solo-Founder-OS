@@ -33,8 +33,8 @@ export async function GET() {
     }
 
     // Fetch the user's subscription
-    const { data: subscription } = await supabase
-      .from('subscriptions')
+    const { data: subscription } = await (supabase
+      .from('subscriptions') as any)
       .select('*')
       .eq('user_id', user.id)
       .single();

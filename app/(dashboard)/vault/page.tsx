@@ -44,7 +44,6 @@ export default async function VaultPage({ searchParams }: VaultPageProps) {
     .from("vault_items")
     .select("*, collection:vault_collections(id, name, color, icon)")
     .eq("user_id", user.id)
-    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   // Apply filters
@@ -90,15 +89,13 @@ export default async function VaultPage({ searchParams }: VaultPageProps) {
   const { count: totalItems } = await supabase
     .from("vault_items")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .is("deleted_at", null);
+    .eq("user_id", user.id);
 
   const { count: totalFavorites } = await supabase
     .from("vault_items")
     .select("*", { count: "exact", head: true })
     .eq("user_id", user.id)
-    .eq("is_favorite", true)
-    .is("deleted_at", null);
+    .eq("is_favorite", true);
 
   return (
     <div className="space-y-6">

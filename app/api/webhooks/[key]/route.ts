@@ -15,8 +15,8 @@ export async function POST(
     const supabase = await createClient();
 
     // Look up webhook config
-    const { data: webhook, error: whError } = await supabase
-      .from('automation_webhooks')
+    const { data: webhook, error: whError } = await (supabase
+      .from('automation_webhooks') as any)
       .select(`
         id,
         automation_id,
@@ -33,8 +33,8 @@ export async function POST(
     }
 
     // Verify the automation is active
-    const { data: automation } = await supabase
-      .from('automations')
+    const { data: automation } = await (supabase
+      .from('automations') as any)
       .select('id, workspace_id, name, status')
       .eq('id', webhook.automation_id)
       .single();
@@ -94,8 +94,8 @@ export async function POST(
     });
 
     // Create automation run
-    const { data: run, error: runError } = await supabase
-      .from('automation_runs')
+    const { data: run, error: runError } = await (supabase
+      .from('automation_runs') as any)
       .insert({
         automation_id: automation.id,
         workspace_id: automation.workspace_id,
@@ -116,7 +116,7 @@ export async function POST(
     }
 
     // Log the trigger
-    await supabase.from('automation_run_logs').insert({
+    await (supabase.from('automation_run_logs') as any).insert({
       run_id: run.id,
       level: 'info',
       message: 'Webhook received — automation run queued',
@@ -152,8 +152,8 @@ export async function GET(
   const { key } = await params;
   const supabase = await createClient();
 
-  const { data: webhook, error } = await supabase
-    .from('automation_webhooks')
+  const { data: webhook, error } = await (supabase
+    .from('automation_webhooks') as any)
     .select('automation_id')
     .eq('webhook_key', key)
     .single();
@@ -162,8 +162,8 @@ export async function GET(
     return NextResponse.json({ error: 'Webhook not found' }, { status: 404 });
   }
 
-  const { data: automation } = await supabase
-    .from('automations')
+  const { data: automation } = await (supabase
+    .from('automations') as any)
     .select('name, status')
     .eq('id', webhook.automation_id)
     .single();

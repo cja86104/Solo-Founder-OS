@@ -41,8 +41,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import {
   MessageSquare,
   Plus,
@@ -87,8 +85,6 @@ export default function FeedbackPage() {
   // Detail view state
   const [selectedSubmission, setSelectedSubmission] =
     useState<FeedbackSubmissionWithRelations | null>(null);
-  const [replyText, setReplyText] = useState('');
-  const [isReplying, setIsReplying] = useState(false);
 
   // Delete state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -199,32 +195,6 @@ export default function FeedbackPage() {
     }
   };
 
-  const handleReply = async () => {
-    if (!selectedSubmission || !replyText.trim()) return;
-
-    setIsReplying(true);
-    try {
-      const response = await fetch('/api/feedback/responses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          submission_id: selectedSubmission.id,
-          message: replyText,
-        }),
-      });
-
-      if (!response.ok) throw new Error('Failed to send reply');
-
-      toast.success('Reply sent');
-      setReplyText('');
-      fetchData();
-    } catch (error) {
-      toast.error('Failed to send reply');
-    } finally {
-      setIsReplying(false);
-    }
-  };
-
   const handleDeleteSubmission = async () => {
     if (!submissionToDelete) return;
 
@@ -299,7 +269,7 @@ export default function FeedbackPage() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          {can('feedback.create') && (
+          {can('feedback.manage') && (
             <Button onClick={() => setWidgetFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               New Widget
@@ -549,22 +519,6 @@ export default function FeedbackPage() {
                 }
               />
 
-              {/* Reply Form */}
-              <div className="mt-6 space-y-3">
-                <Label>Send Reply</Label>
-                <Textarea
-                  placeholder="Type your response..."
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  rows={3}
-                />
-                <Button
-                  onClick={handleReply}
-                  disabled={isReplying || !replyText.trim()}
-                >
-                  {isReplying ? 'Sending...' : 'Send Reply'}
-                </Button>
-              </div>
             </div>
           )}
         </SheetContent>

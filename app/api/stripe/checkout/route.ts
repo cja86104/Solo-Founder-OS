@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
     };
 
     // Get or create Stripe customer
-    const { data: subscription } = await supabase
-      .from("subscriptions")
+    const { data: subscription } = await (supabase
+      .from("subscriptions") as any)
       .select("stripe_customer_id")
       .eq("user_id", user.id)
       .single();
@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
       customerId = customer.id;
 
       // Save customer ID
-      await supabase
-        .from("subscriptions")
+      await (supabase
+        .from("subscriptions") as any)
         .update({ stripe_customer_id: customerId })
         .eq("user_id", user.id);
     }

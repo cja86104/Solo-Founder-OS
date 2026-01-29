@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query - use user_id which is the actual FK column
-    let query = supabase
-      .from('content_posts')
+    let query = (supabase
+      .from('content_posts') as any)
       .select(`
         *,
         author:profiles(id, full_name, avatar_url)
@@ -126,8 +126,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -138,8 +138,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Use user_id which is the actual column in the schema
-    const { data: post, error } = await supabase
-      .from('content_posts')
+    const { data: post, error } = await (supabase
+      .from('content_posts') as any)
       .insert({
         workspace_id,
         user_id: user.id,

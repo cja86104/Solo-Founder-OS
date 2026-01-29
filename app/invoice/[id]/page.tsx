@@ -28,8 +28,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   }
 
   const supabase = await createClient();
-  const { data: invoice } = await supabase
-    .from('invoices')
+  const { data: invoice } = await (supabase
+    .from('invoices') as any)
     .select('invoice_number, client_name')
     .eq('id', id)
     .eq('public_token', token)
@@ -56,8 +56,8 @@ export default async function PublicInvoicePage({ params, searchParams }: PagePr
   const supabase = await createClient();
 
   // Fetch invoice with public token
-  const { data: invoice, error } = await supabase
-    .from('invoices')
+  const { data: invoice, error } = await (supabase
+    .from('invoices') as any)
     .select(`
       *,
       contact:contacts(id, name, email, company),
@@ -72,22 +72,22 @@ export default async function PublicInvoicePage({ params, searchParams }: PagePr
   }
 
   // Fetch invoice items
-  const { data: items } = await supabase
-    .from('invoice_items')
+  const { data: items } = await (supabase
+    .from('invoice_items') as any)
     .select('*')
     .eq('invoice_id', id)
     .order('position', { ascending: true }) as { data: unknown[] | null };
 
   // Fetch workspace for branding
-  const { data: workspace } = await supabase
-    .from('workspaces')
+  const { data: workspace } = await (supabase
+    .from('workspaces') as any)
     .select('name, logo_url')
     .eq('id', invoice.workspace_id)
     .single() as { data: { name: string; logo_url: string | null } | null };
 
   // Update view tracking (don't await, fire and forget)
-  supabase
-    .from('invoices')
+  (supabase
+    .from('invoices') as any)
     .update({
       view_count: (invoice.view_count || 0) + 1,
       viewed_at: invoice.viewed_at || new Date().toISOString(),

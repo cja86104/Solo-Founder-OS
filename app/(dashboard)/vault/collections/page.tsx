@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ArrowLeft, FolderOpen } from "lucide-react";
 import { CollectionCard } from "@/components/vault/collection-card";
 import { CreateCollectionDialog } from "@/components/vault/create-collection-dialog";
+import type { VaultCollection } from "@/types/vault";
 
 export const metadata: Metadata = {
   title: "Collections - Code Vault",
@@ -23,7 +24,7 @@ export default async function CollectionsPage() {
     .from("vault_collections")
     .select("*")
     .eq("user_id", user.id)
-    .order("name");
+    .order("name") as { data: VaultCollection[] | null };
 
   return (
     <div className="space-y-6">

@@ -26,8 +26,8 @@ interface LandingPageRow {
 async function getLandingPage(slug: string): Promise<LandingPageRow | null> {
   const supabase = await createClient()
 
-  const { data: page, error } = await supabase
-    .from('landing_pages')
+  const { data: page, error } = await (supabase
+    .from('landing_pages') as any)
     .select('*')
     .eq('slug', slug)
     .eq('status', 'published')
@@ -38,7 +38,7 @@ async function getLandingPage(slug: string): Promise<LandingPageRow | null> {
   }
 
   // Track page view
-  await supabase.from('landing_page_analytics').insert({
+  await (supabase.from('landing_page_analytics') as any).insert({
     page_id: page.id,
     event_type: 'page_view',
     event_data: {
@@ -119,7 +119,7 @@ export default async function PublicLandingPage({ params }: PageProps) {
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <h1 className="text-2xl font-bold mb-2">{page.title}</h1>
-              <p className="text-muted-foreground">This page is under construction.</p>
+              <p className="text-muted-foreground">Check back soon for updates.</p>
             </div>
           </div>
         )}

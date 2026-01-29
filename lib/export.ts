@@ -44,8 +44,8 @@ export async function exportContacts(
   format: ExportFormat,
   options?: ExportOptions
 ): Promise<ExportResult> {
-  let query = supabase
-    .from('contacts')
+  let query = (supabase
+    .from('contacts') as any)
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -100,8 +100,8 @@ export async function exportLandingPages(
   workspaceId: string,
   format: ExportFormat
 ): Promise<ExportResult> {
-  const { data, error } = await supabase
-    .from('landing_pages')
+  const { data, error } = await (supabase
+    .from('landing_pages') as any)
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -145,8 +145,8 @@ export async function exportVaultItems(
   workspaceId: string,
   format: ExportFormat
 ): Promise<ExportResult> {
-  const { data, error } = await supabase
-    .from('vault_items')
+  const { data, error } = await (supabase
+    .from('vault_items') as any)
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -192,8 +192,8 @@ export async function exportActivities(
   format: ExportFormat,
   options?: ExportOptions
 ): Promise<ExportResult> {
-  let query = supabase
-    .from('activities')
+  let query = (supabase
+    .from('activities') as any)
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -244,13 +244,13 @@ export async function exportAllData(
   workspaceId: string
 ): Promise<ExportResult> {
   const [contacts, pages, vault, activities] = await Promise.all([
-    supabase.from('contacts').select('*').eq('workspace_id', workspaceId),
-    supabase.from('landing_pages').select('*').eq('workspace_id', workspaceId),
-    supabase
-      .from('vault_items')
+    (supabase.from('contacts') as any).select('*').eq('workspace_id', workspaceId),
+    (supabase.from('landing_pages') as any).select('*').eq('workspace_id', workspaceId),
+    (supabase
+      .from('vault_items') as any)
       .select('*')
       .eq('workspace_id', workspaceId),
-    supabase.from('activities').select('*').eq('workspace_id', workspaceId),
+    (supabase.from('activities') as any).select('*').eq('workspace_id', workspaceId),
   ]);
 
   const exportData = {

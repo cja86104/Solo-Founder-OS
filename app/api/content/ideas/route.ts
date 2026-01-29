@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
 
     // Ideas are content posts with status 'idea'
     // If no ideas table exists, return posts with is_idea flag or empty array
-    const { data: posts, error } = await supabase
-      .from('content_posts')
+    const { data: posts, error } = await (supabase
+      .from('content_posts') as any)
       .select('id, title, content, tags, created_at')
       .eq('workspace_id', workspaceId)
       .eq('status', 'draft')
@@ -84,8 +84,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -96,8 +96,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create as a draft content post (idea)
-    const { data: idea, error } = await supabase
-      .from('content_posts')
+    const { data: idea, error } = await (supabase
+      .from('content_posts') as any)
       .insert({
         workspace_id,
         title,
@@ -140,8 +140,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'id is required' }, { status: 400 });
     }
 
-    const { error } = await supabase
-      .from('content_posts')
+    const { error } = await (supabase
+      .from('content_posts') as any)
       .delete()
       .eq('id', ideaId)
       .eq('user_id', user.id);

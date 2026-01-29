@@ -116,7 +116,7 @@ export function VaultItemCard({ item }: { item: VaultItem }) {
 
     const { error } = await (supabase
       .from("vault_items") as any)
-      .update({ deleted_at: new Date().toISOString() })
+      .delete()
       .eq("id", item.id);
 
     if (error) {

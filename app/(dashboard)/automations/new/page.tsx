@@ -187,7 +187,7 @@ export default function NewAutomationPage() {
   };
 
   // Permission check
-  if (!workspaceLoading && !can('content.create')) {
+  if (!workspaceLoading && !can('automations.create')) {
     return (
       <div className="container py-6">
         <Card>

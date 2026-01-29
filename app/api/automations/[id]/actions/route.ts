@@ -20,8 +20,8 @@ export async function GET(
     }
 
     // Fetch automation to verify access
-    const { data: automation, error: fetchError } = await supabase
-      .from('automations')
+    const { data: automation, error: fetchError } = await (supabase
+      .from('automations') as any)
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -34,8 +34,8 @@ export async function GET(
     }
 
     // Verify workspace membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -49,8 +49,8 @@ export async function GET(
     }
 
     // Fetch actions
-    const { data: actions, error: actionsError } = await supabase
-      .from('automation_actions')
+    const { data: actions, error: actionsError } = await (supabase
+      .from('automation_actions') as any)
       .select('*')
       .eq('automation_id', id)
       .order('position', { ascending: true });
@@ -89,8 +89,8 @@ export async function POST(
     }
 
     // Fetch automation
-    const { data: automation, error: fetchError } = await supabase
-      .from('automations')
+    const { data: automation, error: fetchError } = await (supabase
+      .from('automations') as any)
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -103,8 +103,8 @@ export async function POST(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -143,8 +143,8 @@ export async function POST(
     // Get current max position if not provided
     let finalPosition = position;
     if (finalPosition === undefined) {
-      const { data: existingActions } = await supabase
-        .from('automation_actions')
+      const { data: existingActions } = await (supabase
+        .from('automation_actions') as any)
         .select('position')
         .eq('automation_id', id)
         .order('position', { ascending: false })
@@ -156,8 +156,8 @@ export async function POST(
     }
 
     // Create the action
-    const { data: action, error: createError } = await supabase
-      .from('automation_actions')
+    const { data: action, error: createError } = await (supabase
+      .from('automation_actions') as any)
       .insert({
         automation_id: id,
         action_type,
@@ -203,8 +203,8 @@ export async function PUT(
     }
 
     // Fetch automation
-    const { data: automation, error: fetchError } = await supabase
-      .from('automations')
+    const { data: automation, error: fetchError } = await (supabase
+      .from('automations') as any)
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -217,8 +217,8 @@ export async function PUT(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -256,8 +256,8 @@ export async function PUT(
     }
 
     // Delete all existing actions
-    await supabase
-      .from('automation_actions')
+    await (supabase
+      .from('automation_actions') as any)
       .delete()
       .eq('automation_id', id);
 
@@ -273,8 +273,8 @@ export async function PUT(
         branch_condition: (action.branch_condition || null) as any,
       }));
 
-      const { data: insertedActions, error: insertError } = await supabase
-        .from('automation_actions')
+      const { data: insertedActions, error: insertError } = await (supabase
+        .from('automation_actions') as any)
         .insert(actionsToInsert as any)
         .select();
 

@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { data: keys, error } = await supabase
-      .from('api_keys')
+    const { data: keys, error } = await (supabase
+      .from('api_keys') as any)
       .select('id, name, key_preview, last_used_at, created_at')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id and name are required' }, { status: 400 });
     }
 
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
     const keyPreview = `${fullKey.slice(0, 12)}...${fullKey.slice(-4)}`;
     const keyHash = require('crypto').createHash('sha256').update(fullKey).digest('hex');
 
-    const { data: apiKey, error } = await supabase
-      .from('api_keys')
+    const { data: apiKey, error } = await (supabase
+      .from('api_keys') as any)
       .insert({
         workspace_id,
         user_id: user.id,
@@ -115,8 +115,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'key_id is required' }, { status: 400 });
     }
 
-    const { data: apiKey } = await supabase
-      .from('api_keys')
+    const { data: apiKey } = await (supabase
+      .from('api_keys') as any)
       .select('workspace_id')
       .eq('id', keyId)
       .single();
@@ -125,8 +125,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'API key not found' }, { status: 404 });
     }
 
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', apiKey.workspace_id)
       .eq('user_id', user.id)
@@ -136,7 +136,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { error } = await supabase.from('api_keys').delete().eq('id', keyId);
+    const { error } = await (supabase.from('api_keys') as any).delete().eq('id', keyId);
     if (error) throw error;
 
     return NextResponse.json({ success: true });

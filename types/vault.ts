@@ -17,8 +17,7 @@ export interface VaultItem {
   metadata: Record<string, unknown> | null;
   created_at: string | null;
   updated_at: string | null;
-  deleted_at?: string | null;
-  workspace_id?: string;
+  workspace_id: string;
 }
 
 export interface VaultCollection {

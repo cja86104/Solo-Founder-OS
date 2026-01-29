@@ -373,7 +373,7 @@ export default function CRMPage() {
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            {can('crm.create') && (
+            {can('deals.create') && (
               <Button onClick={() => setFormOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Deal
@@ -545,6 +545,7 @@ export default function CRMPage() {
         deal={editingDeal}
         stages={stages}
         contacts={contacts}
+        initialStageId={initialStageId}
         onSubmit={editingDeal ? handleUpdateDeal : handleCreateDeal}
       />
 

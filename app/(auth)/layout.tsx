@@ -19,19 +19,12 @@ export default function AuthLayout({
           </Link>
           
           <div className="space-y-6">
-            <blockquote className="text-2xl font-medium text-white/90 leading-relaxed">
-              "Finally, a platform that understands what solo founders actually need. 
-              All my tools in one place."
-            </blockquote>
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center">
-                <span className="text-white font-semibold">JD</span>
-              </div>
-              <div>
-                <p className="text-white font-medium">Jane Doe</p>
-                <p className="text-white/60 text-sm">Founder, SaaS Startup</p>
-              </div>
-            </div>
+            <h2 className="text-3xl font-bold text-white/90 leading-relaxed">
+              Everything you need to run your business, in one place.
+            </h2>
+            <p className="text-lg text-white/70">
+              CRM, invoicing, projects, analytics, automation, and more — built specifically for solo founders.
+            </p>
           </div>
 
           <div className="flex items-center gap-8 text-white/60 text-sm">

@@ -8,6 +8,7 @@ import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
+import { useWorkspace } from "@/lib/workspace-context";
 import { vaultCollectionSchema, type VaultCollectionInput } from "@/lib/validations/vault";
 import { COLLECTION_COLORS } from "@/types/vault";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ import { cn } from "@/lib/utils";
 export function CreateCollectionDialog() {
   const router = useRouter();
   const supabase = createClient();
+  const { currentWorkspace } = useWorkspace();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,7 +66,13 @@ export function CreateCollectionDialog() {
         return;
       }
 
+      if (!currentWorkspace) {
+        toast.error("No workspace selected");
+        return;
+      }
+
       const { error } = await (supabase.from("vault_collections") as any).insert({
+        workspace_id: currentWorkspace.id,
         user_id: user.id,
         name: data.name,
         description: data.description || null,

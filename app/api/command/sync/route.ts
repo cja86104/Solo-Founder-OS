@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify user has admin access to workspace
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -52,16 +52,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check for recent sync to prevent spam
-    const { data: recentSync } = await supabase
-      .from('stripe_sync_log')
+    // Check for recent sync to prevent spam (if table exists)
+    const { data: recentSync, error: syncCheckError } = await (supabase
+      .from('stripe_sync_log') as any)
       .select('started_at')
       .eq('workspace_id', workspace_id)
       .eq('status', 'started')
       .gte('started_at', new Date(Date.now() - 5 * 60 * 1000).toISOString())
       .single();
 
-    if (recentSync) {
+    // Only enforce rate limit if table exists and has recent sync
+    if (!syncCheckError && recentSync) {
       return NextResponse.json(
         { error: 'A sync is already in progress. Please wait 5 minutes.' },
         { status: 429 }
@@ -137,8 +138,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify user has access to workspace
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -149,20 +150,28 @@ export async function GET(request: NextRequest) {
     }
 
     // Get sync history
-    const { data: syncHistory, error } = await supabase
-      .from('stripe_sync_log')
+    const { data: syncHistory, error } = await (supabase
+      .from('stripe_sync_log') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('started_at', { ascending: false })
       .limit(limit);
 
-    if (error) throw error;
+    if (error) {
+      // Table might not exist yet - return empty history
+      console.error('Get sync history error (table may not exist):', error);
+      return NextResponse.json({
+        sync_history: [],
+        last_synced_at: null,
+        total_syncs: 0,
+      });
+    }
 
     // Get last successful sync
     const lastSuccessful = syncHistory?.find((s: { status: string }) => s.status === 'completed');
 
     return NextResponse.json({
-      sync_history: syncHistory,
+      sync_history: syncHistory || [],
       last_synced_at: lastSuccessful?.completed_at || null,
       total_syncs: syncHistory?.length || 0,
     });

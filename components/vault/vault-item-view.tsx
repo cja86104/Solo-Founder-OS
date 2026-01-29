@@ -101,7 +101,7 @@ export function VaultItemView({ item, isOwner }: VaultItemViewProps) {
 
     const { error } = await (supabase
       .from("vault_items") as any)
-      .update({ deleted_at: new Date().toISOString() })
+      .delete()
       .eq("id", item.id);
 
     if (error) {

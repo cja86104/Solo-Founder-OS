@@ -11,12 +11,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: notifications, error } = await supabase
-      .from('notifications')
+    const { searchParams } = new URL(request.url);
+    const workspaceId = searchParams.get('workspace_id');
+
+    let query = (supabase
+      .from('notifications') as any)
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(20);
+
+    if (workspaceId) {
+      query = query.eq('workspace_id', workspaceId);
+    }
+
+    const { data: notifications, error } = await query;
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -46,8 +55,8 @@ export async function PATCH(request: NextRequest) {
       mark_all_read?: boolean;
     };
 
-    let query = supabase
-      .from('notifications')
+    let query = (supabase
+      .from('notifications') as any)
       .update({ is_read: true })
       .eq('user_id', user.id);
 

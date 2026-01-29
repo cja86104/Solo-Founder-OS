@@ -19,15 +19,15 @@ export default async function DashboardLayout({
   }
 
   // Fetch user profile
-  const { data: profile } = await supabase
-    .from("profiles")
+  const { data: profile } = await (supabase
+    .from("profiles") as any)
     .select("*")
     .eq("id", user.id)
     .single();
 
   // Fetch subscription - if missing, we'll use a default
-  const { data: subscription } = await supabase
-    .from("subscriptions")
+  const { data: subscription } = await (supabase
+    .from("subscriptions") as any)
     .select("*")
     .eq("user_id", user.id)
     .single();
@@ -36,7 +36,7 @@ export default async function DashboardLayout({
   const defaultSubscription = {
     id: "default",
     user_id: user.id,
-    plan: "free" as const,
+    plan: "pro" as const,
     status: "active" as const,
     stripe_customer_id: null,
     stripe_subscription_id: null,

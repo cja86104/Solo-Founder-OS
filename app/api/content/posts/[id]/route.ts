@@ -14,8 +14,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: post, error } = await supabase
-      .from('content_posts')
+    const { data: post, error } = await (supabase
+      .from('content_posts') as any)
       .select('*')
       .eq('id', id)
       .single();
@@ -24,8 +24,8 @@ export async function GET(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', post.workspace_id)
       .eq('user_id', user.id)
@@ -56,8 +56,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: existingPost } = await supabase
-      .from('content_posts')
+    const { data: existingPost } = await (supabase
+      .from('content_posts') as any)
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -66,8 +66,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', existingPost.workspace_id)
       .eq('user_id', user.id)
@@ -78,9 +78,12 @@ export async function PATCH(
     }
 
     const updateData: Record<string, unknown> = {};
-    const allowedFields = ['title', 'content', 'status', 'scheduled_at', 'published_at', 'platforms', 'tags'];
+    // Base columns that always exist
+    const baseFields = ['title', 'content', 'status', 'scheduled_at', 'published_at', 'platforms', 'tags'];
+    // Extended columns from content engine migration
+    const extendedFields = ['content_type', 'slug', 'meta_description', 'category', 'media_urls'];
 
-    for (const field of allowedFields) {
+    for (const field of baseFields) {
       if (body[field] !== undefined) {
         updateData[field] = body[field];
       }
@@ -90,16 +93,43 @@ export async function PATCH(
       updateData.published_at = new Date().toISOString();
     }
 
-    const { data: post, error } = await supabase
-      .from('content_posts')
+    // Only include extended fields if they have actual values
+    for (const field of extendedFields) {
+      if (body[field] !== undefined && body[field] !== null) {
+        updateData[field] = body[field];
+      }
+    }
+
+    let result = await (supabase
+      .from('content_posts') as any)
       .update(updateData)
       .eq('id', id)
       .select()
       .single();
 
-    if (error) throw error;
+    // If it fails due to unknown columns, retry with base columns only
+    if (result.error?.code === 'PGRST204') {
+      const baseOnly: Record<string, unknown> = {};
+      for (const field of baseFields) {
+        if (body[field] !== undefined) {
+          baseOnly[field] = body[field];
+        }
+      }
+      if (body.status === 'published' && !body.published_at) {
+        baseOnly.published_at = new Date().toISOString();
+      }
 
-    return NextResponse.json({ post });
+      result = await (supabase
+        .from('content_posts') as any)
+        .update(baseOnly)
+        .eq('id', id)
+        .select()
+        .single();
+    }
+
+    if (result.error) throw result.error;
+
+    return NextResponse.json({ post: result.data });
   } catch (error) {
     console.error('Error updating post:', error);
     return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
@@ -119,8 +149,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: post } = await supabase
-      .from('content_posts')
+    const { data: post } = await (supabase
+      .from('content_posts') as any)
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -129,8 +159,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', post.workspace_id)
       .eq('user_id', user.id)
@@ -140,7 +170,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { error } = await supabase.from('content_posts').delete().eq('id', id);
+    const { error } = await (supabase.from('content_posts') as any).delete().eq('id', id);
     if (error) throw error;
 
     return NextResponse.json({ success: true });

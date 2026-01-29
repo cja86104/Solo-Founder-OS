@@ -360,7 +360,7 @@ export default function AutomationDetailPage() {
     );
   }
 
-  const canEdit = can('content.update');
+  const canEdit = can('automations.update');
 
   return (
     <div className="container py-6 max-w-4xl">

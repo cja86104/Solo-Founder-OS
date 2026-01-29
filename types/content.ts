@@ -76,6 +76,16 @@ export interface CreatePostInput {
   meta_description?: string;
   scheduled_at?: string;
   status?: string;
+  media_urls?: string[];
+}
+
+export interface ThreadSegment {
+  text: string;
+  media_url?: string;
+}
+
+export interface ThreadContent {
+  segments: ThreadSegment[];
 }
 
 // Utility functions

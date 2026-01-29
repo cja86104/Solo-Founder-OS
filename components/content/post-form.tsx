@@ -13,6 +13,8 @@ import {
   getPlatformLabel,
   generateSlug,
 } from '@/types/content';
+import { PostEditor } from '@/components/content/editors/post-editor';
+import { ThreadEditor, type ThreadSegment } from '@/components/content/editors/thread-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,7 +30,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -50,15 +51,15 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Loader2,
   Calendar as CalendarIcon,
-  Tag,
   X,
   Plus,
   Sparkles,
   Clock,
+  Check,
+  Eye,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -80,6 +81,7 @@ const postFormSchema = z.object({
   slug: z.string().optional(),
   meta_description: z.string().optional(),
   scheduled_at: z.date().optional(),
+  media_urls: z.array(z.string()).optional(),
 });
 
 type PostFormValues = z.infer<typeof postFormSchema>;
@@ -88,9 +90,6 @@ const CONTENT_TYPES: ContentType[] = [
   'post',
   'article',
   'thread',
-  'newsletter',
-  'video_script',
-  'podcast_notes',
 ];
 
 const PLATFORMS: ContentPlatform[] = [
@@ -106,11 +105,12 @@ const PLATFORMS: ContentPlatform[] = [
 
 interface PostFormProps {
   post?: (ContentPost & Record<string, unknown>) | null;
-  onSubmit: (data: CreatePostInput) => Promise<void>;
+  onSubmit: (data: CreatePostInput & { media_urls?: string[] }) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
   onSuccess?: () => void;
   onGenerateAI?: (prompt: string) => Promise<string>;
+  workspaceId: string;
 }
 
 export function PostForm({
@@ -119,12 +119,27 @@ export function PostForm({
   onCancel,
   isSubmitting = false,
   onGenerateAI,
+  workspaceId,
 }: PostFormProps) {
   const [newTag, setNewTag] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [showSchedule, setShowSchedule] = useState(!!post?.scheduled_at);
   const [scheduleTime, setScheduleTime] = useState('09:00');
+  const [mediaUrls, setMediaUrls] = useState<string[]>(
+    ((post as Record<string, unknown>)?.media_urls as string[]) || []
+  );
+  const [threadSegments, setThreadSegments] = useState<ThreadSegment[]>(() => {
+    if ((post as Record<string, unknown>)?.content_type === 'thread' && post?.content) {
+      try {
+        const parsed = JSON.parse(post.content);
+        if (parsed.segments) return parsed.segments;
+      } catch {
+        // not JSON, use as first segment
+      }
+    }
+    return [{ text: post?.content || '' }];
+  });
 
   const form = useForm<PostFormValues>({
     resolver: zodResolver(postFormSchema),
@@ -138,11 +153,13 @@ export function PostForm({
       slug: (post as Record<string, unknown>)?.slug as string || '',
       meta_description: (post as Record<string, unknown>)?.meta_description as string || '',
       scheduled_at: post?.scheduled_at ? new Date(post.scheduled_at) : undefined,
+      media_urls: ((post as Record<string, unknown>)?.media_urls as string[]) || [],
     },
   });
 
   const currentTags = form.watch('tags');
   const currentPlatforms = form.watch('platforms');
+  const contentType = form.watch('content_type');
   const title = form.watch('title');
 
   const handleAddTag = () => {
@@ -197,9 +214,15 @@ export function PostForm({
       scheduledAt.setHours(hours, minutes, 0, 0);
     }
 
+    // For threads, serialize segments as JSON
+    let finalContent = data.content;
+    if (data.content_type === 'thread') {
+      finalContent = JSON.stringify({ segments: threadSegments });
+    }
+
     await onSubmit({
       title: data.title,
-      content: data.content,
+      content: finalContent,
       content_type: data.content_type,
       platforms: data.platforms as ContentPlatform[],
       tags: data.tags,
@@ -208,6 +231,7 @@ export function PostForm({
       meta_description: data.meta_description || undefined,
       scheduled_at: scheduledAt?.toISOString(),
       status: scheduledAt ? 'scheduled' : undefined,
+      media_urls: mediaUrls,
     });
   };
 
@@ -259,65 +283,101 @@ export function PostForm({
                       ))}
                     </SelectContent>
                   </Select>
+                  {field.value === 'article' && !post && (
+                    <p className="text-xs text-muted-foreground">
+                      Articles open in a full-page editor after saving.
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Content */}
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel>Content</FormLabel>
-                    {onGenerateAI && (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button type="button" variant="ghost" size="sm">
-                            <Sparkles className="h-4 w-4 mr-1" />
-                            AI Generate
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80">
-                          <div className="space-y-3">
-                            <Label>What should the AI write about?</Label>
-                            <Textarea
-                              placeholder="e.g., Write a LinkedIn post about productivity tips for founders..."
-                              value={aiPrompt}
-                              onChange={(e) => setAiPrompt(e.target.value)}
-                              rows={3}
-                            />
-                            <Button
-                              type="button"
-                              onClick={handleGenerateAI}
-                              disabled={isGenerating || !aiPrompt}
-                              className="w-full"
-                            >
-                              {isGenerating ? (
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              ) : (
-                                <Sparkles className="h-4 w-4 mr-2" />
-                              )}
-                              Generate
+            {/* Content - Dynamic Editor */}
+            {contentType === 'thread' ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Thread Segments</Label>
+                </div>
+                <ThreadEditor
+                  segments={threadSegments}
+                  onChange={setThreadSegments}
+                  workspaceId={workspaceId}
+                />
+              </div>
+            ) : contentType === 'article' && post ? (
+              <div className="rounded-lg border p-4 text-center space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Use the full-page editor for article content.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    window.open(`/content/edit/${post.id}`, '_self')
+                  }
+                >
+                  Open Full Editor
+                </Button>
+              </div>
+            ) : (
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Content</FormLabel>
+                      {onGenerateAI && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button type="button" variant="ghost" size="sm">
+                              <Sparkles className="h-4 w-4 mr-1" />
+                              AI Generate
                             </Button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    )}
-                  </div>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Write your content here..."
-                      rows={10}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <div className="space-y-3">
+                              <Label>What should the AI write about?</Label>
+                              <Textarea
+                                placeholder="e.g., Write a LinkedIn post about productivity tips for founders..."
+                                value={aiPrompt}
+                                onChange={(e) => setAiPrompt(e.target.value)}
+                                rows={3}
+                              />
+                              <Button
+                                type="button"
+                                onClick={handleGenerateAI}
+                                disabled={isGenerating || !aiPrompt}
+                                className="w-full"
+                              >
+                                {isGenerating ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Sparkles className="h-4 w-4 mr-2" />
+                                )}
+                                Generate
+                              </Button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    </div>
+                    <FormControl>
+                      <PostEditor
+                        content={field.value || ''}
+                        onChange={field.onChange}
+                        mediaUrls={mediaUrls}
+                        onMediaChange={setMediaUrls}
+                        platforms={currentPlatforms}
+                        workspaceId={workspaceId}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Tags */}
             <div className="space-y-3">
@@ -363,24 +423,33 @@ export function PostForm({
               Select the platforms where you want to publish this content.
             </p>
             <div className="grid grid-cols-2 gap-3">
-              {PLATFORMS.map((platform) => (
-                <div
-                  key={platform}
-                  className={cn(
-                    'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
-                    currentPlatforms.includes(platform)
-                      ? 'border-primary bg-primary/5'
-                      : 'hover:bg-muted/50'
-                  )}
-                  onClick={() => togglePlatform(platform)}
-                >
-                  <Checkbox
-                    checked={currentPlatforms.includes(platform)}
-                    onCheckedChange={() => togglePlatform(platform)}
-                  />
-                  <span>{getPlatformLabel(platform)}</span>
-                </div>
-              ))}
+              {PLATFORMS.map((platform) => {
+                const isSelected = currentPlatforms.includes(platform);
+                return (
+                  <div
+                    key={platform}
+                    className={cn(
+                      'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
+                      isSelected
+                        ? 'border-primary bg-primary/5'
+                        : 'hover:bg-muted/50'
+                    )}
+                    onClick={() => togglePlatform(platform)}
+                  >
+                    <div
+                      className={cn(
+                        'flex items-center justify-center h-4 w-4 shrink-0 rounded-sm border shadow',
+                        isSelected
+                          ? 'bg-primary border-primary text-primary-foreground'
+                          : 'border-primary'
+                      )}
+                    >
+                      {isSelected && <Check className="h-3.5 w-3.5" />}
+                    </div>
+                    <span>{getPlatformLabel(platform)}</span>
+                  </div>
+                );
+              })}
             </div>
           </TabsContent>
 
@@ -440,7 +509,7 @@ export function PostForm({
             {/* SEO */}
             <div className="space-y-4">
               <h4 className="font-medium">SEO Settings</h4>
-              
+
               <FormField
                 control={form.control}
                 name="slug"
@@ -496,14 +565,31 @@ export function PostForm({
         </Tabs>
 
         {/* Actions */}
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {post ? 'Save Changes' : showSchedule ? 'Schedule' : 'Save Draft'}
-          </Button>
+        <div className="flex justify-between gap-2 pt-4 border-t">
+          <div>
+            {post && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  window.open(`/content/preview/${post.id}`, '_blank')
+                }
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Preview
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {post ? 'Save Changes' : showSchedule ? 'Schedule' : 'Save Draft'}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>
@@ -514,8 +600,9 @@ interface PostFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   post?: (ContentPost & Record<string, unknown>) | null;
-  onSubmit: (data: CreatePostInput) => Promise<void>;
+  onSubmit: (data: CreatePostInput & { media_urls?: string[] }) => Promise<void>;
   onGenerateAI?: (prompt: string) => Promise<string>;
+  workspaceId: string;
 }
 
 export function PostFormDialog({
@@ -524,10 +611,11 @@ export function PostFormDialog({
   post,
   onSubmit,
   onGenerateAI,
+  workspaceId,
 }: PostFormDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (data: CreatePostInput) => {
+  const handleSubmit = async (data: CreatePostInput & { media_urls?: string[] }) => {
     setIsSubmitting(true);
     try {
       await onSubmit(data);
@@ -553,6 +641,7 @@ export function PostFormDialog({
           onCancel={() => onOpenChange(false)}
           isSubmitting={isSubmitting}
           onGenerateAI={onGenerateAI}
+          workspaceId={workspaceId}
         />
       </DialogContent>
     </Dialog>

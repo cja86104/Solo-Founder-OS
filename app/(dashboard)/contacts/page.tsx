@@ -309,7 +309,7 @@ export default function ContactsPage() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          {can('crm.create') && (
+          {can('contacts.create') && (
             <Button onClick={() => setFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Contact
@@ -472,7 +472,7 @@ export default function ContactsPage() {
                   ? 'Try adjusting your filters'
                   : 'Add your first contact to get started'}
               </p>
-              {can('crm.create') && !search && statusFilter === 'all' && (
+              {can('contacts.create') && !search && statusFilter === 'all' && (
                 <Button onClick={() => setFormOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Contact
@@ -493,7 +493,7 @@ export default function ContactsPage() {
                     setContactToDelete(c);
                     setDeleteDialogOpen(true);
                   }}
-                  showActions={can('crm.edit')}
+                  showActions={can('contacts.update')}
                 />
               ))}
             </div>

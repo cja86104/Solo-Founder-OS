@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership, error: membershipError } = await supabase
-      .from('workspace_members')
+    const { data: membership, error: membershipError } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -166,16 +166,16 @@ async function fetchMetrics(
   period: AnalyticsPeriod
 ): Promise<AnalyticsMetrics> {
   // Current period data
-  const { data: currentData } = await supabase
-    .from('analytics_sessions')
+  const { data: currentData } = await (supabase
+    .from('analytics_sessions') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .gte('started_at', startDate.toISOString())
     .lte('started_at', endDate.toISOString());
 
   // Previous period data for comparison
-  const { data: prevData } = await supabase
-    .from('analytics_sessions')
+  const { data: prevData } = await (supabase
+    .from('analytics_sessions') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .gte('started_at', prevStartDate.toISOString())
@@ -185,24 +185,24 @@ async function fetchMetrics(
   const prevSessions = prevData || [];
 
   // Calculate current metrics
-  const uniqueVisitors = new Set(sessions.map((s) => s.visitor_id)).size;
-  const prevUniqueVisitors = new Set(prevSessions.map((s) => s.visitor_id)).size;
+  const uniqueVisitors = new Set(sessions.map((s: any) => s.visitor_id)).size;
+  const prevUniqueVisitors = new Set(prevSessions.map((s: any) => s.visitor_id)).size;
 
   const returningVisitorIds = new Set(
-    sessions.filter((s) => {
+    sessions.filter((s: any) => {
       const firstSession = sessions.find(
-        (fs) => fs.visitor_id === s.visitor_id && fs.started_at < s.started_at
+        (fs: any) => fs.visitor_id === s.visitor_id && fs.started_at < s.started_at
       );
       return !!firstSession;
-    }).map((s) => s.visitor_id)
+    }).map((s: any) => s.visitor_id)
   );
 
-  const totalPageViews = sessions.reduce((sum, s) => sum + (s.page_views || 0), 0);
-  const prevTotalPageViews = prevSessions.reduce((sum, s) => sum + (s.page_views || 0), 0);
+  const totalPageViews = sessions.reduce((sum: number, s: any) => sum + (s.page_views || 0), 0);
+  const prevTotalPageViews = prevSessions.reduce((sum: number, s: any) => sum + (s.page_views || 0), 0);
 
   const avgSessionDuration =
     sessions.length > 0
-      ? sessions.reduce((sum, s) => sum + (s.duration_seconds || 0), 0) / sessions.length
+      ? sessions.reduce((sum: number, s: any) => sum + (s.duration_seconds || 0), 0) / sessions.length
       : 0;
 
   const avgPagesPerSession =
@@ -210,19 +210,19 @@ async function fetchMetrics(
       ? totalPageViews / sessions.length
       : 0;
 
-  const bounces = sessions.filter((s) => s.is_bounce).length;
+  const bounces = sessions.filter((s: any) => s.is_bounce).length;
   const bounceRate = sessions.length > 0 ? (bounces / sessions.length) * 100 : 0;
-  const prevBounces = prevSessions.filter((s) => s.is_bounce).length;
+  const prevBounces = prevSessions.filter((s: any) => s.is_bounce).length;
   const prevBounceRate = prevSessions.length > 0 ? (prevBounces / prevSessions.length) * 100 : 0;
 
-  const conversions = sessions.filter((s) => s.converted).length;
-  const prevConversions = prevSessions.filter((s) => s.converted).length;
+  const conversions = sessions.filter((s: any) => s.converted).length;
+  const prevConversions = prevSessions.filter((s: any) => s.converted).length;
   const conversionRate = sessions.length > 0 ? (conversions / sessions.length) * 100 : 0;
   const prevConversionRate = prevSessions.length > 0 ? (prevConversions / prevSessions.length) * 100 : 0;
 
   const totalConversionValue = sessions
-    .filter((s) => s.converted)
-    .reduce((sum, s) => sum + (s.conversion_value || 0), 0);
+    .filter((s: any) => s.converted)
+    .reduce((sum: number, s: any) => sum + (s.conversion_value || 0), 0);
 
   return {
     period,
@@ -261,8 +261,8 @@ async function fetchTimeSeries(
   endDate: Date,
   period: AnalyticsPeriod
 ): Promise<TimeSeriesDataPoint[]> {
-  const { data } = await supabase
-    .from('analytics_sessions')
+  const { data } = await (supabase
+    .from('analytics_sessions') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .gte('started_at', startDate.toISOString())
@@ -274,7 +274,7 @@ async function fetchTimeSeries(
   // Group by date
   const grouped = new Map<string, typeof sessions>();
   
-  sessions.forEach((session) => {
+  sessions.forEach((session: any) => {
     const date = new Date(session.started_at).toISOString().split('T')[0];
     if (!grouped.has(date)) {
       grouped.set(date, []);
@@ -290,14 +290,14 @@ async function fetchTimeSeries(
     const dateStr = current.toISOString().split('T')[0];
     const daySessions = grouped.get(dateStr) || [];
     
-    const visitors = new Set(daySessions.map((s) => s.visitor_id)).size;
-    const pageViews = daySessions.reduce((sum, s) => sum + (s.page_views || 0), 0);
-    const conversions = daySessions.filter((s) => s.converted).length;
-    const bounces = daySessions.filter((s) => s.is_bounce).length;
+    const visitors = new Set(daySessions.map((s: any) => s.visitor_id)).size;
+    const pageViews = daySessions.reduce((sum: number, s: any) => sum + (s.page_views || 0), 0);
+    const conversions = daySessions.filter((s: any) => s.converted).length;
+    const bounces = daySessions.filter((s: any) => s.is_bounce).length;
     const bounceRate = daySessions.length > 0 ? (bounces / daySessions.length) * 100 : 0;
     const avgDuration =
       daySessions.length > 0
-        ? daySessions.reduce((sum, s) => sum + (s.duration_seconds || 0), 0) / daySessions.length
+        ? daySessions.reduce((sum: number, s: any) => sum + (s.duration_seconds || 0), 0) / daySessions.length
         : 0;
 
     result.push({
@@ -323,8 +323,8 @@ async function fetchTopPages(
   endDate: Date,
   limit = 10
 ): Promise<TopPage[]> {
-  const { data } = await supabase
-    .from('analytics_page_views')
+  const { data } = await (supabase
+    .from('analytics_page_views') as any)
     .select('page_path, page_title, duration_seconds, session_id')
     .eq('workspace_id', workspaceId)
     .gte('created_at', startDate.toISOString())
@@ -340,7 +340,7 @@ async function fetchTopPages(
     totalDuration: number;
   }>();
 
-  pageViews.forEach((pv) => {
+  pageViews.forEach((pv: any) => {
     if (!grouped.has(pv.page_path)) {
       grouped.set(pv.page_path, {
         title: pv.page_title,
@@ -379,8 +379,8 @@ async function fetchTopReferrers(
   endDate: Date,
   limit = 10
 ): Promise<TopReferrer[]> {
-  const { data } = await supabase
-    .from('analytics_sessions')
+  const { data } = await (supabase
+    .from('analytics_sessions') as any)
     .select('referrer, utm_source, utm_medium, visitor_id, converted')
     .eq('workspace_id', workspaceId)
     .gte('started_at', startDate.toISOString())
@@ -396,7 +396,7 @@ async function fetchTopReferrers(
     conversions: number;
   }>();
 
-  sessions.forEach((s) => {
+  sessions.forEach((s: any) => {
     const source = s.utm_source || s.referrer || 'Direct';
     if (!grouped.has(source)) {
       grouped.set(source, {
@@ -434,8 +434,8 @@ async function fetchDeviceBreakdown(
   startDate: Date,
   endDate: Date
 ): Promise<DeviceBreakdown[]> {
-  const { data } = await supabase
-    .from('analytics_sessions')
+  const { data } = await (supabase
+    .from('analytics_sessions') as any)
     .select('device_type, visitor_id, is_bounce, duration_seconds')
     .eq('workspace_id', workspaceId)
     .gte('started_at', startDate.toISOString())
@@ -452,7 +452,7 @@ async function fetchDeviceBreakdown(
     totalDuration: number;
   }>();
 
-  sessions.forEach((s) => {
+  sessions.forEach((s: any) => {
     const device = s.device_type || 'desktop';
     if (!grouped.has(device)) {
       grouped.set(device, {
@@ -490,8 +490,8 @@ async function fetchGeoBreakdown(
   endDate: Date,
   limit = 10
 ): Promise<GeoBreakdown[]> {
-  const { data } = await supabase
-    .from('analytics_sessions')
+  const { data } = await (supabase
+    .from('analytics_sessions') as any)
     .select('country, visitor_id, converted')
     .eq('workspace_id', workspaceId)
     .gte('started_at', startDate.toISOString())
@@ -507,7 +507,7 @@ async function fetchGeoBreakdown(
     conversions: number;
   }>();
 
-  sessions.forEach((s) => {
+  sessions.forEach((s: any) => {
     const country = s.country || 'Unknown';
     if (!grouped.has(country)) {
       grouped.set(country, {

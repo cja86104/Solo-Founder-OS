@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VaultItemForm } from "@/components/vault/vault-item-form";
 import { VaultItemView } from "@/components/vault/vault-item-view";
+import type { VaultItemWithCollection, VaultCollection } from "@/types/vault";
 
 interface VaultItemPageProps {
   params: Promise<{ id: string }>;
@@ -19,7 +20,7 @@ export async function generateMetadata({
     .from("vault_items")
     .select("title")
     .eq("id", id)
-    .single();
+    .single() as { data: { title: string } | null };
 
   return {
     title: item?.title || "Item Not Found",
@@ -44,8 +45,7 @@ export default async function VaultItemPage({
     .from("vault_items")
     .select("*, collection:vault_collections(id, name, color, icon)")
     .eq("id", id)
-    .is("deleted_at", null)
-    .single();
+    .single() as { data: VaultItemWithCollection | null; error: unknown };
 
   if (error || !item) {
     notFound();
@@ -71,7 +71,7 @@ export default async function VaultItemPage({
     .from("vault_collections")
     .select("id, name, color, icon")
     .eq("user_id", user!.id)
-    .order("name");
+    .order("name") as { data: Pick<VaultCollection, 'id' | 'name' | 'color' | 'icon'>[] | null };
 
   const isEditMode = edit === "true" && isOwner;
 

@@ -22,7 +22,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   ArrowLeft,
   Users,
-  Download,
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -85,11 +84,6 @@ export default function CustomersPage() {
     }
   };
 
-  // Handle export
-  const handleExport = () => {
-    toast.info('Export functionality coming soon');
-  };
-
   // At-risk customers
   const atRiskCustomers = customers.filter(
     (c) => c.status === 'at_risk' || c.churn_risk_score >= 50
@@ -146,10 +140,6 @@ export default function CustomersPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
           <Button variant="outline" onClick={fetchCustomers}>
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -173,7 +163,6 @@ export default function CustomersPage() {
         onEmailCustomer={handleEmailCustomer}
         onViewInStripe={handleViewInStripe}
         onRefresh={fetchCustomers}
-        onExport={handleExport}
         pageSize={20}
       />
     </div>

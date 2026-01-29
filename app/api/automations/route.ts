@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query with optional filters
-    let query = supabase
-      .from('automations')
+    let query = (supabase
+      .from('automations') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -89,8 +89,8 @@ export async function GET(request: NextRequest) {
 
     if (includeActions && automations && automations.length > 0) {
       const automationIds = automations.map((a) => a.id);
-      const { data: actions } = await supabase
-        .from('automation_actions')
+      const { data: actions } = await (supabase
+        .from('automation_actions') as any)
         .select('*')
         .in('automation_id', automationIds)
         .order('position', { ascending: true });
@@ -176,8 +176,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -198,8 +198,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the automation
-    const { data: automation, error: createError } = await supabase
-      .from('automations')
+    const { data: automation, error: createError } = await (supabase
+      .from('automations') as any)
       .insert({
         workspace_id,
         name: name.trim(),
@@ -232,8 +232,8 @@ export async function POST(request: NextRequest) {
         branch_condition: (action.branch_condition || null) as any,
       }));
 
-      const { data: insertedActions, error: actionsError } = await supabase
-        .from('automation_actions')
+      const { data: insertedActions, error: actionsError } = await (supabase
+        .from('automation_actions') as any)
         .insert(actionsToInsert as any)
         .select();
 
@@ -249,8 +249,8 @@ export async function POST(request: NextRequest) {
     if (trigger_type === 'scheduled' && trigger_config) {
       const scheduleConfig = trigger_config as { cron_expression?: string; timezone?: string };
       if (scheduleConfig.cron_expression) {
-        const { error: scheduleError } = await supabase
-          .from('automation_schedules')
+        const { error: scheduleError } = await (supabase
+          .from('automation_schedules') as any)
           .insert({
             automation_id: automation.id,
             cron_expression: scheduleConfig.cron_expression,
@@ -266,8 +266,8 @@ export async function POST(request: NextRequest) {
     // Handle webhook automations - create webhook record
     if (trigger_type === 'webhook') {
       const webhookConfig = trigger_config as { require_signature?: boolean; allowed_ips?: string[] };
-      const { error: webhookError } = await supabase
-        .from('automation_webhooks')
+      const { error: webhookError } = await (supabase
+        .from('automation_webhooks') as any)
         .insert({
           automation_id: automation.id,
           workspace_id,
@@ -282,10 +282,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        automation: {
-          ...automation,
-          actions: createdActions,
-        },
+        ...automation,
+        actions: createdActions,
       },
       { status: 201 }
     );

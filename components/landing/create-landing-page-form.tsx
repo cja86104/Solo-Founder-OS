@@ -312,22 +312,22 @@ function getTemplateContent(template: string) {
               headline: "Simple, Transparent Pricing",
               subheadline: "Choose the plan that's right for you",
               plans: [
-                { 
-                  name: "Starter", 
-                  price: "$9", 
-                  period: "/month", 
+                {
+                  name: "Starter",
+                  price: "$XX",
+                  period: "/month",
                   description: "Perfect for getting started",
-                  features: ["Feature 1", "Feature 2", "Feature 3"], 
+                  features: ["Your feature here", "Another feature", "One more feature"],
                   cta: { text: "Get Started", url: "#" }
                 },
-                { 
-                  name: "Pro", 
-                  price: "$29", 
-                  period: "/month", 
+                {
+                  name: "Pro",
+                  price: "$XX",
+                  period: "/month",
                   description: "For growing businesses",
-                  features: ["Everything in Starter", "Feature 4", "Feature 5", "Priority Support"], 
+                  features: ["Everything in Starter", "Premium feature", "Advanced feature", "Priority Support"],
                   cta: { text: "Start Trial", url: "#" },
-                  highlighted: true 
+                  highlighted: true
                 },
               ],
             },
@@ -417,7 +417,7 @@ function getTemplateContent(template: string) {
             order: 2,
             props: {
               headline: "Get Your Free Copy",
-              subheadline: "Join 5,000+ readers who have already downloaded this guide.",
+              subheadline: "Join readers who have already downloaded this guide.",
               primaryCta: {
                 text: "Download Now",
                 url: "#capture",
@@ -476,9 +476,9 @@ function getTemplateContent(template: string) {
             order: 2,
             props: {
               stats: [
-                { value: "10+", label: "Years Experience" },
-                { value: "50K+", label: "Students Taught" },
-                { value: "4.9/5", label: "Average Rating" },
+                { value: "X+", label: "Years Experience" },
+                { value: "XX+", label: "Students Taught" },
+                { value: "X.X/5", label: "Average Rating" },
               ],
             },
           },
@@ -550,9 +550,9 @@ function getTemplateContent(template: string) {
             order: 2,
             props: {
               stats: [
-                { value: "8+", label: "Years Experience" },
-                { value: "120+", label: "Projects Completed" },
-                { value: "40+", label: "Happy Clients" },
+                { value: "X+", label: "Years Experience" },
+                { value: "XX+", label: "Projects Completed" },
+                { value: "XX+", label: "Happy Clients" },
               ],
             },
           },
@@ -624,8 +624,8 @@ function getTemplateContent(template: string) {
             props: {
               headline: "What Our Clients Say",
               testimonials: [
-                { quote: "They transformed our brand and doubled our conversion rate.", author: { name: "Sarah Chen", title: "CEO", company: "TechStart", avatar: "" } },
-                { quote: "Professional, creative, and always on time. Highly recommended.", author: { name: "Mark Johnson", title: "Founder", company: "GrowthCo", avatar: "" } },
+                { quote: "Add your client testimonial here.", author: { name: "Client Name", title: "Title", company: "Company", avatar: "" } },
+                { quote: "Add another client testimonial here.", author: { name: "Client Name", title: "Title", company: "Company", avatar: "" } },
               ],
             },
           },
@@ -639,18 +639,18 @@ function getTemplateContent(template: string) {
               plans: [
                 {
                   name: "Project",
-                  price: "$5K",
+                  price: "$XXX",
                   period: "+",
                   description: "One-time projects with defined scope",
-                  features: ["Brand design", "Website build", "Launch support"],
+                  features: ["Your service here", "Another service", "Support included"],
                   cta: { text: "Get a Quote", url: "#contact" },
                 },
                 {
                   name: "Retainer",
-                  price: "$3K",
+                  price: "$XXX",
                   period: "/month",
                   description: "Ongoing partnership for continuous growth",
-                  features: ["Dedicated team", "Monthly strategy", "Priority support", "Performance reports"],
+                  features: ["Dedicated support", "Monthly deliverables", "Priority access", "Regular reports"],
                   cta: { text: "Let's Talk", url: "#contact" },
                   highlighted: true,
                 },

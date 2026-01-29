@@ -206,11 +206,6 @@ export default function CommandCenterPage() {
     }
   };
 
-  // Handle export
-  const handleExport = () => {
-    toast.info('Export functionality coming soon');
-  };
-
   // Handle settings
   const handleSettings = () => {
     router.push('/settings/integrations');
@@ -287,7 +282,6 @@ export default function CommandCenterPage() {
         lastSync={data.lastSync}
         isSyncing={isSyncing}
         onSync={can('content.update') ? handleSync : undefined}
-        onExport={handleExport}
         onSettings={handleSettings}
       />
 

@@ -46,9 +46,9 @@ const navigationItems = [
 const quickActions = [
   { name: "New Snippet", href: "/vault/new", icon: Plus },
   { name: "New Landing Page", href: "/landing/new", icon: Plus },
-  { name: "New Contact", href: "/crm/contacts/new", icon: Plus },
-  { name: "New Project", href: "/projects/new", icon: Plus },
-  { name: "New Content", href: "/content/create", icon: Plus },
+  { name: "New Contact", href: "/crm", icon: Plus },
+  { name: "New Project", href: "/projects", icon: Plus },
+  { name: "New Content", href: "/content", icon: Plus },
 ];
 
 export function CommandMenu() {

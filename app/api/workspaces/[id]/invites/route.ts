@@ -23,8 +23,8 @@ export async function GET(
     }
 
     // Check if user is a member
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -35,8 +35,8 @@ export async function GET(
     }
 
     // Get pending invites (not expired, not accepted)
-    const { data: invites, error: invitesError } = await supabase
-      .from('workspace_invites')
+    const { data: invites, error: invitesError } = await (supabase
+      .from('workspace_invites') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .is('accepted_at', null)
@@ -93,8 +93,8 @@ export async function POST(
     }
 
     // Check if user is owner or admin
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -119,8 +119,8 @@ export async function POST(
     );
 
     if (invitedUser) {
-      const { data: existingMember } = await supabase
-        .from('workspace_members')
+      const { data: existingMember } = await (supabase
+        .from('workspace_members') as any)
         .select('id')
         .eq('workspace_id', workspaceId)
         .eq('user_id', invitedUser.id)
@@ -135,8 +135,8 @@ export async function POST(
     }
 
     // Check for existing pending invite
-    const { data: existingInvite } = await supabase
-      .from('workspace_invites')
+    const { data: existingInvite } = await (supabase
+      .from('workspace_invites') as any)
       .select('id')
       .eq('workspace_id', workspaceId)
       .eq('email', email.toLowerCase())
@@ -152,8 +152,8 @@ export async function POST(
     }
 
     // Get workspace details for the email
-    const { data: workspace } = await supabase
-      .from('workspaces')
+    const { data: workspace } = await (supabase
+      .from('workspaces') as any)
       .select('name, slug')
       .eq('id', workspaceId)
       .single();
@@ -163,8 +163,8 @@ export async function POST(
     }
 
     // Create invitation
-    const { data: invite, error: inviteError } = await supabase
-      .from('workspace_invites')
+    const { data: invite, error: inviteError } = await (supabase
+      .from('workspace_invites') as any)
       .insert({
         workspace_id: workspaceId,
         email: email.toLowerCase(),
@@ -272,8 +272,8 @@ export async function DELETE(
     }
 
     // Check if user is owner or admin
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -284,8 +284,8 @@ export async function DELETE(
     }
 
     // Delete invitation
-    const { error: deleteError } = await supabase
-      .from('workspace_invites')
+    const { error: deleteError } = await (supabase
+      .from('workspace_invites') as any)
       .delete()
       .eq('id', inviteId)
       .eq('workspace_id', workspaceId);

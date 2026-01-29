@@ -40,9 +40,10 @@ import {
   Pencil,
   Trash2,
   Copy,
-  Send,
+  Download,
   Archive,
   Clock,
+  ExternalLink,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -53,7 +54,7 @@ interface PostCardProps {
   onEdit?: (post: ContentPostWithAuthor) => void;
   onDelete?: (post: ContentPostWithAuthor) => void;
   onDuplicate?: (post: ContentPostWithAuthor) => void;
-  onPublish?: (post: ContentPostWithAuthor) => void;
+  onSaveLocal?: (post: ContentPostWithAuthor) => void;
   onArchive?: (post: ContentPostWithAuthor) => void;
   onClick?: (post: ContentPostWithAuthor) => void;
   className?: string;
@@ -65,14 +66,32 @@ export function PostCard({
   onEdit,
   onDelete,
   onDuplicate,
-  onPublish,
+  onSaveLocal,
   onArchive,
   onClick,
   className,
 }: PostCardProps) {
-  const contentPreview = post.content
-    ? post.content.slice(0, 150) + (post.content.length > 150 ? '...' : '')
-    : '';
+  // Strip HTML tags for preview text
+  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, '').trim();
+  const rawContent = post.content || '';
+  let previewText = '';
+  if (post.content_type === 'thread') {
+    try {
+      const parsed = JSON.parse(rawContent);
+      if (parsed.segments) {
+        previewText = parsed.segments
+          .map((s: { text: string }) => stripHtml(s.text))
+          .join(' / ')
+          .slice(0, 150);
+      }
+    } catch {
+      previewText = stripHtml(rawContent).slice(0, 150);
+    }
+  } else {
+    previewText = stripHtml(rawContent).slice(0, 150);
+  }
+  const contentPreview = previewText + (previewText.length >= 150 ? '...' : '');
+  const postMediaUrls = ((post as any).media_urls as string[]) || [];
 
   if (variant === 'compact') {
     return (
@@ -219,12 +238,10 @@ export function PostCard({
               <Copy className="h-4 w-4 mr-2" />
               Duplicate
             </DropdownMenuItem>
-            {post.status === 'draft' && (
-              <DropdownMenuItem onClick={() => onPublish?.(post)}>
-                <Send className="h-4 w-4 mr-2" />
-                Publish Now
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem onClick={() => onSaveLocal?.(post)}>
+              <Download className="h-4 w-4 mr-2" />
+              Save Local
+            </DropdownMenuItem>
             {post.status !== 'archived' && (
               <DropdownMenuItem onClick={() => onArchive?.(post)}>
                 <Archive className="h-4 w-4 mr-2" />
@@ -285,6 +302,25 @@ export function PostCard({
                 <Copy className="h-4 w-4 mr-2" />
                 Duplicate
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(`/content/preview/${post.id}`, '_blank');
+                }}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Preview
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSaveLocal?.(post)}>
+                <Download className="h-4 w-4 mr-2" />
+                Save Local
+              </DropdownMenuItem>
+              {post.status !== 'archived' && (
+                <DropdownMenuItem onClick={() => onArchive?.(post)}>
+                  <Archive className="h-4 w-4 mr-2" />
+                  Archive
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => onDelete?.(post)}
@@ -300,6 +336,21 @@ export function PostCard({
       </CardHeader>
 
       <CardContent className="pb-3">
+        {/* Media thumbnail */}
+        {postMediaUrls.length > 0 && (
+          <div className="mb-2 rounded-md overflow-hidden">
+            <img
+              src={postMediaUrls[0]}
+              alt=""
+              className="w-full h-32 object-cover"
+            />
+            {postMediaUrls.length > 1 && (
+              <p className="text-xs text-muted-foreground mt-1">
+                +{postMediaUrls.length - 1} more
+              </p>
+            )}
+          </div>
+        )}
         <p className="text-sm text-muted-foreground line-clamp-2">
           {contentPreview || 'No content yet'}
         </p>

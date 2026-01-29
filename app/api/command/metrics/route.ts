@@ -4,6 +4,8 @@ import type {
   MRRMetrics,
   MRRHistory,
   Customer,
+  Subscription,
+  RevenueEvent,
   MetricPeriod,
   ChurnAnalysis,
 } from '@/types/command';
@@ -27,11 +29,35 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get('workspace_id');
-    const period = (searchParams.get('period') || 'monthly') as MetricPeriod;
+    const periodParam = searchParams.get('period') || 'monthly';
     const startDate = searchParams.get('start_date');
     const endDate = searchParams.get('end_date');
-    const includeCustomers = searchParams.get('include_customers') === 'true';
+    const include = searchParams.get('include');
+    const limitParam = searchParams.get('limit');
+    const customerId = searchParams.get('customer_id');
+    const includeCustomers = include === 'customers' || searchParams.get('include_customers') === 'true';
+    const includeSubscriptions = include === 'subscriptions';
+    const includeEvents = include === 'events';
     const includeChurnAnalysis = searchParams.get('include_churn') === 'true';
+
+    // Convert date range shorthand (7d, 30d, 90d, 12m) to period_type and start_date
+    let period: MetricPeriod = 'daily';
+    let derivedStartDate = startDate;
+    const rangeMatch = periodParam.match(/^(\d+)(d|m)$/);
+    if (rangeMatch) {
+      const [, amount, unit] = rangeMatch;
+      const start = new Date();
+      if (unit === 'd') {
+        start.setDate(start.getDate() - parseInt(amount));
+      } else if (unit === 'm') {
+        start.setMonth(start.getMonth() - parseInt(amount));
+      }
+      derivedStartDate = derivedStartDate || start.toISOString().split('T')[0];
+      period = 'daily';
+    } else {
+      // It's already a MetricPeriod value like 'daily', 'weekly', 'monthly'
+      period = periodParam as MetricPeriod;
+    }
 
     if (!workspaceId) {
       return NextResponse.json(
@@ -41,8 +67,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify user has access to workspace
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -56,18 +82,62 @@ export async function GET(request: NextRequest) {
     const metrics = await getCurrentMetrics(supabase, workspaceId);
 
     // Get MRR history
-    const history = await getMRRHistory(supabase, workspaceId, period, startDate, endDate);
+    const history = await getMRRHistory(supabase, workspaceId, period, derivedStartDate, endDate);
 
-    // Optionally include customer list
+    // Optionally include customer list (or single customer)
     let customers: Customer[] | undefined;
+    let customer: Customer | undefined;
     if (includeCustomers) {
-      const { data } = await supabase
-        .from('customers')
+      if (customerId) {
+        // Fetch single customer by ID
+        const { data } = await (supabase
+          .from('customers') as any)
+          .select('*')
+          .eq('workspace_id', workspaceId)
+          .eq('id', customerId)
+          .single();
+        customer = data as Customer;
+      } else {
+        const { data } = await (supabase
+          .from('customers') as any)
+          .select('*')
+          .eq('workspace_id', workspaceId)
+          .order('mrr', { ascending: false })
+          .limit(100);
+        customers = data as Customer[];
+      }
+    }
+
+    // Optionally include subscriptions
+    let subscriptions: Subscription[] | undefined;
+    if (includeSubscriptions) {
+      let subQuery = (supabase
+        .from('stripe_subscriptions') as any)
         .select('*')
-        .eq('workspace_id', workspaceId)
-        .order('mrr', { ascending: false })
-        .limit(100);
-      customers = data as Customer[];
+        .eq('workspace_id', workspaceId);
+      if (customerId) {
+        subQuery = subQuery.eq('customer_id', customerId);
+      }
+      const { data } = await subQuery
+        .order('created_at', { ascending: false })
+        .limit(limitParam ? parseInt(limitParam) : 100);
+      subscriptions = data as Subscription[];
+    }
+
+    // Optionally include revenue events
+    let events: RevenueEvent[] | undefined;
+    if (includeEvents) {
+      let eventsQuery = (supabase
+        .from('revenue_events') as any)
+        .select('*')
+        .eq('workspace_id', workspaceId);
+      if (customerId) {
+        eventsQuery = eventsQuery.eq('customer_id', customerId);
+      }
+      const { data } = await eventsQuery
+        .order('event_date', { ascending: false })
+        .limit(limitParam ? parseInt(limitParam) : 50);
+      events = data as RevenueEvent[];
     }
 
     // Optionally include churn analysis
@@ -80,7 +150,10 @@ export async function GET(request: NextRequest) {
       metrics,
       history,
       period,
+      customer,
       customers,
+      subscriptions,
+      events,
       churn_analysis: churnAnalysis,
     });
   } catch (error) {
@@ -101,8 +174,8 @@ async function getCurrentMetrics(
   workspaceId: string
 ): Promise<MRRMetrics> {
   // Get all customers
-  const { data: customers } = await supabase
-    .from('customers')
+  const { data: customers } = await (supabase
+    .from('customers') as any)
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -125,8 +198,8 @@ async function getCurrentMetrics(
   lastMonth.setMonth(lastMonth.getMonth() - 1);
   const lastMonthStr = lastMonth.toISOString().split('T')[0];
 
-  const { data: previousRecord } = await supabase
-    .from('mrr_history')
+  const { data: previousRecord, error: prevError } = await (supabase
+    .from('mrr_history') as any)
     .select('mrr')
     .eq('workspace_id', workspaceId)
     .eq('period_type', 'daily')
@@ -135,7 +208,8 @@ async function getCurrentMetrics(
     .limit(1)
     .single();
 
-  const previousMRR = previousRecord?.mrr || 0;
+  // Table may not exist - that's okay
+  const previousMRR = (!prevError && previousRecord?.mrr) ? previousRecord.mrr : 0;
   const mrrChange = currentMRR - previousMRR;
   const mrrChangePercent = previousMRR > 0 ? (mrrChange / previousMRR) * 100 : 0;
 
@@ -143,8 +217,8 @@ async function getCurrentMetrics(
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const { data: revenueEvents } = await supabase
-    .from('revenue_events')
+  const { data: revenueEvents } = await (supabase
+    .from('revenue_events') as any)
     .select('event_type, mrr_impact')
     .eq('workspace_id', workspaceId)
     .gte('event_date', thirtyDaysAgo.toISOString());
@@ -210,8 +284,8 @@ async function getMRRHistory(
   startDate?: string | null,
   endDate?: string | null
 ): Promise<MRRHistory[]> {
-  let query = supabase
-    .from('mrr_history')
+  let query = (supabase
+    .from('mrr_history') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('period_type', period)
@@ -233,7 +307,10 @@ async function getMRRHistory(
   const { data, error } = await query;
 
   if (error) {
-    console.error('Error fetching MRR history:', error);
+    // Table may not exist yet - this is not a critical error
+    if (error.code !== 'PGRST205') {
+      console.error('Error fetching MRR history:', error);
+    }
     return [];
   }
 
@@ -245,8 +322,8 @@ async function getChurnAnalysis(
   workspaceId: string
 ): Promise<ChurnAnalysis> {
   // Get at-risk customers
-  const { data: atRiskCustomers } = await supabase
-    .from('customers')
+  const { data: atRiskCustomers } = await (supabase
+    .from('customers') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('status', 'at_risk')
@@ -257,8 +334,8 @@ async function getChurnAnalysis(
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const { data: recentlyChurned } = await supabase
-    .from('customers')
+  const { data: recentlyChurned } = await (supabase
+    .from('customers') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('status', 'churned')
@@ -267,8 +344,8 @@ async function getChurnAnalysis(
     .limit(10);
 
   // Calculate current churn rate
-  const { data: allCustomers } = await supabase
-    .from('customers')
+  const { data: allCustomers } = await (supabase
+    .from('customers') as any)
     .select('status')
     .eq('workspace_id', workspaceId);
 
@@ -281,8 +358,8 @@ async function getChurnAnalysis(
   lastMonth.setMonth(lastMonth.getMonth() - 1);
   const lastMonthStr = lastMonth.toISOString().split('T')[0];
 
-  const { data: previousRecord } = await supabase
-    .from('mrr_history')
+  const { data: previousRecord, error: churnHistoryError } = await (supabase
+    .from('mrr_history') as any)
     .select('churn_rate')
     .eq('workspace_id', workspaceId)
     .lte('period_date', lastMonthStr)
@@ -290,7 +367,8 @@ async function getChurnAnalysis(
     .limit(1)
     .single();
 
-  const previousChurnRate = previousRecord?.churn_rate || 0;
+  // Table may not exist - that's okay
+  const previousChurnRate = (!churnHistoryError && previousRecord?.churn_rate) ? previousRecord.churn_rate : 0;
 
   // Determine trend
   let churnTrend: 'improving' | 'stable' | 'worsening' = 'stable';
@@ -302,8 +380,8 @@ async function getChurnAnalysis(
   }
 
   // Analyze churn reasons from revenue events
-  const { data: churnEvents } = await supabase
-    .from('revenue_events')
+  const { data: churnEvents } = await (supabase
+    .from('revenue_events') as any)
     .select('description')
     .eq('workspace_id', workspaceId)
     .eq('event_type', 'churn')

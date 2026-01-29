@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Get stages
-    let { data: stages, error } = await supabase
-      .from('pipeline_stages')
+    let { data: stages, error } = await (supabase
+      .from('pipeline_stages') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('position', { ascending: true });
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     // If no stages exist, create defaults
     if (!stages || stages.length === 0) {
-      const { error: createError } = await supabase.rpc(
+      const { error: createError } = await (supabase as any).rpc(
         'create_default_pipeline_stages',
         { p_workspace_id: workspaceId }
       );
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         ];
 
         for (const stage of defaultStages) {
-          await supabase.from('pipeline_stages').insert({
+          await (supabase.from('pipeline_stages') as any).insert({
             workspace_id: workspaceId,
             ...stage,
           });
@@ -71,8 +71,8 @@ export async function GET(request: NextRequest) {
       }
 
       // Fetch again
-      const { data: newStages } = await supabase
-        .from('pipeline_stages')
+      const { data: newStages } = await (supabase
+        .from('pipeline_stages') as any)
         .select('*')
         .eq('workspace_id', workspaceId)
         .order('position', { ascending: true });
@@ -114,8 +114,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -128,8 +128,8 @@ export async function POST(request: NextRequest) {
     // Get max position if not provided
     let stagePosition = position;
     if (stagePosition === undefined) {
-      const { data: maxPos } = await supabase
-        .from('pipeline_stages')
+      const { data: maxPos } = await (supabase
+        .from('pipeline_stages') as any)
         .select('position')
         .eq('workspace_id', workspace_id)
         .order('position', { ascending: false })
@@ -139,8 +139,8 @@ export async function POST(request: NextRequest) {
       stagePosition = (maxPos?.position ?? -1) + 1;
     }
 
-    const { data: stage, error } = await supabase
-      .from('pipeline_stages')
+    const { data: stage, error } = await (supabase
+      .from('pipeline_stages') as any)
       .insert({
         workspace_id,
         name,
@@ -188,8 +188,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -201,8 +201,8 @@ export async function PATCH(request: NextRequest) {
 
     // Update each stage position
     for (const stage of stages) {
-      await supabase
-        .from('pipeline_stages')
+      await (supabase
+        .from('pipeline_stages') as any)
         .update({ position: stage.position, name: stage.name, color: stage.color })
         .eq('id', stage.id)
         .eq('workspace_id', workspace_id);

@@ -266,7 +266,7 @@ export default function AutomationsPage() {
   }
 
   // Permission check
-  if (!can('content.view')) {
+  if (!can('automations.view')) {
     return (
       <div className="container py-6">
         <Card>
@@ -305,7 +305,7 @@ export default function AutomationsPage() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          {can('content.create') && (
+          {can('automations.create') && (
             <Button onClick={handleCreateNew}>
               <Plus className="h-4 w-4 mr-2" />
               New Automation
@@ -377,12 +377,12 @@ export default function AutomationsPage() {
       <AutomationList
         automations={automations}
         isLoading={isRefreshing}
-        onCreateNew={can('content.create') ? handleCreateNew : undefined}
-        onEdit={can('content.update') ? handleEdit : undefined}
-        onDelete={can('content.delete') ? handleDeleteConfirm : undefined}
-        onDuplicate={can('content.create') ? handleDuplicate : undefined}
-        onStatusChange={can('content.update') ? handleStatusChange : undefined}
-        onRun={can('content.update') ? handleRun : undefined}
+        onCreateNew={can('automations.create') ? handleCreateNew : undefined}
+        onEdit={can('automations.update') ? handleEdit : undefined}
+        onDelete={can('automations.delete') ? handleDeleteConfirm : undefined}
+        onDuplicate={can('automations.create') ? handleDuplicate : undefined}
+        onStatusChange={can('automations.update') ? handleStatusChange : undefined}
+        onRun={can('automations.update') ? handleRun : undefined}
         onClick={handleViewRuns}
       />
 

@@ -110,7 +110,7 @@ export function UserMenu({ user, profile, subscription }: UserMenuProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/settings/team">
+            <Link href="/settings/workspace">
               <Users className="mr-2 h-4 w-4" />
               Team
             </Link>
@@ -126,9 +126,9 @@ export function UserMenu({ user, profile, subscription }: UserMenuProps) {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/admin">
+              <Link href="/settings">
                 <Shield className="mr-2 h-4 w-4" />
-                Admin Panel
+                Admin Settings
               </Link>
             </DropdownMenuItem>
           </>

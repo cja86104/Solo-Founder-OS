@@ -30,8 +30,8 @@ export async function POST(
     }
 
     // Fetch automation with actions
-    const { data: automation, error: fetchError } = await supabase
-      .from('automations')
+    const { data: automation, error: fetchError } = await (supabase
+      .from('automations') as any)
       .select('*')
       .eq('id', id)
       .single();
@@ -44,8 +44,8 @@ export async function POST(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -79,8 +79,8 @@ export async function POST(
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
-      const { count: todayRunCount } = await supabase
-        .from('automation_runs')
+      const { count: todayRunCount } = await (supabase
+        .from('automation_runs') as any)
         .select('*', { count: 'exact', head: true })
         .eq('automation_id', id)
         .gte('created_at', todayStart.toISOString());
@@ -114,8 +114,8 @@ export async function POST(
     };
 
     // Create the run record
-    const { data: run, error: runError } = await supabase
-      .from('automation_runs')
+    const { data: run, error: runError } = await (supabase
+      .from('automation_runs') as any)
       .insert({
         automation_id: id,
         workspace_id: automation.workspace_id,
@@ -133,7 +133,7 @@ export async function POST(
     }
 
     // Log the start of execution
-    await supabase.from('automation_run_logs').insert({
+    await (supabase.from('automation_run_logs') as any).insert({
       run_id: run.id,
       level: 'info',
       message: 'Automation run started manually',
@@ -141,15 +141,15 @@ export async function POST(
     });
 
     // Fetch actions to execute
-    const { data: actions } = await supabase
-      .from('automation_actions')
+    const { data: actions } = await (supabase
+      .from('automation_actions') as any)
       .select('*')
       .eq('automation_id', id)
       .order('position', { ascending: true });
 
     // Update run status to running
-    await supabase
-      .from('automation_runs')
+    await (supabase
+      .from('automation_runs') as any)
       .update({ status: 'running' as AutomationRunStatus })
       .eq('id', run.id);
 
@@ -162,7 +162,7 @@ export async function POST(
       for (const action of actions) {
         try {
           // Log action start
-          await supabase.from('automation_run_logs').insert({
+          await (supabase.from('automation_run_logs') as any).insert({
             run_id: run.id,
             action_id: action.id,
             level: 'info',
@@ -177,7 +177,7 @@ export async function POST(
           actionsExecuted++;
 
           // Log action success
-          await supabase.from('automation_run_logs').insert({
+          await (supabase.from('automation_run_logs') as any).insert({
             run_id: run.id,
             action_id: action.id,
             level: 'info',
@@ -189,7 +189,7 @@ export async function POST(
 
           // Condition not met — stop executing further actions (not a failure)
           if (errMsg === 'CONDITION_NOT_MET') {
-            await supabase.from('automation_run_logs').insert({
+            await (supabase.from('automation_run_logs') as any).insert({
               run_id: run.id,
               action_id: action.id,
               level: 'info',
@@ -202,7 +202,7 @@ export async function POST(
           actionsFailed++;
 
           // Log action failure
-          await supabase.from('automation_run_logs').insert({
+          await (supabase.from('automation_run_logs') as any).insert({
             run_id: run.id,
             action_id: action.id,
             level: 'error',
@@ -230,8 +230,8 @@ export async function POST(
       'completed';
 
     // Update run with results
-    const { data: updatedRun, error: updateError } = await supabase
-      .from('automation_runs')
+    const { data: updatedRun, error: updateError } = await (supabase
+      .from('automation_runs') as any)
       .update({
         status: finalStatus,
         actions_executed: actionsExecuted,
@@ -249,7 +249,7 @@ export async function POST(
     }
 
     // Log completion
-    await supabase.from('automation_run_logs').insert({
+    await (supabase.from('automation_run_logs') as any).insert({
       run_id: run.id,
       level: actionsFailed > 0 ? 'warning' : 'info',
       message: `Automation run completed`,

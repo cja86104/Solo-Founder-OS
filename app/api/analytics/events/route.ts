@@ -35,8 +35,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days);
 
     // Build query
-    let query = supabase
-      .from('analytics_events')
+    let query = (supabase
+      .from('analytics_events') as any)
       .select('*', { count: 'exact' })
       .eq('workspace_id', workspaceId)
       .gte('created_at', startDate.toISOString())
@@ -82,11 +82,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch event summary (counts by event name)
-    const { data: summary } = await supabase
-      .from('analytics_events')
+    const { data: summary } = await (supabase
+      .from('analytics_events') as any)
       .select('event_name, event_category')
       .eq('workspace_id', workspaceId)
-      .gte('created_at', startDate.toISOString());
+      .gte('created_at', startDate.toISOString()) as { data: { event_name: string; event_category: string }[] | null };
 
     const eventCounts = new Map<string, { count: number; category: string }>();
     (summary || []).forEach((e) => {
@@ -152,8 +152,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace exists and has analytics enabled
-    const { data: workspace } = await supabase
-      .from('workspaces')
+    const { data: workspace } = await (supabase
+      .from('workspaces') as any)
       .select('id, settings')
       .eq('id', workspace_id)
       .single();
@@ -166,8 +166,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create event
-    const { data: event, error: createError } = await supabase
-      .from('analytics_events')
+    const { data: event, error: createError } = await (supabase
+      .from('analytics_events') as any)
       .insert({
         workspace_id,
         session_id: session_id || null,
@@ -228,8 +228,8 @@ async function checkGoalCompletions(
 ) {
   try {
     // Fetch active event-based goals
-    const { data: goals } = await supabase
-      .from('analytics_goals')
+    const { data: goals } = await (supabase
+      .from('analytics_goals') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .eq('goal_type', 'event')
@@ -253,8 +253,8 @@ async function checkGoalCompletions(
 
       if (matches) {
         // Check if not already converted in this session
-        const { data: existing } = await supabase
-          .from('analytics_conversions')
+        const { data: existing } = await (supabase
+          .from('analytics_conversions') as any)
           .select('id')
           .eq('goal_id', goal.id)
           .eq('session_id', event.session_id)
@@ -262,7 +262,7 @@ async function checkGoalCompletions(
 
         if (!existing) {
           // Record conversion
-          await supabase.from('analytics_conversions').insert({
+          await (supabase.from('analytics_conversions') as any).insert({
             workspace_id: workspaceId,
             goal_id: goal.id,
             session_id: event.session_id,
@@ -272,8 +272,8 @@ async function checkGoalCompletions(
 
           // Update session as converted
           if (event.session_id) {
-            await supabase
-              .from('analytics_sessions')
+            await (supabase
+              .from('analytics_sessions') as any)
               .update({
                 converted: true,
                 conversion_value: goal.conversion_value,

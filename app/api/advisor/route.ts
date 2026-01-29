@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership, error: memberError } = await supabase
-      .from('workspace_members')
+    const { data: membership, error: memberError } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -67,8 +67,8 @@ export async function GET(request: NextRequest) {
 
     // If conversation_id provided, return messages for that conversation
     if (conversationId) {
-      const { data: messages, error } = await supabase
-        .from('advisor_messages')
+      const { data: messages, error } = await (supabase
+        .from('advisor_messages') as any)
         .select('*')
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true });
@@ -83,8 +83,8 @@ export async function GET(request: NextRequest) {
 
     // Otherwise return conversations list
     const topicFilter = searchParams.get('topic');
-    let query = supabase
-      .from('advisor_conversations')
+    let query = (supabase
+      .from('advisor_conversations') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -146,8 +146,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -164,8 +164,8 @@ export async function POST(request: NextRequest) {
     let convId = conversation_id;
     if (!convId) {
       // Create new conversation
-      const { data: newConv, error: convError } = await supabase
-        .from('advisor_conversations')
+      const { data: newConv, error: convError } = await (supabase
+        .from('advisor_conversations') as any)
         .insert({
           workspace_id,
           user_id: user.id,
@@ -189,8 +189,8 @@ export async function POST(request: NextRequest) {
     const conversationId = convId!;
 
     // Save user message
-    const { data: userMessage, error: userMsgError } = await supabase
-      .from('advisor_messages')
+    const { data: userMessage, error: userMsgError } = await (supabase
+      .from('advisor_messages') as any)
       .insert({
         conversation_id: conversationId,
         role: 'user',
@@ -211,8 +211,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch conversation history for context
-    const { data: history } = await supabase
-      .from('advisor_messages')
+    const { data: history } = await (supabase
+      .from('advisor_messages') as any)
       .select('role, content')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true })
@@ -225,8 +225,8 @@ export async function POST(request: NextRequest) {
     const aiResponse = await getAIResponse(messages, topic);
 
     // Save assistant message
-    const { data: assistantMessage, error: assistantMsgError } = await supabase
-      .from('advisor_messages')
+    const { data: assistantMessage, error: assistantMsgError } = await (supabase
+      .from('advisor_messages') as any)
       .insert({
         conversation_id: conversationId,
         role: 'assistant',
@@ -251,8 +251,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Update conversation
-    await supabase
-      .from('advisor_conversations')
+    await (supabase
+      .from('advisor_conversations') as any)
       .update({
         message_count: (history?.length || 0) + 2,
         last_message_at: new Date().toISOString(),
@@ -464,8 +464,8 @@ async function generateSuggestions(
     effort_score: 50,
   }));
 
-  const { data } = await supabase
-    .from('advisor_suggestions')
+  const { data } = await (supabase
+    .from('advisor_suggestions') as any)
     .insert(suggestions)
     .select();
 

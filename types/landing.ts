@@ -199,9 +199,9 @@ export const SECTION_TEMPLATES: Record<SectionType, { name: string; icon: string
     defaultProps: {
       headline: "Why Choose Us",
       features: [
-        { icon: "Zap", title: "Fast", description: "Lightning quick performance" },
-        { icon: "Shield", title: "Secure", description: "Enterprise-grade security" },
-        { icon: "Heart", title: "Easy", description: "Simple and intuitive" },
+        { icon: "Zap", title: "Feature One", description: "Describe your first key feature" },
+        { icon: "Shield", title: "Feature Two", description: "Describe your second key feature" },
+        { icon: "Heart", title: "Feature Three", description: "Describe your third key feature" },
       ],
       columns: 3,
     },
@@ -212,8 +212,8 @@ export const SECTION_TEMPLATES: Record<SectionType, { name: string; icon: string
     defaultProps: {
       headline: "Simple Pricing",
       plans: [
-        { name: "Free", price: "$0", features: ["Feature 1", "Feature 2"], ctaText: "Start Free" },
-        { name: "Pro", price: "$29", features: ["Everything in Free", "Feature 3", "Feature 4"], ctaText: "Get Pro", highlighted: true },
+        { name: "Starter", price: "$0", features: ["Add your features here"], ctaText: "Get Started" },
+        { name: "Pro", price: "$XX", features: ["Everything in Starter", "Add more features"], ctaText: "Go Pro", highlighted: true },
       ],
     },
   },
@@ -223,7 +223,7 @@ export const SECTION_TEMPLATES: Record<SectionType, { name: string; icon: string
     defaultProps: {
       headline: "What Our Customers Say",
       testimonials: [
-        { quote: "Amazing product!", author: { name: "John Doe", title: "CEO", company: "", avatar: "" } },
+        { quote: "Add a customer testimonial here", author: { name: "Customer Name", title: "Title", company: "Company", avatar: "" } },
       ],
     },
   },
@@ -243,7 +243,7 @@ export const SECTION_TEMPLATES: Record<SectionType, { name: string; icon: string
     defaultProps: {
       headline: "Frequently Asked Questions",
       items: [
-        { question: "What is this?", answer: "This is an amazing product." },
+        { question: "Your question here?", answer: "Your answer here." },
       ],
     },
   },
@@ -271,9 +271,9 @@ export const SECTION_TEMPLATES: Record<SectionType, { name: string; icon: string
     icon: "BarChart",
     defaultProps: {
       stats: [
-        { value: "10K+", label: "Users" },
-        { value: "99%", label: "Uptime" },
-        { value: "24/7", label: "Support" },
+        { value: "XX+", label: "Customers" },
+        { value: "XX%", label: "Satisfaction" },
+        { value: "XX", label: "Your Metric" },
       ],
     },
   },
@@ -283,7 +283,7 @@ export const SECTION_TEMPLATES: Record<SectionType, { name: string; icon: string
     defaultProps: {
       headline: "Meet Our Team",
       members: [
-        { name: "John Doe", role: "CEO", image: "", social: {} },
+        { name: "Team Member", role: "Role", image: "", social: {} },
       ],
     },
   },

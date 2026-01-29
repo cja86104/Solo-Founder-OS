@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query - only join with tables that exist
-    let query = supabase
-      .from('feedback_submissions')
+    let query = (supabase
+      .from('feedback_submissions') as any)
       .select(`
         *,
         widget:feedback_widgets(id, name)
@@ -77,8 +77,16 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error;
 
+    // Map DB field names to frontend field names
+    // DB: content -> message, type -> category
+    const mapped = (submissions || []).map((s: any) => ({
+      ...s,
+      message: s.content,
+      category: s.type || 'other',
+    }));
+
     return NextResponse.json({
-      submissions: submissions || [],
+      submissions: mapped,
       pagination: {
         page,
         pageSize,
@@ -111,8 +119,11 @@ export async function POST(request: NextRequest) {
       name,
       type,
       category, // alias for type
+      rating,
+      emoji_rating,
       page_url,
       user_agent,
+      screen_size,
     } = body;
 
     const feedbackContent = content || message;
@@ -126,8 +137,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get widget to find workspace_id and validate
-    const { data: widget, error: widgetError } = await supabase
-      .from('feedback_widgets')
+    const { data: widget, error: widgetError } = await (supabase
+      .from('feedback_widgets') as any)
       .select('workspace_id, is_active')
       .eq('id', widget_id)
       .single();
@@ -143,8 +154,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: submission, error } = await supabase
-      .from('feedback_submissions')
+    const { data: submission, error } = await (supabase
+      .from('feedback_submissions') as any)
       .insert({
         workspace_id: widget.workspace_id,
         widget_id,
@@ -152,8 +163,11 @@ export async function POST(request: NextRequest) {
         email: email || null,
         name: name || null,
         type: feedbackType,
+        rating: rating || null,
+        emoji_rating: emoji_rating || null,
         page_url: page_url || null,
         user_agent: user_agent || null,
+        screen_size: screen_size || null,
       })
       .select()
       .single();
@@ -194,8 +208,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Get submission to check workspace
-    const { data: existing } = await supabase
-      .from('feedback_submissions')
+    const { data: existing } = await (supabase
+      .from('feedback_submissions') as any)
       .select('workspace_id')
       .eq('id', submission_id)
       .single();
@@ -205,8 +219,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', existing.workspace_id)
       .eq('user_id', user.id)
@@ -218,11 +232,18 @@ export async function PATCH(request: NextRequest) {
 
     // Build update
     const updateData: Record<string, unknown> = {};
-    if (status !== undefined) updateData.status = status;
+    if (status !== undefined) {
+      updateData.status = status;
+      if (status === 'resolved') {
+        updateData.resolved_at = new Date().toISOString();
+      }
+    }
     if (priority !== undefined) updateData.priority = priority;
+    if (body.internal_notes !== undefined) updateData.internal_notes = body.internal_notes;
+    if (body.assigned_to !== undefined) updateData.assigned_to = body.assigned_to;
 
-    const { data: submission, error } = await supabase
-      .from('feedback_submissions')
+    const { data: submission, error } = await (supabase
+      .from('feedback_submissions') as any)
       .update(updateData)
       .eq('id', submission_id)
       .select()

@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check workspace membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -121,8 +121,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check workspace membership with edit permissions
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -136,8 +136,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create contact
-    const { data: contact, error } = await supabase
-      .from('contacts')
+    const { data: contact, error } = await (supabase
+      .from('contacts') as any)
       .insert({
         workspace_id,
         email: email.toLowerCase().trim(),
@@ -197,8 +197,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check workspace membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -216,16 +216,16 @@ export async function PATCH(request: NextRequest) {
     switch (action) {
       case 'add_tags': {
         // Get current contacts
-        const { data: contacts } = await supabase
-          .from('contacts')
+        const { data: contacts } = await (supabase
+          .from('contacts') as any)
           .select('id, tags')
           .in('id', contact_ids);
 
         // Update each with merged tags
         for (const contact of contacts || []) {
           const newTags = [...new Set([...(contact.tags || []), ...(data.tags || [])])];
-          await supabase
-            .from('contacts')
+          await (supabase
+            .from('contacts') as any)
             .update({ tags: newTags })
             .eq('id', contact.id);
         }
@@ -234,8 +234,8 @@ export async function PATCH(request: NextRequest) {
       }
 
       case 'remove_tags': {
-        const { data: contacts } = await supabase
-          .from('contacts')
+        const { data: contacts } = await (supabase
+          .from('contacts') as any)
           .select('id, tags')
           .in('id', contact_ids);
 
@@ -243,8 +243,8 @@ export async function PATCH(request: NextRequest) {
           const newTags = (contact.tags || []).filter(
             (t: string) => !(data.tags || []).includes(t)
           );
-          await supabase
-            .from('contacts')
+          await (supabase
+            .from('contacts') as any)
             .update({ tags: newTags })
             .eq('id', contact.id);
         }
@@ -253,8 +253,8 @@ export async function PATCH(request: NextRequest) {
       }
 
       case 'update_status': {
-        const { error } = await supabase
-          .from('contacts')
+        const { error } = await (supabase
+          .from('contacts') as any)
           .update({ status: data.status })
           .in('id', contact_ids);
 
@@ -272,8 +272,8 @@ export async function PATCH(request: NextRequest) {
           );
         }
 
-        const { error } = await supabase
-          .from('contacts')
+        const { error } = await (supabase
+          .from('contacts') as any)
           .delete()
           .in('id', contact_ids);
 

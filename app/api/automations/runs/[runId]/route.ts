@@ -20,8 +20,8 @@ export async function GET(
     }
 
     // Fetch run
-    const { data: run, error: fetchError } = await supabase
-      .from('automation_runs')
+    const { data: run, error: fetchError } = await (supabase
+      .from('automation_runs') as any)
       .select('*')
       .eq('id', runId)
       .single();
@@ -34,8 +34,8 @@ export async function GET(
     }
 
     // Verify workspace membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', run.workspace_id)
       .eq('user_id', user.id)
@@ -49,15 +49,15 @@ export async function GET(
     }
 
     // Fetch associated automation info
-    const { data: automation } = await supabase
-      .from('automations')
+    const { data: automation } = await (supabase
+      .from('automations') as any)
       .select('id, name, trigger_type, status')
       .eq('id', run.automation_id)
       .single();
 
     // Fetch all logs for this run
-    const { data: logs } = await supabase
-      .from('automation_run_logs')
+    const { data: logs } = await (supabase
+      .from('automation_run_logs') as any)
       .select('*')
       .eq('run_id', runId)
       .order('created_at', { ascending: true });
@@ -71,8 +71,8 @@ export async function GET(
 
     let actionsMap: Record<string, { action_type: string; position: number }> = {};
     if (actionIds.length > 0) {
-      const { data: actions } = await supabase
-        .from('automation_actions')
+      const { data: actions } = await (supabase
+        .from('automation_actions') as any)
         .select('id, action_type, position')
         .in('id', actionIds.filter((id): id is string => id !== null));
 
@@ -91,11 +91,9 @@ export async function GET(
     }));
 
     return NextResponse.json({
-      run: {
-        ...run,
-        automation,
-        logs: enrichedLogs,
-      },
+      ...run,
+      automation,
+      logs: enrichedLogs,
     });
   } catch (error) {
     console.error('Error in GET /api/automations/runs/[runId]:', error);
@@ -125,8 +123,8 @@ export async function PATCH(
     }
 
     // Fetch run
-    const { data: run, error: fetchError } = await supabase
-      .from('automation_runs')
+    const { data: run, error: fetchError } = await (supabase
+      .from('automation_runs') as any)
       .select('*')
       .eq('id', runId)
       .single();
@@ -139,8 +137,8 @@ export async function PATCH(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', run.workspace_id)
       .eq('user_id', user.id)
@@ -172,8 +170,8 @@ export async function PATCH(
       }
 
       // Update status to cancelled
-      const { data: updatedRun, error: updateError } = await supabase
-        .from('automation_runs')
+      const { data: updatedRun, error: updateError } = await (supabase
+        .from('automation_runs') as any)
         .update({
           status: 'cancelled' as AutomationRunStatus,
           completed_at: new Date().toISOString(),
@@ -192,7 +190,7 @@ export async function PATCH(
       }
 
       // Log the cancellation
-      await supabase.from('automation_run_logs').insert({
+      await (supabase.from('automation_run_logs') as any).insert({
         run_id: runId,
         level: 'warning',
         message: 'Automation run cancelled by user',

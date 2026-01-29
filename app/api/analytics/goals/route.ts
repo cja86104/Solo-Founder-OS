@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch goals
-    const { data: goals, error: goalsError } = await supabase
-      .from('analytics_goals')
+    const { data: goals, error: goalsError } = await (supabase
+      .from('analytics_goals') as any)
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -119,8 +119,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace access with write permission
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -134,8 +134,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create goal
-    const { data: goal, error: createError } = await supabase
-      .from('analytics_goals')
+    const { data: goal, error: createError } = await (supabase
+      .from('analytics_goals') as any)
       .insert({
         workspace_id,
         name,
@@ -188,24 +188,24 @@ async function fetchGoalPerformance(
   prevStartDate.setDate(prevStartDate.getDate() - days);
 
   // Fetch conversions for current period
-  const { data: currentConversions } = await supabase
-    .from('analytics_conversions')
+  const { data: currentConversions } = await (supabase
+    .from('analytics_conversions') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .gte('converted_at', startDate.toISOString())
     .lte('converted_at', endDate.toISOString());
 
   // Fetch conversions for previous period
-  const { data: prevConversions } = await supabase
-    .from('analytics_conversions')
+  const { data: prevConversions } = await (supabase
+    .from('analytics_conversions') as any)
     .select('*')
     .eq('workspace_id', workspaceId)
     .gte('converted_at', prevStartDate.toISOString())
     .lt('converted_at', startDate.toISOString());
 
   // Fetch total sessions for conversion rate calculation
-  const { count: totalSessions } = await supabase
-    .from('analytics_sessions')
+  const { count: totalSessions } = await (supabase
+    .from('analytics_sessions') as any)
     .select('*', { count: 'exact', head: true })
     .eq('workspace_id', workspaceId)
     .gte('started_at', startDate.toISOString())
@@ -217,13 +217,13 @@ async function fetchGoalPerformance(
 
   // Calculate performance for each goal
   return goals.map((goal) => {
-    const goalConversions = conversions.filter((c) => c.goal_id === goal.id);
-    const prevGoalConversions = prevConvs.filter((c) => c.goal_id === goal.id);
+    const goalConversions = conversions.filter((c: any) => c.goal_id === goal.id);
+    const prevGoalConversions = prevConvs.filter((c: any) => c.goal_id === goal.id);
 
     const completions = goalConversions.length;
     const prevCompletions = prevGoalConversions.length;
     const totalValue = goalConversions.reduce(
-      (sum, c) => sum + (c.conversion_value || 0),
+      (sum: number, c: any) => sum + (c.conversion_value || 0),
       0
     );
     const conversionRate = sessions > 0 ? (completions / sessions) * 100 : 0;

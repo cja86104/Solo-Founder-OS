@@ -21,8 +21,8 @@ export async function GET(
     }
 
     // Fetch automation to verify access
-    const { data: automation, error: fetchError } = await supabase
-      .from('automations')
+    const { data: automation, error: fetchError } = await (supabase
+      .from('automations') as any)
       .select('workspace_id, name')
       .eq('id', id)
       .single();
@@ -35,8 +35,8 @@ export async function GET(
     }
 
     // Verify workspace membership
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -50,8 +50,8 @@ export async function GET(
     }
 
     // Build query with filters
-    let query = supabase
-      .from('automation_runs')
+    let query = (supabase
+      .from('automation_runs') as any)
       .select('*', { count: 'exact' })
       .eq('automation_id', id)
       .order('created_at', { ascending: false });
@@ -86,8 +86,8 @@ export async function GET(
     }
 
     // Calculate summary stats
-    const { data: allRuns } = await supabase
-      .from('automation_runs')
+    const { data: allRuns } = await (supabase
+      .from('automation_runs') as any)
       .select('status, duration_ms, actions_executed, actions_failed')
       .eq('automation_id', id);
 

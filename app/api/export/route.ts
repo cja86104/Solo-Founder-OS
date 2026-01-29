@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check workspace membership - only owners and admins can export
-    const { data: membership } = await supabase
-      .from('workspace_members')
+    const { data: membership } = await (supabase
+      .from('workspace_members') as any)
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
