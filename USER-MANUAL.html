@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solo Founder OS — User Manual</title>
+  <style>
+    :root {
+      --orange: #f97316;
+      --rose: #f43f5e;
+      --bg: #ffffff;
+      --bg-alt: #f8fafc;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #6366f1;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* Header */
+    .hero {
+      background: linear-gradient(135deg, var(--orange), var(--rose));
+      color: white;
+      padding: 60px 40px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 2.8em; margin-bottom: 10px; font-weight: 800; }
+    .hero p { font-size: 1.2em; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+    .hero .version {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 4px 16px;
+      border-radius: 20px;
+      margin-top: 16px;
+      font-size: 0.9em;
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 30px;
+    }
+
+    /* Table of Contents */
+    .toc {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px 40px;
+      margin: 40px auto;
+      max-width: 900px;
+    }
+    .toc h2 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: var(--text);
+      border-bottom: 2px solid var(--orange);
+      padding-bottom: 10px;
+    }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 8px; }
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .toc a:hover { text-decoration: underline; }
+    .toc .sub { padding-left: 24px; margin-top: 4px; }
+    .toc .sub li { font-size: 0.95em; margin-bottom: 4px; }
+
+    /* Sections */
+    section {
+      margin: 50px auto;
+      max-width: 900px;
+      padding: 0 30px;
+    }
+    section h2 {
+      font-size: 1.8em;
+      color: var(--text);
+      border-bottom: 3px solid var(--orange);
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+    section h3 {
+      font-size: 1.3em;
+      color: var(--text);
+      margin: 30px 0 12px 0;
+      padding-left: 12px;
+      border-left: 4px solid var(--accent);
+    }
+    section h4 {
+      font-size: 1.1em;
+      color: var(--text-muted);
+      margin: 20px 0 8px 0;
+    }
+    p { margin-bottom: 14px; }
+
+    /* Steps */
+    .steps {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 16px 0;
+    }
+    .steps ol { padding-left: 20px; }
+    .steps li { margin-bottom: 10px; line-height: 1.6; }
+
+    /* Tip boxes */
+    .tip, .warning, .note {
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .tip {
+      background: #f0fdf4;
+      border-left: 4px solid var(--green);
+    }
+    .tip::before { content: "Tip: "; font-weight: 700; color: var(--green); }
+    .warning {
+      background: #fefce8;
+      border-left: 4px solid var(--yellow);
+    }
+    .warning::before { content: "Important: "; font-weight: 700; color: #a16207; }
+    .note {
+      background: #eff6ff;
+      border-left: 4px solid var(--blue);
+    }
+    .note::before { content: "Note: "; font-weight: 700; color: var(--blue); }
+
+    /* Feature cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .feature-card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .feature-card h4 {
+      color: var(--text);
+      margin: 0 0 8px 0;
+      font-size: 1.05em;
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95em;
+      margin: 0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.95em;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    th {
+      background: var(--bg-alt);
+      font-weight: 600;
+    }
+    tr:nth-child(even) { background: var(--bg-alt); }
+
+    /* Kbd */
+    kbd {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.9em;
+      font-family: monospace;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 40px 20px; }
+      .hero h1 { font-size: 2em; }
+      section { padding: 0 16px; }
+      .toc { padding: 20px; margin: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ====================================================================== -->
+<!-- HERO -->
+<!-- ====================================================================== -->
+<div class="hero">
+  <h1>Solo Founder OS</h1>
+  <p>The Complete User Manual — Everything you need to know to run your business from one dashboard.</p>
+  <div class="version">User Manual v1.0 — January 2026</div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- TABLE OF CONTENTS -->
+<!-- ====================================================================== -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#navigation">Navigating the App</a></li>
+    <li><a href="#workspaces">Workspaces &amp; Team Members</a></li>
+    <li><a href="#dashboard">Dashboard (Home Screen)</a></li>
+    <li><a href="#code-vault">Code Vault</a></li>
+    <li><a href="#landing-pages">Landing Pages</a></li>
+    <li><a href="#feedback">Feedback</a></li>
+    <li><a href="#command-center">Command Center (SaaS Metrics)</a></li>
+    <li><a href="#crm">CRM (Contacts &amp; Deals)</a></li>
+    <li><a href="#content-engine">Content Engine</a></li>
+    <li><a href="#projects">Projects &amp; Tasks</a></li>
+    <li><a href="#automations">Automations</a></li>
+    <li><a href="#ai-advisor">AI Advisor</a></li>
+    <li><a href="#analytics">Analytics</a></li>
+    <li><a href="#settings">Settings</a></li>
+    <li><a href="#roles">Roles &amp; Permissions</a></li>
+    <li><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+    <li><a href="#faq">Frequently Asked Questions</a></li>
+  </ol>
+</div>
+
+<!-- ====================================================================== -->
+<!-- 1. GETTING STARTED -->
+<!-- ====================================================================== -->
+<section id="getting-started">
+  <h2>1. Getting Started</h2>
+
+  <h3>What Is Solo Founder OS?</h3>
+  <p>Solo Founder OS is an all-in-one business management platform designed for founders, freelancers, and small teams. Instead of paying for 10 different tools, you get everything in one place:</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>CRM</h4>
+      <p>Track contacts, deals, and your sales pipeline.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Projects</h4>
+      <p>Manage tasks, track time, and organize work.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Content Engine</h4>
+      <p>Create, schedule, and publish content with AI assistance.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Landing Pages</h4>
+      <p>Build and deploy pages to capture leads.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Feedback</h4>
+      <p>Embed feedback widgets and collect user input.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Automations</h4>
+      <p>Set up workflows that run automatically.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Analytics</h4>
+      <p>Track visitors, traffic, and conversions.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Command Center</h4>
+      <p>See your SaaS metrics (MRR, churn, etc.).</p>
+    </div>
+    <div class="feature-card">
+      <h4>Code Vault</h4>
+      <p>Save and organize code snippets and prompts.</p>
+    </div>
+    <div class="feature-card">
+      <h4>AI Advisor</h4>
+      <p>Get AI-powered business advice.</p>
+    </div>
+  </div>
+
+  <h3>Creating Your Account</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to the Solo Founder OS website and click <strong>Sign Up</strong>.</li>
+      <li>Enter your <strong>email address</strong> and choose a <strong>password</strong>.</li>
+      <li>Click <strong>Create Account</strong>.</li>
+      <li>Check your email inbox for a <strong>verification link</strong> and click it.</li>
+      <li>Once verified, you'll be taken to the app where you can create your first <strong>workspace</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Logging In</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to the login page.</li>
+      <li>Enter your <strong>email</strong> and <strong>password</strong>.</li>
+      <li>Click <strong>Sign In</strong>.</li>
+    </ol>
+  </div>
+  <p class="tip">If you forget your password, click <strong>"Forgot Password?"</strong> on the login page. You'll receive a reset link via email.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 2. NAVIGATING THE APP -->
+<!-- ====================================================================== -->
+<section id="navigation">
+  <h2>2. Navigating the App</h2>
+
+  <p>Once logged in, you'll see a layout with three main areas:</p>
+
+  <h3>Sidebar (Left Side)</h3>
+  <p>The sidebar is your main navigation menu. It's always visible on desktop and can be opened with the menu icon on mobile. It's organized into three groups:</p>
+
+  <h4>Overview</h4>
+  <ul>
+    <li><strong>Dashboard</strong> — Your home screen with an overview of all tools.</li>
+  </ul>
+
+  <h4>Products (Your Main Tools)</h4>
+  <ul>
+    <li><strong>Code Vault</strong> — Save and organize code snippets.</li>
+    <li><strong>Landing Pages</strong> — Build web pages to capture leads.</li>
+    <li><strong>Feedback</strong> — Collect and manage user feedback.</li>
+    <li><strong>Command Center</strong> — View SaaS business metrics.</li>
+    <li><strong>CRM</strong> — Manage contacts and deals.</li>
+    <li><strong>Content Engine</strong> — Create and schedule content.</li>
+    <li><strong>Projects</strong> — Manage projects and tasks.</li>
+    <li><strong>Automations</strong> — Set up automated workflows.</li>
+    <li><strong>AI Advisor</strong> — Chat with an AI business advisor.</li>
+    <li><strong>Analytics</strong> — View website traffic and engagement data.</li>
+  </ul>
+
+  <h4>Account</h4>
+  <ul>
+    <li><strong>Settings</strong> — Manage your profile, workspace, billing, and more.</li>
+  </ul>
+
+  <p class="tip">You can <strong>collapse the sidebar</strong> to just icons by clicking the "Collapse" button at the bottom. This gives you more screen space.</p>
+
+  <h3>Header (Top Bar)</h3>
+  <p>The top bar contains:</p>
+  <ul>
+    <li><strong>Breadcrumbs</strong> — Shows you where you are in the app (e.g., Dashboard &gt; CRM &gt; Deal Details).</li>
+    <li><strong>Command Menu</strong> — A quick search/action bar (press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open).</li>
+    <li><strong>Theme Toggle</strong> — Switch between light and dark mode.</li>
+    <li><strong>Notification Bell</strong> — See your latest notifications.</li>
+    <li><strong>User Menu</strong> — Access your profile, team settings, and sign out.</li>
+  </ul>
+
+  <h3>Main Content Area</h3>
+  <p>The center of the screen is where all the action happens. Each tool opens here when you click it in the sidebar.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 3. WORKSPACES -->
+<!-- ====================================================================== -->
+<section id="workspaces">
+  <h2>3. Workspaces &amp; Team Members</h2>
+
+  <h3>What Is a Workspace?</h3>
+  <p>A <strong>workspace</strong> is like a container for one business or project. All your contacts, deals, content, projects, and automations live inside a workspace. If you run multiple businesses, you can create separate workspaces for each one.</p>
+
+  <h3>Creating a Workspace</h3>
+  <div class="steps">
+    <ol>
+      <li>Click your <strong>workspace name</strong> in the sidebar (top area).</li>
+      <li>Click <strong>"Create Workspace"</strong> from the dropdown.</li>
+      <li>Enter a <strong>name</strong> for your workspace (e.g., "My SaaS Company").</li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Switching Between Workspaces</h3>
+  <p>If you have multiple workspaces, click the <strong>workspace name</strong> in the sidebar to see a dropdown list of all your workspaces. Click any workspace to switch to it. A checkmark shows which one is currently active.</p>
+
+  <h3>Inviting Team Members</h3>
+  <div class="steps">
+    <ol>
+      <li>Click your workspace name and select <strong>"Manage Members"</strong>.</li>
+      <li>Click <strong>"Invite Member"</strong>.</li>
+      <li>Enter their <strong>email address</strong> and choose a <strong>role</strong> (Admin, Editor, or Viewer).</li>
+      <li>Click <strong>Send Invite</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Team Roles Explained</h3>
+  <table>
+    <tr>
+      <th>Role</th>
+      <th>What They Can Do</th>
+    </tr>
+    <tr>
+      <td><strong>Owner</strong></td>
+      <td>Full access to everything. Can delete the workspace, manage billing, and assign roles. Only one owner per workspace.</td>
+    </tr>
+    <tr>
+      <td><strong>Admin</strong></td>
+      <td>Almost everything the owner can do: manage members, change settings, create/edit/delete all content. Cannot delete the workspace or change billing.</td>
+    </tr>
+    <tr>
+      <td><strong>Editor</strong></td>
+      <td>Can create, edit, and view content, contacts, deals, projects, automations, and more. Cannot manage team members, settings, or billing.</td>
+    </tr>
+    <tr>
+      <td><strong>Viewer</strong></td>
+      <td>Read-only access. Can see everything but cannot create, edit, or delete anything.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 4. DASHBOARD -->
+<!-- ====================================================================== -->
+<section id="dashboard">
+  <h2>4. Dashboard (Home Screen)</h2>
+  <p>The Dashboard is the first screen you see when you log in. It gives you a bird's-eye view of your entire business:</p>
+  <ul>
+    <li><strong>Quick Links</strong> — Cards for each tool (Code Vault, Landing Pages, Feedback, etc.) with short descriptions. Click any card to jump to that tool.</li>
+    <li><strong>Key Metrics</strong> — Revenue, active subscribers, growth trends, and activity summaries at a glance.</li>
+  </ul>
+  <p>Think of the Dashboard as your business "home base." From here, you can quickly get to anything you need.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 5. CODE VAULT -->
+<!-- ====================================================================== -->
+<section id="code-vault">
+  <h2>5. Code Vault</h2>
+  <p>The Code Vault is your personal library for saving <strong>code snippets, AI prompts, and reusable components</strong>. Think of it as a recipe book for code.</p>
+
+  <h3>Saving a New Item</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>Code Vault</strong> in the sidebar.</li>
+      <li>Click <strong>"New Item"</strong> (or the + button).</li>
+      <li>Give it a <strong>title</strong> (e.g., "Login Form Component").</li>
+      <li>Choose the <strong>type</strong>: Code Snippet, Prompt, Component, or Template.</li>
+      <li>Select the <strong>programming language</strong> (e.g., JavaScript, Python).</li>
+      <li>Paste your <strong>code or content</strong> into the editor.</li>
+      <li>Optionally, add a <strong>description</strong> and assign it to a <strong>collection</strong>.</li>
+      <li>Click <strong>Save</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Organizing with Collections</h3>
+  <p>Collections are like folders. You can create collections such as "React Components," "API Templates," or "Marketing Prompts" to keep things organized.</p>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>Code Vault &gt; Collections</strong>.</li>
+      <li>Click <strong>"New Collection"</strong>.</li>
+      <li>Give it a name, pick a color and icon.</li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Finding Items</h3>
+  <ul>
+    <li><strong>Search</strong> — Use the search bar at the top to find items by name.</li>
+    <li><strong>Filter by Type</strong> — Filter to show only snippets, prompts, components, or templates.</li>
+    <li><strong>Filter by Language</strong> — Show only items in a specific programming language.</li>
+    <li><strong>Filter by Collection</strong> — Show only items in a specific collection.</li>
+    <li><strong>Favorites</strong> — Toggle to show only items you've starred as favorites.</li>
+  </ul>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 6. LANDING PAGES -->
+<!-- ====================================================================== -->
+<section id="landing-pages">
+  <h2>6. Landing Pages</h2>
+  <p>Build simple, effective web pages to <strong>showcase your product and capture leads</strong> — without needing a separate website builder.</p>
+
+  <h3>Creating a Landing Page</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>Landing Pages</strong> in the sidebar.</li>
+      <li>Click <strong>"New Page"</strong>.</li>
+      <li>Fill in your page details:
+        <ul>
+          <li><strong>Title</strong> — The main heading visitors see.</li>
+          <li><strong>Slug</strong> — The URL path (e.g., "my-product" becomes yoursite.com/p/my-product).</li>
+          <li><strong>Description</strong> — A short summary for search engines.</li>
+          <li><strong>Content</strong> — Your page content (hero text, features, etc.).</li>
+        </ul>
+      </li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Publishing Your Page</h3>
+  <p>New pages start as <strong>drafts</strong>. To make a page visible to the public:</p>
+  <div class="steps">
+    <ol>
+      <li>Open the page you want to publish.</li>
+      <li>Change the status to <strong>"Published"</strong>.</li>
+      <li>Your page is now live at <code>/p/your-slug</code>.</li>
+    </ol>
+  </div>
+
+  <h3>Tracking Performance</h3>
+  <p>The Landing Pages dashboard shows you:</p>
+  <ul>
+    <li><strong>Total Pages</strong> — How many pages you've created.</li>
+    <li><strong>Total Views</strong> — How many times your pages have been visited.</li>
+    <li><strong>Total Leads</strong> — How many people filled out a form on your pages.</li>
+    <li><strong>Conversions</strong> — How many visitors took your desired action.</li>
+  </ul>
+
+  <h3>Viewing Leads</h3>
+  <p>Go to <strong>Landing Pages &gt; Leads</strong> to see everyone who submitted a form on your landing pages. You'll see their name, email, which page they came from, and when they submitted.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 7. FEEDBACK -->
+<!-- ====================================================================== -->
+<section id="feedback">
+  <h2>7. Feedback</h2>
+  <p>Collect feedback from your customers using <strong>embeddable widgets</strong> that you place on your website or app.</p>
+
+  <h3>Creating a Feedback Widget</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>Feedback</strong> in the sidebar.</li>
+      <li>Click <strong>"New Widget"</strong>.</li>
+      <li>Configure your widget:
+        <ul>
+          <li><strong>Name</strong> — Internal name for your reference (e.g., "Homepage Feedback").</li>
+          <li><strong>Title</strong> — What users see (e.g., "Send us feedback").</li>
+          <li><strong>Theme</strong> — Light, dark, or auto (matches the user's device).</li>
+          <li><strong>Color</strong> — Your brand color for the widget.</li>
+          <li><strong>Position</strong> — Where the widget button appears (bottom-right, bottom-left, etc.).</li>
+          <li><strong>Categories</strong> — Types of feedback users can choose (bug, feature, question, other).</li>
+          <li><strong>Require Email</strong> — Toggle whether users must provide their email.</li>
+          <li><strong>Show Emoji Rating</strong> — Let users rate with emojis.</li>
+        </ul>
+      </li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Embedding on Your Website</h3>
+  <p>After creating a widget, you'll get an <strong>embed code</strong> (a snippet of HTML/JavaScript). Copy this code and paste it into your website's HTML, just before the closing <code>&lt;/body&gt;</code> tag. The feedback button will appear automatically.</p>
+
+  <h3>Managing Submissions</h3>
+  <p>When users submit feedback through your widget, it appears in the <strong>Submissions</strong> tab. For each submission, you can:</p>
+  <ul>
+    <li><strong>Change status</strong> — Mark as New, In Review, Resolved, or Archived.</li>
+    <li><strong>Set priority</strong> — Low, Medium, High, or Urgent.</li>
+    <li><strong>Add internal notes</strong> — Write notes only your team can see.</li>
+    <li><strong>Assign to a team member</strong> — Route feedback to the right person.</li>
+    <li><strong>Delete</strong> — Remove spam or irrelevant submissions (admin/owner only).</li>
+  </ul>
+
+  <h3>Filtering Feedback</h3>
+  <p>Use the filters at the top to narrow down submissions by:</p>
+  <ul>
+    <li><strong>Status</strong> — New, In Review, Resolved, Archived.</li>
+    <li><strong>Type/Category</strong> — Bug, Feature, Question, Other.</li>
+    <li><strong>Widget</strong> — Which widget the feedback came from.</li>
+    <li><strong>Search</strong> — Find feedback by content or email.</li>
+  </ul>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 8. COMMAND CENTER -->
+<!-- ====================================================================== -->
+<section id="command-center">
+  <h2>8. Command Center (SaaS Metrics)</h2>
+  <p>The Command Center is your <strong>business intelligence dashboard</strong>. It connects to Stripe to show you real-time SaaS metrics.</p>
+
+  <h3>What You'll See</h3>
+  <p>The Command Center is organized into tabs:</p>
+
+  <h4>Overview Tab</h4>
+  <ul>
+    <li><strong>MRR (Monthly Recurring Revenue)</strong> — How much money you earn every month from subscriptions.</li>
+    <li><strong>ARR (Annual Recurring Revenue)</strong> — MRR multiplied by 12.</li>
+    <li><strong>Active Subscribers</strong> — How many paying customers you have right now.</li>
+    <li><strong>Churn Rate</strong> — What percentage of customers cancelled this month.</li>
+    <li><strong>Growth Rate</strong> — How fast your revenue is growing.</li>
+    <li><strong>MRR Chart</strong> — A visual graph of your revenue over time.</li>
+  </ul>
+
+  <h4>Customers Tab</h4>
+  <ul>
+    <li>A table of all your customers with their name, email, plan, status, and lifetime value.</li>
+    <li><strong>At-Risk Customers</strong> — Customers who might cancel soon (based on behavior patterns).</li>
+  </ul>
+
+  <h4>Revenue Tab</h4>
+  <ul>
+    <li><strong>Revenue by Plan</strong> — See how much each plan contributes.</li>
+    <li><strong>Recent Revenue Events</strong> — New subscriptions, upgrades, downgrades, and cancellations.</li>
+  </ul>
+
+  <h4>Sync Tab</h4>
+  <ul>
+    <li>Shows when data was last synced from Stripe.</li>
+    <li>You can trigger a <strong>manual sync</strong> if you need fresh data immediately.</li>
+  </ul>
+
+  <p class="note">The Command Center requires a Stripe integration. Your Stripe data is automatically synced via webhooks. If you haven't connected Stripe yet, go to <strong>Settings &gt; Billing</strong> to set it up.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 9. CRM -->
+<!-- ====================================================================== -->
+<section id="crm">
+  <h2>9. CRM (Contacts &amp; Deals)</h2>
+  <p>The CRM helps you manage your <strong>relationships and sales pipeline</strong>. It has two main parts: Contacts and Deals.</p>
+
+  <h3>Contacts</h3>
+  <p>Contacts are people you do business with — customers, leads, partners, etc.</p>
+
+  <h4>Adding a Contact</h4>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>CRM</strong> (or <strong>Contacts</strong> if visible) in the sidebar.</li>
+      <li>Click <strong>"New Contact"</strong>.</li>
+      <li>Fill in their information:
+        <ul>
+          <li><strong>Name</strong> — First and last name.</li>
+          <li><strong>Email</strong> — Their email address.</li>
+          <li><strong>Phone</strong> — Phone number (optional).</li>
+          <li><strong>Company</strong> — Where they work (optional).</li>
+          <li><strong>Status</strong> — Lead, Active, Inactive, or Churned.</li>
+          <li><strong>Tags</strong> — Labels to categorize them (e.g., "VIP," "Enterprise").</li>
+        </ul>
+      </li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h4>Finding Contacts</h4>
+  <ul>
+    <li><strong>Search</strong> — Search by name, email, or company.</li>
+    <li><strong>Filter by Status</strong> — Show only leads, active, inactive, or churned contacts.</li>
+    <li><strong>Filter by Tags</strong> — Show contacts with specific tags.</li>
+  </ul>
+
+  <h3>Deals (Sales Pipeline)</h3>
+  <p>Deals represent potential sales moving through your pipeline. The CRM shows deals as a <strong>Kanban board</strong> — columns represent stages, and deals are cards you drag between stages.</p>
+
+  <h4>Default Pipeline Stages</h4>
+  <table>
+    <tr>
+      <th>Stage</th>
+      <th>What It Means</th>
+    </tr>
+    <tr>
+      <td>Lead</td>
+      <td>Initial interest — someone who might buy.</td>
+    </tr>
+    <tr>
+      <td>Qualified</td>
+      <td>You've confirmed they're a good fit.</td>
+    </tr>
+    <tr>
+      <td>Proposal</td>
+      <td>You've sent them a proposal or quote.</td>
+    </tr>
+    <tr>
+      <td>Negotiation</td>
+      <td>Working out the final details.</td>
+    </tr>
+    <tr>
+      <td>Won</td>
+      <td>Deal closed successfully!</td>
+    </tr>
+    <tr>
+      <td>Lost</td>
+      <td>Deal didn't work out.</td>
+    </tr>
+  </table>
+
+  <h4>Creating a Deal</h4>
+  <div class="steps">
+    <ol>
+      <li>On the CRM page, click <strong>"New Deal"</strong>.</li>
+      <li>Fill in the details:
+        <ul>
+          <li><strong>Name</strong> — A name for this deal (e.g., "Acme Corp Annual Plan").</li>
+          <li><strong>Value</strong> — How much the deal is worth in dollars.</li>
+          <li><strong>Stage</strong> — Where this deal is in your pipeline.</li>
+          <li><strong>Contact</strong> — Link it to an existing contact.</li>
+          <li><strong>Notes</strong> — Any relevant details.</li>
+        </ul>
+      </li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h4>Moving a Deal</h4>
+  <p>To move a deal to the next stage, simply <strong>drag and drop</strong> the deal card from one column to another. You can also open the deal and change its stage from the dropdown.</p>
+
+  <h3>CRM Stats</h3>
+  <p>At the top of the CRM page, you'll see key stats:</p>
+  <ul>
+    <li><strong>Total Pipeline Value</strong> — The sum of all open deals.</li>
+    <li><strong>Deals Won</strong> — How many deals you've closed.</li>
+    <li><strong>Win Rate</strong> — The percentage of deals that ended in "Won."</li>
+    <li><strong>Average Deal Value</strong> — The average dollar amount of your deals.</li>
+  </ul>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 10. CONTENT ENGINE -->
+<!-- ====================================================================== -->
+<section id="content-engine">
+  <h2>10. Content Engine</h2>
+  <p>Create, write, and manage <strong>blog posts, social media content, newsletters, and more</strong> — all with built-in AI assistance.</p>
+
+  <h3>Content Types</h3>
+  <ul>
+    <li><strong>Blog Post</strong> — Long-form articles for your website.</li>
+    <li><strong>Social Post</strong> — Short-form content for social media.</li>
+    <li><strong>Newsletter</strong> — Email content for your subscribers.</li>
+    <li><strong>Video Script</strong> — Scripts for video content.</li>
+    <li><strong>Thread</strong> — Multi-part social media threads.</li>
+  </ul>
+
+  <h3>Creating Content</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>Content Engine</strong> in the sidebar.</li>
+      <li>Click <strong>"New Post"</strong>.</li>
+      <li>Choose the <strong>content type</strong> (blog, social, newsletter, etc.).</li>
+      <li>Enter a <strong>title</strong>.</li>
+      <li>Write your content in the <strong>rich text editor</strong>, which supports:
+        <ul>
+          <li>Bold, italic, headings, lists.</li>
+          <li>Images and media embedding.</li>
+          <li>Code blocks.</li>
+        </ul>
+      </li>
+      <li>Add <strong>tags</strong> to categorize your content.</li>
+      <li>Select which <strong>platforms</strong> to publish to (e.g., Twitter, LinkedIn, Blog).</li>
+      <li>Click <strong>Save as Draft</strong> or <strong>Publish</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Content Tabs</h3>
+  <p>The Content Engine page has several views:</p>
+  <ul>
+    <li><strong>Posts</strong> — All your content in a list/grid view with filters for status, type, and platform.</li>
+    <li><strong>Calendar</strong> — A visual calendar showing when content is scheduled.</li>
+    <li><strong>Ideas</strong> — A place to capture content ideas for later.</li>
+    <li><strong>Analytics</strong> — See how your content is performing (views, likes, shares, comments).</li>
+  </ul>
+
+  <h3>Content Statuses</h3>
+  <table>
+    <tr>
+      <th>Status</th>
+      <th>Meaning</th>
+    </tr>
+    <tr><td>Draft</td><td>Work in progress. Not visible to anyone.</td></tr>
+    <tr><td>Scheduled</td><td>Will be published automatically at a set date/time.</td></tr>
+    <tr><td>Published</td><td>Live and visible to the public.</td></tr>
+    <tr><td>Archived</td><td>Hidden from public view but kept for records.</td></tr>
+  </table>
+
+  <h3>AI Content Generation</h3>
+  <p>The Content Engine includes AI assistance to help you write faster. When creating or editing content, look for the <strong>AI/Sparkles icon</strong> to generate ideas, outlines, or full drafts based on your topic.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 11. PROJECTS -->
+<!-- ====================================================================== -->
+<section id="projects">
+  <h2>11. Projects &amp; Tasks</h2>
+  <p>Manage your work with <strong>projects, tasks, and time tracking</strong> — perfect for client work, product development, or personal to-dos.</p>
+
+  <h3>Creating a Project</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>Projects</strong> in the sidebar.</li>
+      <li>Click <strong>"New Project"</strong>.</li>
+      <li>Enter a <strong>name</strong> and optional <strong>description</strong>.</li>
+      <li>Set a <strong>start date</strong> and <strong>due date</strong> if applicable.</li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h3>Managing Tasks</h3>
+  <p>Each project contains tasks. Tasks are the individual items of work that need to be done.</p>
+
+  <h4>Creating a Task</h4>
+  <div class="steps">
+    <ol>
+      <li>Select a project (or choose "All Tasks").</li>
+      <li>Click <strong>"New Task"</strong>.</li>
+      <li>Fill in the details:
+        <ul>
+          <li><strong>Title</strong> — What needs to be done.</li>
+          <li><strong>Description</strong> — More details (optional).</li>
+          <li><strong>Priority</strong> — Low, Medium, High, or Urgent.</li>
+          <li><strong>Status</strong> — To Do, In Progress, Review, or Done.</li>
+          <li><strong>Due Date</strong> — When it needs to be finished.</li>
+          <li><strong>Assignee</strong> — Who's responsible.</li>
+        </ul>
+      </li>
+      <li>Click <strong>Create</strong>.</li>
+    </ol>
+  </div>
+
+  <h4>Task Views</h4>
+  <ul>
+    <li><strong>List View</strong> — Tasks in a simple list format.</li>
+    <li><strong>Board View</strong> — Tasks as cards on a Kanban board (columns = statuses).</li>
+  </ul>
+
+  <h3>Time Tracking</h3>
+  <p>Track how much time you spend on tasks:</p>
+  <div class="steps">
+    <ol>
+      <li>Open a task or use the <strong>Time Tracker</strong> panel.</li>
+      <li>Click <strong>"Start Timer"</strong> to begin tracking.</li>
+      <li>When you're done, click <strong>"Stop"</strong>.</li>
+      <li>The time entry is saved automatically and linked to the task.</li>
+    </ol>
+  </div>
+  <p>You can also add time entries manually by entering the start time, end time, and description.</p>
+
+  <h3>Project Progress</h3>
+  <p>Each project shows a <strong>progress bar</strong> calculated from the percentage of completed tasks. This gives you a quick overview of how far along each project is.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 12. AUTOMATIONS -->
+<!-- ====================================================================== -->
+<section id="automations">
+  <h2>12. Automations</h2>
+  <p>Automations let you create <strong>workflows that run automatically</strong> when something happens. For example: "When a new contact is added, send them a welcome email."</p>
+
+  <h3>How Automations Work</h3>
+  <p>Every automation has two parts:</p>
+  <ol>
+    <li><strong>Trigger</strong> — The event that starts the automation (e.g., "new contact created").</li>
+    <li><strong>Actions</strong> — What happens next (e.g., "send email," "create task," "add tag").</li>
+  </ol>
+
+  <h3>Available Triggers</h3>
+  <table>
+    <tr><th>Category</th><th>Triggers</th></tr>
+    <tr>
+      <td>Contacts</td>
+      <td>New contact, Contact updated, Contact tagged</td>
+    </tr>
+    <tr>
+      <td>Deals</td>
+      <td>Deal created, Deal stage changed, Deal won, Deal lost</td>
+    </tr>
+    <tr>
+      <td>Content</td>
+      <td>Form submitted, Feedback received</td>
+    </tr>
+    <tr>
+      <td>Projects</td>
+      <td>Task completed, Task created</td>
+    </tr>
+    <tr>
+      <td>System</td>
+      <td>Scheduled (runs on a schedule), Webhook (triggered by external apps), Manual (you start it)</td>
+    </tr>
+  </table>
+
+  <h3>Available Actions</h3>
+  <table>
+    <tr><th>Action</th><th>What It Does</th></tr>
+    <tr><td>Send Email</td><td>Sends an email to a specified address.</td></tr>
+    <tr><td>Create Task</td><td>Creates a new task in a project.</td></tr>
+    <tr><td>Update Contact</td><td>Changes a contact's information.</td></tr>
+    <tr><td>Add Tag</td><td>Adds a tag to a contact.</td></tr>
+    <tr><td>Remove Tag</td><td>Removes a tag from a contact.</td></tr>
+    <tr><td>Create Deal</td><td>Creates a new deal in your pipeline.</td></tr>
+    <tr><td>Move Deal</td><td>Moves a deal to a different pipeline stage.</td></tr>
+    <tr><td>Update Deal</td><td>Changes a deal's information.</td></tr>
+    <tr><td>Webhook</td><td>Sends data to an external URL.</td></tr>
+    <tr><td>Delay</td><td>Waits a specified amount of time before continuing.</td></tr>
+    <tr><td>Condition</td><td>Checks if something is true before continuing (e.g., "only if deal value > $1000").</td></tr>
+  </table>
+
+  <h3>Creating an Automation</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>Automations</strong> in the sidebar.</li>
+      <li>Click <strong>"New Automation"</strong>.</li>
+      <li>Give it a <strong>name</strong> and optional <strong>description</strong>.</li>
+      <li>Choose a <strong>trigger</strong> by clicking one of the trigger cards.</li>
+      <li>Configure the trigger settings (if applicable).</li>
+      <li>Add one or more <strong>actions</strong> by clicking "Add Action."</li>
+      <li>Configure each action's settings.</li>
+      <li>Optionally set a <strong>daily run limit</strong> and <strong>cooldown period</strong>.</li>
+      <li>Click <strong>"Create Automation"</strong>.</li>
+    </ol>
+  </div>
+
+  <p class="note">New automations start as <strong>Drafts</strong>. You must change the status to <strong>"Active"</strong> for them to run automatically.</p>
+
+  <h3>Automation Statuses</h3>
+  <table>
+    <tr><th>Status</th><th>Meaning</th></tr>
+    <tr><td>Draft</td><td>Still being set up. Will not run.</td></tr>
+    <tr><td>Active</td><td>Running and will trigger when the event occurs.</td></tr>
+    <tr><td>Paused</td><td>Temporarily stopped. Can be reactivated.</td></tr>
+    <tr><td>Archived</td><td>Permanently stopped and hidden.</td></tr>
+  </table>
+
+  <h3>Running Manually</h3>
+  <p>You can test any automation by clicking <strong>"Run Now"</strong> on the automation's detail page. This triggers it immediately with test data.</p>
+
+  <h3>Viewing Run History</h3>
+  <p>Click <strong>"View Runs"</strong> on any automation to see a history of every time it ran. For each run, you can see:</p>
+  <ul>
+    <li><strong>Status</strong> — Completed, Failed, Running, Pending, or Cancelled.</li>
+    <li><strong>Duration</strong> — How long it took to run.</li>
+    <li><strong>Actions Executed</strong> — How many actions ran successfully.</li>
+    <li><strong>Actions Failed</strong> — How many actions encountered errors.</li>
+    <li><strong>Logs</strong> — A detailed step-by-step log of what happened.</li>
+  </ul>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 13. AI ADVISOR -->
+<!-- ====================================================================== -->
+<section id="ai-advisor">
+  <h2>13. AI Advisor</h2>
+  <p>The AI Advisor is your <strong>built-in business consultant</strong>. You can chat with it to get advice on strategy, marketing, product decisions, and more.</p>
+
+  <h3>Starting a Conversation</h3>
+  <div class="steps">
+    <ol>
+      <li>Go to <strong>AI Advisor</strong> in the sidebar.</li>
+      <li>Click <strong>"New Conversation"</strong>.</li>
+      <li>Choose a <strong>topic</strong> (Growth, Marketing, Product, Sales, Operations, Finance, or General).</li>
+      <li>Type your question or describe your situation.</li>
+      <li>The AI will respond with advice tailored to your business.</li>
+    </ol>
+  </div>
+
+  <h3>Conversation History</h3>
+  <p>All your conversations are saved. You can return to them anytime from the conversation list on the left side. Filter by topic to find specific conversations.</p>
+
+  <p class="tip">Be specific with your questions for better advice. Instead of "How do I grow?", try "I have a B2B SaaS with 50 customers at $49/month. What are the top 3 strategies to reach $10k MRR?"</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 14. ANALYTICS -->
+<!-- ====================================================================== -->
+<section id="analytics">
+  <h2>14. Analytics</h2>
+  <p>Track your <strong>website traffic, user behavior, and conversion metrics</strong> in one place.</p>
+
+  <h3>What You'll See</h3>
+  <p>The Analytics dashboard is organized into tabs:</p>
+
+  <h4>Overview</h4>
+  <ul>
+    <li><strong>Total Visitors</strong> — Unique people who visited your site.</li>
+    <li><strong>Page Views</strong> — Total number of pages viewed.</li>
+    <li><strong>Bounce Rate</strong> — Percentage of visitors who left after one page.</li>
+    <li><strong>Average Session Duration</strong> — How long visitors stay on your site.</li>
+    <li><strong>Visitor Chart</strong> — A graph showing traffic over time.</li>
+  </ul>
+
+  <h4>Traffic</h4>
+  <ul>
+    <li><strong>Top Pages</strong> — Which pages get the most visits.</li>
+    <li><strong>Top Referrers</strong> — Where your visitors are coming from (Google, Twitter, etc.).</li>
+  </ul>
+
+  <h4>Engagement</h4>
+  <ul>
+    <li><strong>Device Breakdown</strong> — Desktop vs. Mobile vs. Tablet visitors.</li>
+    <li><strong>Geographic Breakdown</strong> — Which countries your visitors come from.</li>
+  </ul>
+
+  <h4>Conversions</h4>
+  <ul>
+    <li><strong>Conversion tracking</strong> — Measure how many visitors take desired actions.</li>
+    <li><strong>Goal tracking</strong> — Set and track specific goals.</li>
+  </ul>
+
+  <h3>Time Periods</h3>
+  <p>Use the dropdown at the top to change the time range: Today, Last 7 Days, Last 30 Days, Last 90 Days, or Last Year.</p>
+
+  <h3>Exporting Data</h3>
+  <p>Click the <strong>Download</strong> button to export your analytics data for use in spreadsheets or reports.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 15. SETTINGS -->
+<!-- ====================================================================== -->
+<section id="settings">
+  <h2>15. Settings</h2>
+  <p>Access settings from the <strong>"Settings"</strong> link in the sidebar or from the user menu in the top-right corner.</p>
+
+  <h3>Profile Settings</h3>
+  <p>Update your personal information:</p>
+  <ul>
+    <li><strong>Full Name</strong> — Your display name.</li>
+    <li><strong>Avatar</strong> — Upload a profile photo.</li>
+    <li><strong>Email</strong> — Your login email (read-only here).</li>
+  </ul>
+
+  <h3>Account Settings</h3>
+  <ul>
+    <li><strong>Change Password</strong> — Update your login password.</li>
+    <li><strong>Delete Account</strong> — Permanently remove your account and all data.</li>
+  </ul>
+
+  <h3>Workspace Settings</h3>
+  <p>(Admin/Owner only)</p>
+  <ul>
+    <li><strong>Workspace Name</strong> — Change the name of your workspace.</li>
+    <li><strong>Workspace Slug</strong> — Change the URL identifier.</li>
+    <li><strong>Logo</strong> — Upload a workspace logo.</li>
+    <li><strong>Team Members</strong> — View and manage team members.</li>
+  </ul>
+
+  <h3>Billing</h3>
+  <p>(Owner only)</p>
+  <ul>
+    <li><strong>Current Plan</strong> — See which plan you're on.</li>
+    <li><strong>Manage Subscription</strong> — Opens the Stripe portal to update payment info, change plans, or cancel.</li>
+  </ul>
+
+  <h3>API Keys</h3>
+  <p>If you need to integrate with external tools, you can generate API keys here. Keep these secret — anyone with your API key can access your data.</p>
+
+  <h3>Export</h3>
+  <p>Export all your data (contacts, deals, content, etc.) in CSV or JSON format. Useful for backups or migrating to another tool.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 16. ROLES & PERMISSIONS -->
+<!-- ====================================================================== -->
+<section id="roles">
+  <h2>16. Roles &amp; Permissions (Detailed Reference)</h2>
+  <p>This table shows exactly what each role can do in every section of the app:</p>
+
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>Viewer</th>
+      <th>Editor</th>
+      <th>Admin</th>
+      <th>Owner</th>
+    </tr>
+    <tr>
+      <td>View contacts, deals, content, projects, automations, feedback, analytics</td>
+      <td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Create and edit contacts, deals, content, projects, automations</td>
+      <td>No</td><td>Yes</td><td>Yes</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Delete contacts, deals, content, projects</td>
+      <td>No</td><td>No</td><td>Yes</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Delete automations, feedback widgets/submissions</td>
+      <td>No</td><td>No</td><td>Yes</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Manage workspace settings</td>
+      <td>No</td><td>No</td><td>Yes</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Invite and manage team members</td>
+      <td>No</td><td>No</td><td>Yes</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Manage billing and subscriptions</td>
+      <td>No</td><td>No</td><td>No</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Delete workspace</td>
+      <td>No</td><td>No</td><td>No</td><td>Yes</td>
+    </tr>
+    <tr>
+      <td>Export data</td>
+      <td>No</td><td>No</td><td>Yes</td><td>Yes</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 17. KEYBOARD SHORTCUTS -->
+<!-- ====================================================================== -->
+<section id="keyboard-shortcuts">
+  <h2>17. Keyboard Shortcuts</h2>
+  <table>
+    <tr>
+      <th>Shortcut</th>
+      <th>What It Does</th>
+    </tr>
+    <tr>
+      <td><kbd>Ctrl</kbd> + <kbd>K</kbd></td>
+      <td>Open the Command Menu (quick search &amp; navigation).</td>
+    </tr>
+  </table>
+  <p>The Command Menu lets you quickly jump to any page, search for contacts or deals, and perform common actions without using the mouse.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- 18. FAQ -->
+<!-- ====================================================================== -->
+<section id="faq">
+  <h2>18. Frequently Asked Questions</h2>
+
+  <h3>How do I switch between light and dark mode?</h3>
+  <p>Click the <strong>sun/moon icon</strong> in the top-right corner of the header bar. The app will switch between light and dark themes.</p>
+
+  <h3>Can I use this on my phone?</h3>
+  <p>Yes. Solo Founder OS is fully responsive. On mobile, the sidebar is hidden by default — tap the <strong>menu icon</strong> (three horizontal lines) in the top-left to open it.</p>
+
+  <h3>How do I connect Stripe?</h3>
+  <p>Go to <strong>Settings &gt; Billing</strong>. Your Stripe integration is configured through environment variables by your administrator. Once connected, the Command Center will automatically display your SaaS metrics.</p>
+
+  <h3>Can I have multiple workspaces?</h3>
+  <p>Yes. You can create as many workspaces as you need. Each workspace is completely separate — contacts, deals, content, and everything else is isolated per workspace.</p>
+
+  <h3>How do I delete my account?</h3>
+  <p>Go to <strong>Settings &gt; Account</strong> and scroll to the bottom. Click <strong>"Delete Account"</strong> and confirm. This is permanent and cannot be undone.</p>
+
+  <h3>What happens if I forget my password?</h3>
+  <p>On the login page, click <strong>"Forgot Password?"</strong>. Enter your email, and you'll receive a link to reset your password.</p>
+
+  <h3>How do I embed a feedback widget on my website?</h3>
+  <p>Go to <strong>Feedback</strong>, create a widget, and copy the embed code. Paste the code into your website's HTML before the closing <code>&lt;/body&gt;</code> tag.</p>
+
+  <h3>Why is my Command Center empty?</h3>
+  <p>The Command Center requires data from Stripe. If you haven't connected Stripe or don't have any subscriptions yet, the metrics will show as zero. Once you start processing payments through Stripe, data will populate automatically.</p>
+
+  <h3>How do I make a landing page public?</h3>
+  <p>Create a landing page, then change its status to <strong>"Published"</strong>. It will be accessible at <code>/p/your-slug</code> where "your-slug" is the URL slug you chose when creating the page.</p>
+
+  <h3>Can team members see each other's data?</h3>
+  <p>Yes, within the same workspace, all members can see all data (contacts, deals, content, etc.). The role system controls what actions they can take (view only vs. edit vs. delete), not what data they can see.</p>
+
+  <h3>How do automations work with webhooks?</h3>
+  <p>When you create a webhook-triggered automation, the system generates a unique webhook URL. External services (like Zapier, Stripe, or your own app) can send data to this URL, which triggers the automation. Each webhook uses HMAC-SHA256 signature verification for security.</p>
+</section>
+
+<!-- ====================================================================== -->
+<!-- FOOTER -->
+<!-- ====================================================================== -->
+<footer>
+  <p><strong>Solo Founder OS</strong> — User Manual v1.0</p>
+  <p>January 2026</p>
+  <p>Everything you need to run your business, in one place.</p>
+</footer>
+
+</body>
+</html>

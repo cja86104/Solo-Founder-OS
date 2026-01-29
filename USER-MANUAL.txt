@@ -1,0 +1,832 @@
+================================================================================
+                          SOLO FOUNDER OS
+                         USER MANUAL v1.0
+                          January 2026
+================================================================================
+
+  Everything you need to run your business, in one place.
+
+================================================================================
+                        TABLE OF CONTENTS
+================================================================================
+
+  1.  Getting Started
+  2.  Navigating the App
+  3.  Workspaces & Team Members
+  4.  Dashboard (Home Screen)
+  5.  Code Vault
+  6.  Landing Pages
+  7.  Feedback
+  8.  Command Center (SaaS Metrics)
+  9.  CRM (Contacts & Deals)
+  10. Content Engine
+  11. Projects & Tasks
+  12. Automations
+  13. AI Advisor
+  14. Analytics
+  15. Settings
+  16. Roles & Permissions
+  17. Keyboard Shortcuts
+  18. Frequently Asked Questions
+
+
+================================================================================
+  1. GETTING STARTED
+================================================================================
+
+WHAT IS SOLO FOUNDER OS?
+------------------------
+Solo Founder OS is an all-in-one business management platform designed for
+founders, freelancers, and small teams. Instead of paying for 10 different
+tools, you get everything in one place:
+
+  - CRM              Track contacts, deals, and your sales pipeline.
+  - Projects          Manage tasks, track time, and organize work.
+  - Content Engine    Create, schedule, and publish content with AI help.
+  - Landing Pages     Build web pages to capture leads.
+  - Feedback          Embed feedback widgets and collect user input.
+  - Automations       Set up workflows that run automatically.
+  - Analytics         Track visitors, traffic, and conversions.
+  - Command Center    See your SaaS metrics (MRR, churn, etc.).
+  - Code Vault        Save and organize code snippets and prompts.
+  - AI Advisor        Get AI-powered business advice.
+
+
+CREATING YOUR ACCOUNT
+---------------------
+  1. Go to the Solo Founder OS website and click "Sign Up."
+  2. Enter your email address and choose a password.
+  3. Click "Create Account."
+  4. Check your email inbox for a verification link and click it.
+  5. Once verified, you'll be taken to the app where you can create
+     your first workspace.
+
+
+LOGGING IN
+----------
+  1. Go to the login page.
+  2. Enter your email and password.
+  3. Click "Sign In."
+
+  TIP: If you forget your password, click "Forgot Password?" on the
+  login page. You'll receive a reset link via email.
+
+
+================================================================================
+  2. NAVIGATING THE APP
+================================================================================
+
+Once logged in, you'll see a layout with three main areas:
+
+
+SIDEBAR (LEFT SIDE)
+-------------------
+The sidebar is your main navigation menu. It's always visible on desktop
+and can be opened with the menu icon on mobile. It's organized into
+three groups:
+
+  OVERVIEW
+    - Dashboard         Your home screen with an overview of all tools.
+
+  PRODUCTS (Your Main Tools)
+    - Code Vault        Save and organize code snippets.
+    - Landing Pages     Build web pages to capture leads.
+    - Feedback          Collect and manage user feedback.
+    - Command Center    View SaaS business metrics.
+    - CRM               Manage contacts and deals.
+    - Content Engine    Create and schedule content.
+    - Projects          Manage projects and tasks.
+    - Automations       Set up automated workflows.
+    - AI Advisor        Chat with an AI business advisor.
+    - Analytics         View website traffic and engagement data.
+
+  ACCOUNT
+    - Settings          Manage your profile, workspace, billing, and more.
+
+  TIP: You can collapse the sidebar to just icons by clicking the
+  "Collapse" button at the bottom. This gives you more screen space.
+
+
+HEADER (TOP BAR)
+----------------
+The top bar contains:
+  - Breadcrumbs       Shows where you are (e.g., Dashboard > CRM > Deal).
+  - Command Menu      Quick search/action bar (press Ctrl+K to open).
+  - Theme Toggle      Switch between light and dark mode.
+  - Notification Bell See your latest notifications.
+  - User Menu         Access profile, team settings, and sign out.
+
+
+MAIN CONTENT AREA
+-----------------
+The center of the screen is where all the action happens. Each tool
+opens here when you click it in the sidebar.
+
+
+================================================================================
+  3. WORKSPACES & TEAM MEMBERS
+================================================================================
+
+WHAT IS A WORKSPACE?
+--------------------
+A workspace is like a container for one business or project. All your
+contacts, deals, content, projects, and automations live inside a
+workspace. If you run multiple businesses, you can create separate
+workspaces for each one.
+
+
+CREATING A WORKSPACE
+--------------------
+  1. Click your workspace name in the sidebar (top area).
+  2. Click "Create Workspace" from the dropdown.
+  3. Enter a name for your workspace (e.g., "My SaaS Company").
+  4. Click Create.
+
+
+SWITCHING BETWEEN WORKSPACES
+-----------------------------
+If you have multiple workspaces, click the workspace name in the sidebar
+to see a dropdown list. Click any workspace to switch to it. A checkmark
+shows which one is currently active.
+
+
+INVITING TEAM MEMBERS
+---------------------
+  1. Click your workspace name and select "Manage Members."
+  2. Click "Invite Member."
+  3. Enter their email address and choose a role (Admin, Editor, or Viewer).
+  4. Click Send Invite.
+
+
+TEAM ROLES EXPLAINED
+--------------------
+  +----------+------------------------------------------------------------+
+  | Role     | What They Can Do                                           |
+  +----------+------------------------------------------------------------+
+  | Owner    | Full access to everything. Can delete the workspace,       |
+  |          | manage billing, and assign roles. One owner per workspace. |
+  +----------+------------------------------------------------------------+
+  | Admin    | Almost everything the owner can do: manage members, change |
+  |          | settings, create/edit/delete all content. Cannot delete    |
+  |          | the workspace or change billing.                           |
+  +----------+------------------------------------------------------------+
+  | Editor   | Can create, edit, and view content, contacts, deals,      |
+  |          | projects, automations, and more. Cannot manage team        |
+  |          | members, settings, or billing.                             |
+  +----------+------------------------------------------------------------+
+  | Viewer   | Read-only access. Can see everything but cannot create,   |
+  |          | edit, or delete anything.                                  |
+  +----------+------------------------------------------------------------+
+
+
+================================================================================
+  4. DASHBOARD (HOME SCREEN)
+================================================================================
+
+The Dashboard is the first screen you see when you log in. It gives you
+a bird's-eye view of your entire business:
+
+  - Quick Links     Cards for each tool (Code Vault, Landing Pages,
+                    Feedback, etc.) with descriptions. Click any card
+                    to jump to that tool.
+
+  - Key Metrics     Revenue, active subscribers, growth trends, and
+                    activity summaries at a glance.
+
+Think of the Dashboard as your business "home base." From here, you can
+quickly get to anything you need.
+
+
+================================================================================
+  5. CODE VAULT
+================================================================================
+
+The Code Vault is your personal library for saving code snippets,
+AI prompts, and reusable components. Think of it as a recipe book
+for code.
+
+
+SAVING A NEW ITEM
+-----------------
+  1. Go to Code Vault in the sidebar.
+  2. Click "New Item" (or the + button).
+  3. Give it a title (e.g., "Login Form Component").
+  4. Choose the type: Code Snippet, Prompt, Component, or Template.
+  5. Select the programming language (e.g., JavaScript, Python).
+  6. Paste your code or content into the editor.
+  7. Optionally add a description and assign to a collection.
+  8. Click Save.
+
+
+ORGANIZING WITH COLLECTIONS
+----------------------------
+Collections are like folders. Create collections such as
+"React Components," "API Templates," or "Marketing Prompts."
+
+  1. Go to Code Vault > Collections.
+  2. Click "New Collection."
+  3. Give it a name, pick a color and icon.
+  4. Click Create.
+
+
+FINDING ITEMS
+-------------
+  - Search            Use the search bar to find items by name.
+  - Filter by Type    Show only snippets, prompts, components, or templates.
+  - Filter by Language  Show only items in a specific language.
+  - Filter by Collection  Show only items in a specific collection.
+  - Favorites         Toggle to show only starred items.
+
+
+================================================================================
+  6. LANDING PAGES
+================================================================================
+
+Build simple, effective web pages to showcase your product and capture
+leads -- without needing a separate website builder.
+
+
+CREATING A LANDING PAGE
+-----------------------
+  1. Go to Landing Pages in the sidebar.
+  2. Click "New Page."
+  3. Fill in your page details:
+     - Title         The main heading visitors see.
+     - Slug          The URL path (e.g., "my-product" becomes /p/my-product).
+     - Description   A short summary for search engines.
+     - Content       Your page content (hero text, features, etc.).
+  4. Click Create.
+
+
+PUBLISHING YOUR PAGE
+--------------------
+New pages start as drafts. To make a page public:
+  1. Open the page you want to publish.
+  2. Change the status to "Published."
+  3. Your page is now live at /p/your-slug.
+
+
+TRACKING PERFORMANCE
+--------------------
+The Landing Pages dashboard shows you:
+  - Total Pages       How many pages you've created.
+  - Total Views       How many times your pages have been visited.
+  - Total Leads       How many people filled out a form.
+  - Conversions       How many visitors took your desired action.
+
+
+VIEWING LEADS
+-------------
+Go to Landing Pages > Leads to see everyone who submitted a form on
+your landing pages. You'll see their name, email, which page they came
+from, and when they submitted.
+
+
+================================================================================
+  7. FEEDBACK
+================================================================================
+
+Collect feedback from your customers using embeddable widgets that you
+place on your website or app.
+
+
+CREATING A FEEDBACK WIDGET
+---------------------------
+  1. Go to Feedback in the sidebar.
+  2. Click "New Widget."
+  3. Configure your widget:
+     - Name             Internal name (e.g., "Homepage Feedback").
+     - Title            What users see (e.g., "Send us feedback").
+     - Theme            Light, dark, or auto.
+     - Color            Your brand color for the widget.
+     - Position         Where the button appears (bottom-right, etc.).
+     - Categories       Types of feedback (bug, feature, question, other).
+     - Require Email    Whether users must give their email.
+     - Show Emoji Rating  Let users rate with emojis.
+  4. Click Create.
+
+
+EMBEDDING ON YOUR WEBSITE
+--------------------------
+After creating a widget, you'll get an embed code (HTML/JavaScript).
+Copy this code and paste it into your website's HTML, just before the
+closing </body> tag. The feedback button will appear automatically.
+
+
+MANAGING SUBMISSIONS
+--------------------
+When users submit feedback, it appears in the Submissions tab. You can:
+  - Change status     Mark as New, In Review, Resolved, or Archived.
+  - Set priority      Low, Medium, High, or Urgent.
+  - Add internal notes  Notes only your team can see.
+  - Assign to a team member  Route feedback to the right person.
+  - Delete            Remove spam (admin/owner only).
+
+
+FILTERING FEEDBACK
+------------------
+Use filters at the top to narrow down by:
+  - Status            New, In Review, Resolved, Archived.
+  - Type/Category     Bug, Feature, Question, Other.
+  - Widget            Which widget the feedback came from.
+  - Search            Find by content or email.
+
+
+================================================================================
+  8. COMMAND CENTER (SAAS METRICS)
+================================================================================
+
+The Command Center is your business intelligence dashboard. It connects
+to Stripe to show you real-time SaaS metrics.
+
+
+OVERVIEW TAB
+------------
+  - MRR (Monthly Recurring Revenue)    Monthly income from subscriptions.
+  - ARR (Annual Recurring Revenue)     MRR x 12.
+  - Active Subscribers                 Current paying customers.
+  - Churn Rate                         % of customers who cancelled.
+  - Growth Rate                        How fast revenue is growing.
+  - MRR Chart                          Visual graph of revenue over time.
+
+
+CUSTOMERS TAB
+-------------
+  - A table of all customers with name, email, plan, status, and
+    lifetime value.
+  - At-Risk Customers -- customers who might cancel soon.
+
+
+REVENUE TAB
+-----------
+  - Revenue by Plan     How much each plan contributes.
+  - Recent Events       Subscriptions, upgrades, downgrades, cancellations.
+
+
+SYNC TAB
+--------
+  - Shows when data was last synced from Stripe.
+  - You can trigger a manual sync for fresh data.
+
+  NOTE: The Command Center requires a Stripe integration. If you haven't
+  connected Stripe, go to Settings > Billing.
+
+
+================================================================================
+  9. CRM (CONTACTS & DEALS)
+================================================================================
+
+The CRM helps you manage your relationships and sales pipeline.
+
+
+CONTACTS
+--------
+Contacts are people you do business with -- customers, leads, partners.
+
+  Adding a Contact:
+    1. Go to CRM (or Contacts) in the sidebar.
+    2. Click "New Contact."
+    3. Fill in: Name, Email, Phone, Company, Status, Tags.
+    4. Click Create.
+
+  Finding Contacts:
+    - Search           By name, email, or company.
+    - Filter by Status Lead, Active, Inactive, or Churned.
+    - Filter by Tags   Show contacts with specific tags.
+
+
+DEALS (SALES PIPELINE)
+-----------------------
+Deals represent potential sales. The CRM shows deals as a Kanban board --
+columns are stages, and deals are cards you drag between them.
+
+  Default Pipeline Stages:
+    Lead          Initial interest.
+    Qualified     Confirmed good fit.
+    Proposal      Sent a proposal or quote.
+    Negotiation   Working out final details.
+    Won           Deal closed successfully!
+    Lost          Deal didn't work out.
+
+  Creating a Deal:
+    1. On the CRM page, click "New Deal."
+    2. Fill in: Name, Value ($), Stage, Contact, Notes.
+    3. Click Create.
+
+  Moving a Deal:
+    Drag and drop the deal card from one column to another, or open the
+    deal and change its stage from the dropdown.
+
+
+CRM STATS
+---------
+At the top of the CRM page:
+  - Total Pipeline Value    Sum of all open deals.
+  - Deals Won               How many deals you've closed.
+  - Win Rate                 % of deals that ended in "Won."
+  - Average Deal Value       Average dollar amount of deals.
+
+
+================================================================================
+  10. CONTENT ENGINE
+================================================================================
+
+Create, write, and manage blog posts, social media content, newsletters,
+and more -- with built-in AI assistance.
+
+
+CONTENT TYPES
+-------------
+  - Blog Post        Long-form articles for your website.
+  - Social Post      Short-form content for social media.
+  - Newsletter       Email content for subscribers.
+  - Video Script     Scripts for video content.
+  - Thread           Multi-part social media threads.
+
+
+CREATING CONTENT
+----------------
+  1. Go to Content Engine in the sidebar.
+  2. Click "New Post."
+  3. Choose the content type.
+  4. Enter a title.
+  5. Write in the rich text editor (supports bold, italic, headings,
+     lists, images, code blocks).
+  6. Add tags to categorize your content.
+  7. Select platforms to publish to (Twitter, LinkedIn, Blog, etc.).
+  8. Click Save as Draft or Publish.
+
+
+CONTENT TABS
+------------
+  - Posts       All content in list/grid view with status/type/platform filters.
+  - Calendar    Visual calendar of scheduled content.
+  - Ideas       Capture content ideas for later.
+  - Analytics   Content performance (views, likes, shares, comments).
+
+
+CONTENT STATUSES
+----------------
+  Draft         Work in progress. Not visible.
+  Scheduled     Will auto-publish at a set date/time.
+  Published     Live and visible to the public.
+  Archived      Hidden but kept for records.
+
+
+AI CONTENT GENERATION
+---------------------
+Look for the AI/Sparkles icon when creating or editing content to
+generate ideas, outlines, or full drafts based on your topic.
+
+
+================================================================================
+  11. PROJECTS & TASKS
+================================================================================
+
+Manage your work with projects, tasks, and time tracking.
+
+
+CREATING A PROJECT
+------------------
+  1. Go to Projects in the sidebar.
+  2. Click "New Project."
+  3. Enter a name and optional description.
+  4. Set start date and due date if applicable.
+  5. Click Create.
+
+
+MANAGING TASKS
+--------------
+Each project contains tasks -- individual items of work.
+
+  Creating a Task:
+    1. Select a project (or "All Tasks").
+    2. Click "New Task."
+    3. Fill in: Title, Description, Priority (Low/Medium/High/Urgent),
+       Status (To Do/In Progress/Review/Done), Due Date, Assignee.
+    4. Click Create.
+
+  Task Views:
+    - List View     Tasks in a simple list.
+    - Board View    Tasks as cards on a Kanban board (columns = statuses).
+
+
+TIME TRACKING
+-------------
+Track how much time you spend on tasks:
+  1. Open a task or use the Time Tracker panel.
+  2. Click "Start Timer" to begin.
+  3. Click "Stop" when done.
+  4. The time entry is saved and linked to the task.
+
+You can also add time entries manually by entering start/end times.
+
+
+PROJECT PROGRESS
+----------------
+Each project shows a progress bar based on the percentage of completed
+tasks.
+
+
+================================================================================
+  12. AUTOMATIONS
+================================================================================
+
+Create workflows that run automatically when something happens.
+Example: "When a new contact is added, send them a welcome email."
+
+
+HOW AUTOMATIONS WORK
+--------------------
+Every automation has two parts:
+  1. Trigger    The event that starts it (e.g., "new contact created").
+  2. Actions    What happens next (e.g., "send email," "create task").
+
+
+AVAILABLE TRIGGERS
+------------------
+  Contacts    New contact, Contact updated, Contact tagged
+  Deals       Deal created, Deal stage changed, Deal won, Deal lost
+  Content     Form submitted, Feedback received
+  Projects    Task completed, Task created
+  System      Scheduled, Webhook, Manual
+
+
+AVAILABLE ACTIONS
+-----------------
+  Send Email       Sends an email to a specified address.
+  Create Task      Creates a new task in a project.
+  Update Contact   Changes a contact's information.
+  Add Tag          Adds a tag to a contact.
+  Remove Tag       Removes a tag from a contact.
+  Create Deal      Creates a new deal in your pipeline.
+  Move Deal        Moves a deal to a different stage.
+  Update Deal      Changes a deal's information.
+  Webhook          Sends data to an external URL.
+  Delay            Waits before continuing.
+  Condition        Checks if something is true before continuing.
+
+
+CREATING AN AUTOMATION
+----------------------
+  1. Go to Automations in the sidebar.
+  2. Click "New Automation."
+  3. Give it a name and optional description.
+  4. Choose a trigger by clicking one of the trigger cards.
+  5. Configure the trigger settings.
+  6. Add one or more actions by clicking "Add Action."
+  7. Configure each action's settings.
+  8. Optionally set a daily run limit and cooldown period.
+  9. Click "Create Automation."
+
+  NOTE: New automations start as Drafts. Change status to "Active"
+  for them to run automatically.
+
+
+AUTOMATION STATUSES
+-------------------
+  Draft       Still being set up. Will not run.
+  Active      Running. Will trigger when the event occurs.
+  Paused      Temporarily stopped. Can be reactivated.
+  Archived    Permanently stopped and hidden.
+
+
+RUNNING MANUALLY
+----------------
+Test any automation by clicking "Run Now" on its detail page.
+
+
+VIEWING RUN HISTORY
+-------------------
+Click "View Runs" on any automation to see every time it ran:
+  - Status            Completed, Failed, Running, Pending, or Cancelled.
+  - Duration          How long it took.
+  - Actions Executed  How many actions ran successfully.
+  - Actions Failed    How many had errors.
+  - Logs              Step-by-step log of what happened.
+
+
+================================================================================
+  13. AI ADVISOR
+================================================================================
+
+The AI Advisor is your built-in business consultant. Chat with it to
+get advice on strategy, marketing, product decisions, and more.
+
+
+STARTING A CONVERSATION
+-----------------------
+  1. Go to AI Advisor in the sidebar.
+  2. Click "New Conversation."
+  3. Choose a topic (Growth, Marketing, Product, Sales, Operations,
+     Finance, or General).
+  4. Type your question or describe your situation.
+  5. The AI responds with tailored advice.
+
+
+CONVERSATION HISTORY
+--------------------
+All conversations are saved. Return to them anytime from the list.
+Filter by topic to find specific conversations.
+
+  TIP: Be specific for better advice. Instead of "How do I grow?",
+  try "I have a B2B SaaS with 50 customers at $49/month. What are
+  the top 3 strategies to reach $10k MRR?"
+
+
+================================================================================
+  14. ANALYTICS
+================================================================================
+
+Track website traffic, user behavior, and conversion metrics.
+
+
+OVERVIEW
+--------
+  - Total Visitors              Unique people who visited.
+  - Page Views                  Total pages viewed.
+  - Bounce Rate                 % who left after one page.
+  - Average Session Duration    How long visitors stay.
+  - Visitor Chart               Traffic over time.
+
+
+TRAFFIC
+-------
+  - Top Pages         Which pages get the most visits.
+  - Top Referrers     Where visitors come from (Google, Twitter, etc.).
+
+
+ENGAGEMENT
+----------
+  - Device Breakdown     Desktop vs. Mobile vs. Tablet.
+  - Geographic Breakdown Which countries visitors are from.
+
+
+CONVERSIONS
+-----------
+  - Conversion tracking   Measure desired actions.
+  - Goal tracking         Set and track specific goals.
+
+
+TIME PERIODS
+------------
+Use the dropdown to change the range: Today, Last 7 Days, Last 30 Days,
+Last 90 Days, or Last Year.
+
+
+EXPORTING DATA
+--------------
+Click the Download button to export analytics data for spreadsheets
+or reports.
+
+
+================================================================================
+  15. SETTINGS
+================================================================================
+
+Access from the "Settings" link in the sidebar or the user menu.
+
+
+PROFILE SETTINGS
+----------------
+  - Full Name        Your display name.
+  - Avatar           Upload a profile photo.
+  - Email            Your login email (read-only).
+
+
+ACCOUNT SETTINGS
+----------------
+  - Change Password  Update your login password.
+  - Delete Account   Permanently remove your account and all data.
+
+
+WORKSPACE SETTINGS (Admin/Owner only)
+--------------------------------------
+  - Workspace Name   Change the name.
+  - Workspace Slug   Change the URL identifier.
+  - Logo             Upload a workspace logo.
+  - Team Members     View and manage members.
+
+
+BILLING (Owner only)
+--------------------
+  - Current Plan             See which plan you're on.
+  - Manage Subscription      Opens Stripe portal to update payment,
+                             change plans, or cancel.
+
+
+API KEYS
+--------
+Generate API keys for external integrations. Keep these secret --
+anyone with your key can access your data.
+
+
+EXPORT
+------
+Export all data (contacts, deals, content, etc.) in CSV or JSON format.
+Useful for backups or migration.
+
+
+================================================================================
+  16. ROLES & PERMISSIONS
+================================================================================
+
+  +------------------------------------------+--------+--------+-------+-------+
+  | Feature                                  | Viewer | Editor | Admin | Owner |
+  +------------------------------------------+--------+--------+-------+-------+
+  | View contacts, deals, content, projects, |  Yes   |  Yes   |  Yes  |  Yes  |
+  | automations, feedback, analytics         |        |        |       |       |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Create and edit contacts, deals, content,|  No    |  Yes   |  Yes  |  Yes  |
+  | projects, automations                    |        |        |       |       |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Delete contacts, deals, content, projects|  No    |  No    |  Yes  |  Yes  |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Delete automations, feedback             |  No    |  No    |  Yes  |  Yes  |
+  | widgets/submissions                      |        |        |       |       |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Manage workspace settings                |  No    |  No    |  Yes  |  Yes  |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Invite and manage team members           |  No    |  No    |  Yes  |  Yes  |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Manage billing and subscriptions         |  No    |  No    |  No   |  Yes  |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Delete workspace                         |  No    |  No    |  No   |  Yes  |
+  +------------------------------------------+--------+--------+-------+-------+
+  | Export data                              |  No    |  No    |  Yes  |  Yes  |
+  +------------------------------------------+--------+--------+-------+-------+
+
+
+================================================================================
+  17. KEYBOARD SHORTCUTS
+================================================================================
+
+  Ctrl+K     Open the Command Menu (quick search & navigation).
+
+The Command Menu lets you quickly jump to any page, search for contacts
+or deals, and perform actions without using the mouse.
+
+
+================================================================================
+  18. FREQUENTLY ASKED QUESTIONS
+================================================================================
+
+Q: How do I switch between light and dark mode?
+A: Click the sun/moon icon in the top-right corner of the header bar.
+
+Q: Can I use this on my phone?
+A: Yes. Solo Founder OS is fully responsive. On mobile, tap the menu
+   icon (three horizontal lines) in the top-left to open the sidebar.
+
+Q: How do I connect Stripe?
+A: Go to Settings > Billing. Your Stripe integration is configured
+   through environment variables by your administrator. Once connected,
+   the Command Center automatically displays your metrics.
+
+Q: Can I have multiple workspaces?
+A: Yes. Create as many as you need. Each workspace is completely
+   separate -- contacts, deals, content, and everything else is
+   isolated per workspace.
+
+Q: How do I delete my account?
+A: Go to Settings > Account, scroll to the bottom, click "Delete
+   Account" and confirm. This is permanent and cannot be undone.
+
+Q: What happens if I forget my password?
+A: On the login page, click "Forgot Password?" Enter your email, and
+   you'll receive a reset link.
+
+Q: How do I embed a feedback widget on my website?
+A: Go to Feedback, create a widget, copy the embed code, and paste it
+   into your website's HTML before the closing </body> tag.
+
+Q: Why is my Command Center empty?
+A: It requires Stripe data. If you haven't connected Stripe or don't
+   have subscriptions yet, metrics show as zero. Data populates
+   automatically once you process payments through Stripe.
+
+Q: How do I make a landing page public?
+A: Create a page, change its status to "Published." It will be live
+   at /p/your-slug.
+
+Q: Can team members see each other's data?
+A: Yes, within the same workspace all members see all data. The role
+   system controls what actions they can take (view vs. edit vs.
+   delete), not what data they see.
+
+Q: How do automations work with webhooks?
+A: When you create a webhook-triggered automation, the system generates
+   a unique webhook URL. External services can send data to this URL
+   to trigger the automation. HMAC-SHA256 signature verification is
+   used for security.
+
+
+================================================================================
+                     END OF USER MANUAL
+================================================================================
+
+  Solo Founder OS -- User Manual v1.0
+  January 2026
+  Everything you need to run your business, in one place.
+
+================================================================================
