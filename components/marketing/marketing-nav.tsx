@@ -10,7 +10,7 @@ const navItems = [
   { name: "Features", href: "#features" },
   { name: "Products", href: "#products" },
   { name: "Pricing", href: "#pricing" },
-  { name: "Testimonials", href: "#testimonials" },
+  { name: "How It Works", href: "#how-it-works" },
 ];
 
 export function MarketingNav() {
