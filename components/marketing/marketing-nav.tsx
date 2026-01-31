@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { FoundersHelmIcon } from "@/components/founders-helm-icon";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,7 @@ export function MarketingNav() {
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/25 group-hover:shadow-orange-500/40 transition-shadow">
-                <Zap className="h-5 w-5 text-white" />
+                <FoundersHelmIcon className="h-5 w-5 text-white" />
               </div>
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
             </div>

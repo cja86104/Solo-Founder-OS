@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  Zap,
   Code2,
   FileText,
   Users,
@@ -24,6 +23,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
+import { FoundersHelmIcon } from "@/components/founders-helm-icon";
 
 const products = [
   {
@@ -174,7 +174,7 @@ export default function HomePage() {
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 text-lg border-stone-300 text-stone-700 hover:bg-white/60 hover:text-stone-900 hover:border-orange-400"
+              className="h-14 px-8 text-lg bg-white/70 border-stone-300 text-stone-700 hover:bg-white hover:text-stone-900 hover:border-orange-400"
               asChild
             >
               <Link href="#products">
@@ -486,7 +486,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full h-12 text-base border-stone-300 text-stone-700 hover:bg-white/60 hover:text-stone-900 hover:border-amber-400"
+                className="w-full h-12 text-base bg-white/70 border-stone-300 text-stone-700 hover:bg-white hover:text-stone-900 hover:border-amber-400"
                 asChild
               >
                 <Link href="/signup">
@@ -540,7 +540,7 @@ export default function HomePage() {
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 text-lg border-stone-300 text-stone-700 hover:bg-white/60 hover:text-stone-900 hover:border-orange-400"
+              className="h-14 px-8 text-lg bg-white/70 border-stone-300 text-stone-700 hover:bg-white hover:text-stone-900 hover:border-orange-400"
               asChild
             >
               <Link href="#products">
@@ -557,8 +557,8 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
-                <Zap className="h-4 w-4 text-white" />
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 flex items-center justify-center">
+                <FoundersHelmIcon className="h-4 w-4 text-white" />
               </div>
               <span className="font-semibold text-stone-900">Founders Helm</span>
             </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import { FoundersHelmIcon } from "@/components/founders-helm-icon";
 
 export const metadata = {
   title: "Privacy Policy - Founders Helm",
@@ -13,8 +13,8 @@ export default function PrivacyPage() {
       <header className="border-b border-stone-200 bg-white/60 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Link href="/" className="inline-flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors mb-6">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
-              <Zap className="h-4 w-4 text-white" />
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 flex items-center justify-center">
+              <FoundersHelmIcon className="h-4 w-4 text-white" />
             </div>
             <span className="font-semibold">Founders Helm</span>
           </Link>

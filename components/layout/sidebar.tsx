@@ -19,6 +19,7 @@ import {
   ChevronRight,
   X,
 } from "lucide-react";
+import { FoundersHelmIcon } from "@/components/founders-helm-icon";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -88,8 +89,8 @@ export function Sidebar({
         {/* Logo */}
         <div className="flex h-16 items-center justify-between px-4 border-b">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-lg">F</span>
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 flex items-center justify-center flex-shrink-0">
+              <FoundersHelmIcon className="h-5 w-5 text-white" />
             </div>
             {!collapsed && (
               <span className="font-semibold text-lg truncate">Founders Helm</span>
