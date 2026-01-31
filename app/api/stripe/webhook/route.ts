@@ -116,12 +116,12 @@ export async function POST(request: NextRequest) {
           break;
         }
 
-        // Downgrade to free
+        // Downgrade to expired (read-only)
         await (supabase
           .from("subscriptions") as any)
           .update({
-            plan: "free",
-            status: "canceled",
+            plan: "expired",
+            status: "expired",
             stripe_subscription_id: null,
             stripe_price_id: null,
             current_period_start: null,

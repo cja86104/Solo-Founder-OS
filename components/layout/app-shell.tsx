@@ -5,6 +5,7 @@ import type { User } from "@supabase/supabase-js";
 import type { Profile, Subscription } from "@/types/database";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
+import { TrialBanner } from "@/components/layout/trial-banner";
 import { cn } from "@/lib/utils";
 
 interface AppShellProps {
@@ -54,6 +55,7 @@ export function AppShell({ children, user, profile, subscription }: AppShellProp
           sidebarCollapsed ? "lg:pl-[70px]" : "lg:pl-[260px]"
         )}
       >
+        <TrialBanner />
         <Header
           user={user}
           profile={profile}

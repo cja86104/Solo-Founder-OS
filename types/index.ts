@@ -11,7 +11,7 @@ export interface UserWithProfile {
     role: "user" | "admin";
   } | null;
   subscription: {
-    plan: "free" | "pro" | "lifetime";
+    plan: "trial" | "expired" | "pro" | "lifetime";
     status: string;
   } | null;
 }

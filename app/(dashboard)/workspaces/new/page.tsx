@@ -111,7 +111,7 @@ export default function NewWorkspacePage() {
     setSlug(sanitized);
   };
 
-  const freeLimits = PLAN_LIMITS.free;
+  const freeLimits = PLAN_LIMITS.trial;
   const isFirstWorkspace = workspaces.length === 0;
 
   return (

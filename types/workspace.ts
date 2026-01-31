@@ -4,7 +4,7 @@
 
 export type WorkspaceRole = 'owner' | 'admin' | 'editor' | 'viewer';
 
-export type WorkspacePlan = 'free' | 'pro' | 'lifetime';
+export type WorkspacePlan = 'trial' | 'expired' | 'pro' | 'lifetime';
 
 export interface WorkspaceSettings {
   theme: 'light' | 'dark' | 'system';
@@ -141,11 +141,18 @@ export const DEFAULT_PERMISSIONS: ProductPermissions = {
 };
 
 export const PLAN_LIMITS: Record<WorkspacePlan, WorkspacePlanLimits> = {
-  free: {
-    landing_pages: 3,
-    contacts: 100,
-    page_views: 1000,
-    vault_items: 5,
+  trial: {
+    landing_pages: -1,
+    contacts: -1,
+    page_views: -1,
+    vault_items: -1,
+    team_members: -1,
+  },
+  expired: {
+    landing_pages: 0,
+    contacts: 0,
+    page_views: 0,
+    vault_items: 0,
     team_members: 0,
   },
   pro: {

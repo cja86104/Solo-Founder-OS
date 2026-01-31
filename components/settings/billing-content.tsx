@@ -24,13 +24,21 @@ const planDetails: Record<string, {
   borderClass: string;
   description: string;
 }> = {
-  free: {
-    name: "Free",
+  trial: {
+    name: "Trial",
     icon: Zap,
-    color: "text-blue-500",
-    badgeClass: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-    borderClass: "border-blue-500/30",
-    description: "Get started with essential tools for your business",
+    color: "text-orange-500",
+    badgeClass: "bg-orange-500/10 text-orange-500 border-orange-500/20",
+    borderClass: "border-orange-500/30",
+    description: "14-day free trial with full access to all features",
+  },
+  expired: {
+    name: "Expired",
+    icon: Zap,
+    color: "text-red-500",
+    badgeClass: "bg-red-500/10 text-red-500 border-red-500/20",
+    borderClass: "border-red-500/30",
+    description: "Your trial has expired — upgrade to regain access",
   },
   pro: {
     name: "Pro",
@@ -51,12 +59,17 @@ const planDetails: Record<string, {
 };
 
 const planFeatures: Record<string, string[]> = {
-  free: [
-    "3 Landing Pages",
-    "100 Contacts",
-    "1,000 Page Views/mo",
-    "5 Vault Items",
-    "Community Support",
+  trial: [
+    "Full Access (14 days)",
+    "Unlimited Landing Pages",
+    "Unlimited Contacts",
+    "Unlimited Vault Items",
+    "All Features Included",
+  ],
+  expired: [
+    "Read-Only Access",
+    "View Existing Data",
+    "Upgrade to Unlock Editing",
   ],
   pro: [
     "Unlimited Landing Pages",
@@ -81,9 +94,9 @@ const planFeatures: Record<string, string[]> = {
 };
 
 export function BillingContent({ subscription }: BillingContentProps) {
-  const currentPlan = subscription?.plan || "free";
-  const details = planDetails[currentPlan] || planDetails.free;
-  const features = planFeatures[currentPlan] || planFeatures.free;
+  const currentPlan = subscription?.plan || "expired";
+  const details = planDetails[currentPlan] || planDetails.expired;
+  const features = planFeatures[currentPlan] || planFeatures.expired;
   const Icon = details.icon;
 
   return (
@@ -95,7 +108,13 @@ export function BillingContent({ subscription }: BillingContentProps) {
             <Icon className={`h-5 w-5 ${details.color}`} />
             {details.name} Plan
             <Badge variant="outline" className={details.badgeClass}>
-              {subscription?.status === "active" ? "Active" : "Inactive"}
+              {subscription?.status === "active"
+                ? "Active"
+                : subscription?.status === "trialing"
+                ? "Trialing"
+                : subscription?.status === "expired"
+                ? "Expired"
+                : "Inactive"}
             </Badge>
           </CardTitle>
           <CardDescription>{details.description}</CardDescription>
@@ -110,10 +129,12 @@ export function BillingContent({ subscription }: BillingContentProps) {
             ))}
           </div>
 
-          {currentPlan === "free" && (
+          {(currentPlan === "trial" || currentPlan === "expired") && (
             <div className="pt-4 border-t">
               <p className="text-sm text-muted-foreground mb-3">
-                Upgrade to Pro to unlock all features and grow your business.
+                {currentPlan === "trial"
+                  ? "Upgrade to Pro or Lifetime to keep full access after your trial ends."
+                  : "Your trial has expired. Upgrade to regain full access."}
               </p>
               <Button asChild>
                 <a href="/settings/billing">View Upgrade Options</a>

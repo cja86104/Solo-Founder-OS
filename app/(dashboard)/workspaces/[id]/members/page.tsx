@@ -229,13 +229,14 @@ export default function WorkspaceMembersPage() {
         </Card>
 
         {/* Plan Limit Warning */}
-        {workspace.plan === 'free' && (
+        {(workspace.plan === 'trial' || workspace.plan === 'expired') && (
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="flex items-center justify-between">
               <span>
-                Free plan includes the owner only. Upgrade to Pro for up to 5 team
-                members.
+                {workspace.plan === 'trial'
+                  ? 'Trial includes the owner only. Upgrade to Pro for up to 5 team members.'
+                  : 'Your trial has expired. Upgrade to Pro for up to 5 team members.'}
               </span>
               <Button size="sm" variant="outline" asChild>
                 <Link href="/settings/billing">Upgrade</Link>

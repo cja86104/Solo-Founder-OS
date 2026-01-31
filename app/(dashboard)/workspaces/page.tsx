@@ -416,12 +416,12 @@ export default function WorkspaceSettingsPage() {
                   <div>
                     <p className="font-medium capitalize">{workspace.plan} Plan</p>
                     <p className="text-sm text-muted-foreground">
-                      {workspace.plan === 'free'
+                      {workspace.plan === 'trial' || workspace.plan === 'expired'
                         ? 'Upgrade to unlock more features'
                         : 'Your current subscription'}
                     </p>
                   </div>
-                  {workspace.plan === 'free' ? (
+                  {workspace.plan === 'trial' || workspace.plan === 'expired' ? (
                     <Button asChild>
                       <Link href="/settings/billing">Upgrade</Link>
                     </Button>

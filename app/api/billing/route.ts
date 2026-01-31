@@ -41,8 +41,8 @@ export async function GET() {
 
     return NextResponse.json({
       subscription: subscription || {
-        plan: 'free',
-        status: 'active',
+        plan: 'expired',
+        status: 'expired',
       },
     });
   } catch (error) {

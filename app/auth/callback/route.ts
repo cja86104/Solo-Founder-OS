@@ -54,11 +54,12 @@ export async function GET(request: NextRequest) {
           console.error("Profile creation error:", profileError);
         }
 
-        // Create starter subscription for new users
+        // Create trial subscription for new users (14-day free trial)
         const { error: subscriptionError } = await (supabase.from("subscriptions") as any).insert({
           user_id: data.user.id,
-          plan: "free",
-          status: "active",
+          plan: "trial",
+          status: "trialing",
+          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
         });
 
         if (subscriptionError) {

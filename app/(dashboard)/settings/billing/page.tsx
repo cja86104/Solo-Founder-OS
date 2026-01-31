@@ -26,21 +26,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PLAN_LIMITS, formatLimit } from '@/types/workspace';
+import { useSubscription } from '@/lib/subscription-context';
 
 const PLANS = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: 0,
-    description: 'For side projects and learning',
-    features: [
-      '3 Landing Pages',
-      '100 Contacts',
-      '1,000 Page Views/mo',
-      '5 Vault Items',
-      'Community Support',
-    ],
-  },
   {
     id: 'pro',
     name: 'Pro',
@@ -77,10 +65,11 @@ const PLANS = [
 export default function BillingSettingsPage() {
   const { currentWorkspace, isLoading: workspaceLoading } = useWorkspace();
   const { canManageBilling } = usePermissions();
+  const { isTrialing, isTrialExpired, trialDaysRemaining } = useSubscription();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  const currentPlan = currentWorkspace?.plan || 'free';
-  const limits = currentWorkspace?.plan_limits || PLAN_LIMITS.free;
+  const currentPlan = currentWorkspace?.plan || 'expired';
+  const limits = currentWorkspace?.plan_limits || PLAN_LIMITS.expired;
 
   const handleUpgrade = async (planId: string) => {
     setIsLoading(planId);
@@ -192,7 +181,7 @@ export default function BillingSettingsPage() {
               </CardDescription>
             </div>
             <Badge
-              variant={currentPlan === 'free' ? 'secondary' : 'default'}
+              variant={currentPlan === 'trial' || currentPlan === 'expired' ? 'secondary' : 'default'}
               className="text-lg px-4 py-1"
             >
               {currentPlan === 'lifetime' && <Crown className="h-4 w-4 mr-1" />}
@@ -233,7 +222,23 @@ export default function BillingSettingsPage() {
             </div>
           </div>
         </CardContent>
-        {currentPlan !== 'free' && (
+        {/* Trial status message */}
+        {isTrialing && (
+          <CardFooter>
+            <p className="text-sm text-muted-foreground">
+              <strong>{trialDaysRemaining} day{trialDaysRemaining !== 1 ? 's' : ''}</strong> remaining in your free trial.
+              You have full access to all features.
+            </p>
+          </CardFooter>
+        )}
+        {isTrialExpired && (
+          <CardFooter>
+            <p className="text-sm text-destructive">
+              Your trial has expired. You are in read-only mode. Upgrade below to regain full access.
+            </p>
+          </CardFooter>
+        )}
+        {(currentPlan === 'pro' || currentPlan === 'lifetime') && (
           <CardFooter>
             <Button
               variant="outline"
@@ -254,14 +259,12 @@ export default function BillingSettingsPage() {
       {/* Available Plans */}
       <div>
         <h2 className="text-xl font-semibold mb-4">
-          {currentPlan === 'free' ? 'Upgrade Your Plan' : 'Available Plans'}
+          {currentPlan === 'trial' || currentPlan === 'expired' ? 'Upgrade Your Plan' : 'Available Plans'}
         </h2>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {PLANS.map((plan) => {
             const isCurrent = currentPlan === plan.id;
-            const isDowngrade =
-              (currentPlan === 'pro' && plan.id === 'free') ||
-              (currentPlan === 'lifetime');
+            const isDowngrade = currentPlan === 'lifetime';
 
             return (
               <Card

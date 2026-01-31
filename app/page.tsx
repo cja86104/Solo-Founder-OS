@@ -20,6 +20,7 @@ import {
   TrendingUp,
   DollarSign,
   CheckCircle2,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
@@ -387,6 +388,121 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="relative py-32">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-orange-100/40 rounded-full blur-[100px] -translate-y-1/2" />
+          <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-amber-100/40 rounded-full blur-[100px] -translate-y-1/2" />
+        </div>
+
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 border border-orange-200 text-orange-700 text-sm font-medium mb-8">
+              <Sparkles className="h-4 w-4" />
+              <span>Simple Pricing</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+              Start Free.{" "}
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+                Upgrade When Ready.
+              </span>
+            </h2>
+            <p className="text-xl text-stone-700 max-w-2xl mx-auto">
+              Get a 14-day free trial with full access. No credit card required.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Pro Plan */}
+            <div className="relative p-8 rounded-2xl bg-white border-2 border-primary shadow-xl shadow-orange-100/50">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-semibold">
+                  Most Popular
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h3 className="text-xl font-bold text-stone-900">Pro</h3>
+              </div>
+              <p className="text-stone-600 text-sm mb-6">For growing businesses</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-stone-900">$29</span>
+                <span className="text-stone-500">/month</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Unlimited Landing Pages",
+                  "10,000 Contacts",
+                  "100,000 Page Views/mo",
+                  "Unlimited Vault Items",
+                  "5 Team Members",
+                  "Priority Support",
+                  "Custom Domain",
+                  "Advanced Analytics",
+                ].map((feature) => (
+                  <li key={feature} className="flex items-center gap-2 text-sm text-stone-700">
+                    <Check className="h-4 w-4 text-orange-500 shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                size="lg"
+                className="w-full h-12 text-base bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500 hover:from-orange-600 hover:via-amber-600 hover:to-orange-600 text-white shadow-lg shadow-orange-500/25"
+                asChild
+              >
+                <Link href="/signup">
+                  Start 14-Day Free Trial
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+
+            {/* Lifetime Plan */}
+            <div className="relative p-8 rounded-2xl bg-white/70 border border-stone-200 hover:border-amber-300 transition-all backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="h-5 w-5 text-amber-500" />
+                <h3 className="text-xl font-bold text-stone-900">Lifetime</h3>
+              </div>
+              <p className="text-stone-600 text-sm mb-6">Pay once, use forever</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-stone-900">$299</span>
+                <span className="text-stone-500">/one-time</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Everything in Pro",
+                  "Unlimited Team Members",
+                  "Unlimited Everything",
+                  "Priority Support Forever",
+                  "All Future Updates",
+                ].map((feature) => (
+                  <li key={feature} className="flex items-center gap-2 text-sm text-stone-700">
+                    <Check className="h-4 w-4 text-amber-500 shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full h-12 text-base border-stone-300 text-stone-700 hover:bg-white/60 hover:text-stone-900 hover:border-amber-400"
+                asChild
+              >
+                <Link href="/signup">
+                  Start 14-Day Free Trial
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-stone-500 mt-8">
+            No credit card required. Cancel anytime.
+          </p>
+        </div>
+      </section>
+
       {/* Ready to Get Started CTA Section */}
       <section className="relative py-32">
         <div className="absolute inset-0">
@@ -455,6 +571,12 @@ export default function HomePage() {
               </Link>
               <Link href="/signup" className="hover:text-stone-900 transition-colors">
                 Sign Up
+              </Link>
+              <Link href="/terms" className="hover:text-stone-900 transition-colors">
+                Terms
+              </Link>
+              <Link href="/privacy" className="hover:text-stone-900 transition-colors">
+                Privacy
               </Link>
             </div>
             <p className="text-sm text-stone-400 flex items-center gap-1">
