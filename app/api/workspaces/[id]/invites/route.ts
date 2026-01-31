@@ -187,7 +187,7 @@ export async function POST(
     if (resend) {
       try {
         await resend.emails.send({
-          from: 'Solo Founder OS <noreply@solofounder.os>',
+          from: 'Founders Helm <noreply@foundershelm.com>',
           to: email,
           subject: `You've been invited to join ${workspace.name}`,
           html: `
@@ -199,7 +199,7 @@ export async function POST(
               </head>
               <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <div style="text-align: center; margin-bottom: 30px;">
-                  <h1 style="color: #000; font-size: 24px; margin: 0;">Solo Founder OS</h1>
+                  <h1 style="color: #000; font-size: 24px; margin: 0;">Founders Helm</h1>
                 </div>
                 
                 <div style="background: #f9fafb; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
@@ -219,7 +219,7 @@ export async function POST(
                 </div>
                 
                 <p style="color: #999; font-size: 12px; text-align: center;">
-                  Solo Founder OS - Your entire business. One dashboard.
+                  Founders Helm - Your entire business. One dashboard.
                 </p>
               </body>
             </html>

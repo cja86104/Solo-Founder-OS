@@ -167,7 +167,7 @@ export default function NewWorkspacePage() {
                 <Label htmlFor="slug">Workspace URL</Label>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground shrink-0">
-                    solofounder.os/
+                    foundershelm.com/
                   </span>
                   <div className="relative flex-1">
                     <Input

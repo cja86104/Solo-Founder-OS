@@ -214,7 +214,7 @@ export default function WorkspaceSettingsPage() {
             <div className="space-y-2">
               <Label>Workspace URL</Label>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>solofounder.os/</span>
+                <span>foundershelm.com/</span>
                 <code className="px-2 py-1 bg-muted rounded">
                   {currentWorkspace.slug}
                 </code>

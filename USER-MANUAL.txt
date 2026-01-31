@@ -1,5 +1,5 @@
 ================================================================================
-                          SOLO FOUNDER OS
+                          FOUNDERS HELM
                          USER MANUAL v1.0
                           January 2026
 ================================================================================
@@ -34,9 +34,9 @@
   1. GETTING STARTED
 ================================================================================
 
-WHAT IS SOLO FOUNDER OS?
+WHAT IS FOUNDERS HELM?
 ------------------------
-Solo Founder OS is an all-in-one business management platform designed for
+Founders Helm is an all-in-one business management platform designed for
 founders, freelancers, and small teams. Instead of paying for 10 different
 tools, you get everything in one place:
 
@@ -54,7 +54,7 @@ tools, you get everything in one place:
 
 CREATING YOUR ACCOUNT
 ---------------------
-  1. Go to the Solo Founder OS website and click "Sign Up."
+  1. Go to the Founders Helm website and click "Sign Up."
   2. Enter your email address and choose a password.
   3. Click "Create Account."
   4. Check your email inbox for a verification link and click it.
@@ -775,7 +775,7 @@ Q: How do I switch between light and dark mode?
 A: Click the sun/moon icon in the top-right corner of the header bar.
 
 Q: Can I use this on my phone?
-A: Yes. Solo Founder OS is fully responsive. On mobile, tap the menu
+A: Yes. Founders Helm is fully responsive. On mobile, tap the menu
    icon (three horizontal lines) in the top-left to open the sidebar.
 
 Q: How do I connect Stripe?
@@ -825,7 +825,7 @@ A: When you create a webhook-triggered automation, the system generates
                      END OF USER MANUAL
 ================================================================================
 
-  Solo Founder OS -- User Manual v1.0
+  Founders Helm -- User Manual v1.0
   January 2026
   Everything you need to run your business, in one place.
 

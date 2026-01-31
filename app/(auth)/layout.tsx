@@ -13,9 +13,9 @@ export default function AuthLayout({
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
           <Link href="/" className="flex items-center gap-2">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">S</span>
+              <span className="text-white font-bold text-xl">F</span>
             </div>
-            <span className="text-2xl font-bold text-white">Solo Founder OS</span>
+            <span className="text-2xl font-bold text-white">Founders Helm</span>
           </Link>
           
           <div className="space-y-6">
@@ -23,7 +23,7 @@ export default function AuthLayout({
               Everything you need to run your business, in one place.
             </h2>
             <p className="text-lg text-white/70">
-              CRM, invoicing, projects, analytics, automation, and more — built specifically for solo founders.
+              CRM, invoicing, projects, analytics, automation, and more — built specifically for founders.
             </p>
           </div>
 
@@ -51,9 +51,9 @@ export default function AuthLayout({
           <div className="lg:hidden mb-8 flex justify-center">
             <Link href="/" className="flex items-center gap-2">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center">
-                <span className="text-white font-bold text-xl">S</span>
+                <span className="text-white font-bold text-xl">F</span>
               </div>
-              <span className="text-2xl font-bold">Solo Founder OS</span>
+              <span className="text-2xl font-bold">Founders Helm</span>
             </Link>
           </div>
           

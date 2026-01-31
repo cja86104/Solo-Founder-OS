@@ -21,7 +21,7 @@ import { Progress } from "@/components/ui/progress";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Your Solo Founder OS dashboard",
+  description: "Your Founders Helm dashboard",
 };
 
 const products = [
@@ -281,7 +281,7 @@ export default async function DashboardPage() {
         <CardHeader>
           <CardTitle>Getting Started</CardTitle>
           <CardDescription>
-            Complete these steps to get the most out of Solo Founder OS
+            Complete these steps to get the most out of Founders Helm
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-        'X-Title': 'Solo Founder OS Content Generator',
+        'X-Title': 'Founders Helm Content Generator',
       },
       body: JSON.stringify({
         model: DEEPSEEK_MODEL,
@@ -109,7 +109,7 @@ function buildSystemPrompt(
   contentType?: string,
   platforms?: string[]
 ): string {
-  const basePrompt = `You are an expert content writer for solo founders and entrepreneurs. You write engaging, authentic content that resonates with audiences.`;
+  const basePrompt = `You are an expert content writer for founders and entrepreneurs. You write engaging, authentic content that resonates with audiences.`;
 
   if (mode === 'ideas') {
     return `${basePrompt}

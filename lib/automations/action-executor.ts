@@ -76,7 +76,7 @@ async function executeSendEmail(config: ActionConfigSendEmail): Promise<void> {
   if (!to) throw new Error('No recipient email address resolved');
 
   const { error } = await resend.emails.send({
-    from: 'Solo Founder OS <noreply@solofounder.os>',
+    from: 'Founders Helm <noreply@foundershelm.com>',
     to,
     subject: config.subject,
     html: config.body,
@@ -263,7 +263,7 @@ async function executeWebhook(
 ): Promise<void> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'User-Agent': 'Solo-Founder-OS-Automations/1.0',
+    'User-Agent': 'Founders-Helm-Automations/1.0',
     ...config.headers,
   };
 

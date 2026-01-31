@@ -3,7 +3,7 @@ import { SignupForm } from "@/components/auth/signup-form";
 
 export const metadata: Metadata = {
   title: "Sign Up",
-  description: "Create your Solo Founder OS account",
+  description: "Create your Founders Helm account",
 };
 
 export default function SignupPage() {

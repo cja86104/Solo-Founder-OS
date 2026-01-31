@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Login to your Solo Founder OS account",
+  description: "Login to your Founders Helm account",
 };
 
 export default function LoginPage() {

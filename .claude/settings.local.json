@@ -32,7 +32,13 @@
       "Bash(npm install:*)",
       "Bash(npx next build:*)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dir:*)",
+      "Bash(npx eslint:*)",
+      "Bash(tree:*)",
+      "Bash(wc:*)",
+      "Bash(git show:*)",
+      "Bash(npx next dev --turbopack)"
     ]
   }
 }

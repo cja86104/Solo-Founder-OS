@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Feedback Types
+// Founders Helm - Feedback Types
 // Embeddable feedback widget system
 // ============================================================================
 

@@ -1,5 +1,5 @@
 -- ============================================================================
--- Solo Founder OS - Complete Database Schema (Open Source)
+-- Founders Helm - Complete Database Schema (Open Source)
 -- 
 -- INSTRUCTIONS:
 -- 1. Go to Supabase Dashboard > SQL Editor

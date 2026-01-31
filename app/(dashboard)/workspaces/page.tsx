@@ -274,7 +274,7 @@ export default function WorkspaceSettingsPage() {
                 <Label htmlFor="slug">Workspace URL</Label>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground shrink-0">
-                    solofounder.os/
+                    foundershelm.com/
                   </span>
                   <Input
                     id="slug"

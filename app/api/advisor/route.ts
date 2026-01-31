@@ -359,7 +359,7 @@ async function getAIResponse(
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-      'X-Title': 'Solo Founder OS AI Advisor',
+      'X-Title': 'Founders Helm AI Advisor',
     },
     body: JSON.stringify({
       model: DEEPSEEK_MODEL,

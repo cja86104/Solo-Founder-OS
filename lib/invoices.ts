@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Invoice Utilities
+// Founders Helm - Invoice Utilities
 // Helper functions for invoice operations
 // ============================================================================
 

@@ -86,7 +86,7 @@ export function SignupForm() {
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
         <p className="text-muted-foreground">
-          Start building your business with Solo Founder OS
+          Start building your business with Founders Helm
         </p>
       </div>
 

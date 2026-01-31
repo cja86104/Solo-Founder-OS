@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Activity & Audit Types
+// Founders Helm - Activity & Audit Types
 // ============================================================================
 
 export type ActorType = 'user' | 'system' | 'api' | 'automation';

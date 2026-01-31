@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Invoice Types
+// Founders Helm - Invoice Types
 // Invoices, Invoice Items, Payments, and Activities
 // ============================================================================
 

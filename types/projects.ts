@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Project Tracker Types
+// Founders Helm - Project Tracker Types
 // Tasks, Projects, and Time Tracking
 // ============================================================================
 

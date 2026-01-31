@@ -1,5 +1,5 @@
 -- ============================================================================
--- Solo Founder OS - Command Center (MRR Tracking) Schema
+-- Founders Helm - Command Center (MRR Tracking) Schema
 -- Syncs with Stripe to track subscriptions, MRR, churn, and customer metrics
 -- ============================================================================
 

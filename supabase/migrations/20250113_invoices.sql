@@ -1,5 +1,5 @@
 -- ============================================================================
--- Solo Founder OS - Invoicing System Migration
+-- Founders Helm - Invoicing System Migration
 -- Invoices, Invoice Items, and Payment Tracking
 -- ============================================================================
 

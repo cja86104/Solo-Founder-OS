@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Contact Types
+// Founders Helm - Contact Types
 // Unified contact system across all products
 // ============================================================================
 

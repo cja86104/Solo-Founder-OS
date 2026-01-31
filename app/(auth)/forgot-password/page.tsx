@@ -3,7 +3,7 @@ import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 
 export const metadata: Metadata = {
   title: "Forgot Password",
-  description: "Reset your Solo Founder OS password",
+  description: "Reset your Founders Helm password",
 };
 
 export default function ForgotPasswordPage() {

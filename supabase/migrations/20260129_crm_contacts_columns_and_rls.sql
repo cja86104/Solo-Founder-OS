@@ -1,5 +1,5 @@
 -- ============================================================================
--- Solo Founder OS - CRM Contacts Columns & RLS Migration
+-- Founders Helm - CRM Contacts Columns & RLS Migration
 -- Adds missing columns to contacts table and enables RLS on CRM tables
 -- ============================================================================
 

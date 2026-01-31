@@ -39,7 +39,7 @@ const navigationItems = [
   { name: "Content Engine", href: "/content", icon: PenTool },
   { name: "Projects", href: "/projects", icon: FolderKanban },
   { name: "AI Advisor", href: "/advisor", icon: Brain },
-  { name: "Analytics", href: "/analytics", icon: LineChart },
+  { name: "Insights", href: "/analytics", icon: LineChart },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

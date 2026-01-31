@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: page.meta_title || page.title,
-    description: page.meta_description || page.description || `${page.title} - Built with Solo Founder OS`,
+    description: page.meta_description || page.description || `${page.title} - Built with Founders Helm`,
     openGraph: {
       title: page.meta_title || page.title,
       description: page.meta_description || page.description || undefined,

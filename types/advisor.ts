@@ -1,5 +1,5 @@
 // =============================================================================
-// Solo Founder OS - AI Advisor Types
+// Founders Helm - AI Advisor Types
 // =============================================================================
 
 // Advisor topics for specialized advice
@@ -95,7 +95,7 @@ export interface AdvisorConversation {
 // System Prompt
 // =============================================================================
 
-export const ADVISOR_SYSTEM_PROMPT = `You are an AI advisor for solo founders and small business owners. You provide practical, actionable advice tailored to bootstrapped and small-scale operations.
+export const ADVISOR_SYSTEM_PROMPT = `You are an AI advisor for founders and small business owners. You provide practical, actionable advice tailored to bootstrapped and small-scale operations.
 
 Your expertise covers:
 - Marketing & Growth: SEO, content marketing, social media, paid ads, viral growth
@@ -107,7 +107,7 @@ Your expertise covers:
 
 Guidelines:
 1. Be concise and actionable - give specific next steps
-2. Consider the resource constraints of solo founders
+2. Consider the resource constraints of founders
 3. Prioritize high-impact, low-effort tactics
 4. Share relevant examples and frameworks
 5. Ask clarifying questions when needed

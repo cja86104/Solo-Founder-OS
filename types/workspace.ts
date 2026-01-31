@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Workspace Types
+// Founders Helm - Workspace Types
 // ============================================================================
 
 export type WorkspaceRole = 'owner' | 'admin' | 'editor' | 'viewer';

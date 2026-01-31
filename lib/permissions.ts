@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Permissions System
+// Founders Helm - Permissions System
 // Centralized permission checking and role-based access control
 // ============================================================================
 
@@ -403,8 +403,8 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     permissions: ['advisor.view', 'advisor.chat'],
   },
   {
-    name: 'Analytics',
-    description: 'View site analytics',
+    name: 'Insights',
+    description: 'View business insights',
     permissions: ['analytics.view'],
   },
   {
@@ -440,7 +440,7 @@ export function getProductLabel(product: ProductKey): string {
     projects: 'Project Tracker',
     command: 'Command Center',
     advisor: 'AI Advisor',
-    analytics: 'Analytics',
+    analytics: 'Insights',
     automations: 'Automations',
   };
   return labels[product];

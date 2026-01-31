@@ -19,11 +19,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Solo Founder OS",
-    template: "%s | Solo Founder OS",
+    default: "Founders Helm",
+    template: "%s | Founders Helm",
   },
   description:
-    "Your entire business. One dashboard. 10 integrated tools for solo founders.",
+    "Your entire business. One dashboard. 10 integrated tools for founders.",
   keywords: [
     "SaaS",
     "founder tools",
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     "analytics",
     "project management",
   ],
-  authors: [{ name: "Solo Founder OS" }],
-  creator: "Solo Founder OS",
+  authors: [{ name: "Founders Helm" }],
+  creator: "Founders Helm",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),
@@ -43,16 +43,16 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "Solo Founder OS",
+    title: "Founders Helm",
     description:
-      "Your entire business. One dashboard. 10 integrated tools for solo founders.",
-    siteName: "Solo Founder OS",
+      "Your entire business. One dashboard. 10 integrated tools for founders.",
+    siteName: "Founders Helm",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Solo Founder OS",
+    title: "Founders Helm",
     description:
-      "Your entire business. One dashboard. 10 integrated tools for solo founders.",
+      "Your entire business. One dashboard. 10 integrated tools for founders.",
   },
   robots: {
     index: true,

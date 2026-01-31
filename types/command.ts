@@ -1,5 +1,5 @@
 // ============================================================================
-// Solo Founder OS - Command Center Types
+// Founders Helm - Command Center Types
 // MRR Tracking, Customer Management, and Revenue Metrics
 // ============================================================================
 

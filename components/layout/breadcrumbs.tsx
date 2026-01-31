@@ -20,7 +20,7 @@ const pathNames: Record<string, string> = {
   content: "Content Engine",
   projects: "Projects",
   advisor: "AI Advisor",
-  analytics: "Analytics",
+  analytics: "Insights",
   settings: "Settings",
   profile: "Profile",
   billing: "Billing",

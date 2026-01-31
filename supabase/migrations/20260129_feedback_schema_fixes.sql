@@ -1,5 +1,5 @@
 -- ============================================================================
--- Solo Founder OS - Feedback Schema Fixes
+-- Founders Helm - Feedback Schema Fixes
 -- Adds missing columns, fixes status types, enables RLS
 -- ============================================================================
 

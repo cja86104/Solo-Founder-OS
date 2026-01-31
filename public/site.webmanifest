@@ -1,7 +1,7 @@
 {
-  "name": "Solo Founder OS",
-  "short_name": "SoloOS",
-  "description": "The all-in-one platform for solo founders",
+  "name": "Founders Helm",
+  "short_name": "FoundersHelm",
+  "description": "The all-in-one platform for founders",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

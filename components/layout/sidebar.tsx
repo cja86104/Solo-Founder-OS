@@ -56,7 +56,7 @@ const navigation = [
       { name: "Projects", href: "/projects", icon: FolderKanban },
       { name: "Automations", href: "/automations", icon: Zap },
       { name: "AI Advisor", href: "/advisor", icon: Brain },
-      { name: "Analytics", href: "/analytics", icon: LineChart },
+      { name: "Insights", href: "/analytics", icon: LineChart },
     ],
   },
   {
@@ -89,10 +89,10 @@ export function Sidebar({
         <div className="flex h-16 items-center justify-between px-4 border-b">
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-lg">S</span>
+              <span className="text-white font-bold text-lg">F</span>
             </div>
             {!collapsed && (
-              <span className="font-semibold text-lg truncate">Solo Founder OS</span>
+              <span className="font-semibold text-lg truncate">Founders Helm</span>
             )}
           </Link>
           {isMobile && onClose && (
