@@ -174,7 +174,7 @@ export default function HomePage() {
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 text-lg bg-white/70 border-stone-300 text-stone-700 hover:bg-white hover:text-stone-900 hover:border-orange-400"
+              className="h-14 px-8 text-lg !bg-white/70 border-stone-300 !text-stone-700 !hover:bg-white hover:text-stone-900 hover:border-orange-400"
               asChild
             >
               <Link href="#products">
@@ -486,7 +486,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full h-12 text-base bg-white/70 border-stone-300 text-stone-700 hover:bg-white hover:text-stone-900 hover:border-amber-400"
+                className="w-full h-12 text-base !bg-white/70 border-stone-300 !text-stone-700 !hover:bg-white hover:text-stone-900 hover:border-amber-400"
                 asChild
               >
                 <Link href="/signup">
@@ -540,7 +540,7 @@ export default function HomePage() {
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 text-lg bg-white/70 border-stone-300 text-stone-700 hover:bg-white hover:text-stone-900 hover:border-orange-400"
+              className="h-14 px-8 text-lg !bg-white/70 border-stone-300 !text-stone-700 !hover:bg-white hover:text-stone-900 hover:border-orange-400"
               asChild
             >
               <Link href="#products">
