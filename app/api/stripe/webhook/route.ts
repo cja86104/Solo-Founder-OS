@@ -202,8 +202,8 @@ export async function POST(request: NextRequest) {
         }
 
         if (stripeCustomerId) {
-          const { data: cmdCustomer } = await (supabase
-            .from('customers') as any)
+          const { data: cmdCustomer } = await (supabase as any)
+            .from('customers')
             .select('workspace_id')
             .eq('stripe_customer_id', stripeCustomerId)
             .single();
