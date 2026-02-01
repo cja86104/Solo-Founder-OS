@@ -72,6 +72,181 @@ export type Database = {
           },
         ]
       }
+      advisor_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_message_at: string | null
+          message_count: number
+          title: string
+          topic: string
+          updated_at: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          message_count?: number
+          title?: string
+          topic?: string
+          updated_at?: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          message_count?: number
+          title?: string
+          topic?: string
+          updated_at?: string | null
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advisor_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_conversations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_conversations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      advisor_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          model: string | null
+          role: string
+          tokens_used: number | null
+          topic: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          model?: string | null
+          role?: string
+          tokens_used?: number | null
+          topic?: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          model?: string | null
+          role?: string
+          tokens_used?: number | null
+          topic?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advisor_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "advisor_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      advisor_suggestions: {
+        Row: {
+          action_steps: Json | null
+          conversation_id: string
+          created_at: string | null
+          description: string
+          effort_score: number | null
+          id: string
+          impact_score: number | null
+          priority: string
+          rationale: string | null
+          status: string
+          title: string
+          topic: string
+          type: string
+          workspace_id: string
+        }
+        Insert: {
+          action_steps?: Json | null
+          conversation_id: string
+          created_at?: string | null
+          description: string
+          effort_score?: number | null
+          id?: string
+          impact_score?: number | null
+          priority?: string
+          rationale?: string | null
+          status?: string
+          title: string
+          topic?: string
+          type?: string
+          workspace_id: string
+        }
+        Update: {
+          action_steps?: Json | null
+          conversation_id?: string
+          created_at?: string | null
+          description?: string
+          effort_score?: number | null
+          id?: string
+          impact_score?: number | null
+          priority?: string
+          rationale?: string | null
+          status?: string
+          title?: string
+          topic?: string
+          type?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advisor_suggestions_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "advisor_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_suggestions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_suggestions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_conversions: {
         Row: {
           attribution_campaign: string | null
@@ -1012,50 +1187,86 @@ export type Database = {
       }
       contacts: {
         Row: {
+          avatar_url: string | null
           company: string | null
           created_at: string | null
+          custom_fields: Json | null
           email: string
+          external_id: string | null
           id: string
           job_title: string | null
           last_contacted_at: string | null
+          last_seen_at: string | null
+          lists: string[] | null
           metadata: Json | null
           name: string | null
           phone: string | null
           source: Database["public"]["Enums"]["contact_source"] | null
+          source_id: string | null
+          source_url: string | null
           status: Database["public"]["Enums"]["contact_status"] | null
+          stripe_customer_id: string | null
           tags: string[] | null
+          total_emails_clicked: number | null
+          total_emails_opened: number | null
+          total_emails_sent: number | null
+          total_visits: number | null
           updated_at: string | null
           workspace_id: string
         }
         Insert: {
+          avatar_url?: string | null
           company?: string | null
           created_at?: string | null
+          custom_fields?: Json | null
           email: string
+          external_id?: string | null
           id?: string
           job_title?: string | null
           last_contacted_at?: string | null
+          last_seen_at?: string | null
+          lists?: string[] | null
           metadata?: Json | null
           name?: string | null
           phone?: string | null
           source?: Database["public"]["Enums"]["contact_source"] | null
+          source_id?: string | null
+          source_url?: string | null
           status?: Database["public"]["Enums"]["contact_status"] | null
+          stripe_customer_id?: string | null
           tags?: string[] | null
+          total_emails_clicked?: number | null
+          total_emails_opened?: number | null
+          total_emails_sent?: number | null
+          total_visits?: number | null
           updated_at?: string | null
           workspace_id: string
         }
         Update: {
+          avatar_url?: string | null
           company?: string | null
           created_at?: string | null
+          custom_fields?: Json | null
           email?: string
+          external_id?: string | null
           id?: string
           job_title?: string | null
           last_contacted_at?: string | null
+          last_seen_at?: string | null
+          lists?: string[] | null
           metadata?: Json | null
           name?: string | null
           phone?: string | null
           source?: Database["public"]["Enums"]["contact_source"] | null
+          source_id?: string | null
+          source_url?: string | null
           status?: Database["public"]["Enums"]["contact_status"] | null
+          stripe_customer_id?: string | null
           tags?: string[] | null
+          total_emails_clicked?: number | null
+          total_emails_opened?: number | null
+          total_emails_sent?: number | null
+          total_visits?: number | null
           updated_at?: string | null
           workspace_id?: string
         }
@@ -1076,16 +1287,62 @@ export type Database = {
           },
         ]
       }
+      content_engagement: {
+        Row: {
+          comments: number | null
+          created_at: string | null
+          id: string
+          likes: number | null
+          post_id: string
+          shares: number | null
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          comments?: number | null
+          created_at?: string | null
+          id?: string
+          likes?: number | null
+          post_id: string
+          shares?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          comments?: number | null
+          created_at?: string | null
+          id?: string
+          likes?: number | null
+          post_id?: string
+          shares?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_engagement_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "content_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_posts: {
         Row: {
           ai_generated: boolean | null
+          category: string | null
           content: string
+          content_type: string | null
           created_at: string | null
           id: string
+          media_urls: string[] | null
+          meta_description: string | null
           metadata: Json | null
           platforms: Database["public"]["Enums"]["post_platform"][] | null
           published_at: string | null
           scheduled_at: string | null
+          slug: string | null
           status: Database["public"]["Enums"]["post_status"] | null
           tags: string[] | null
           title: string | null
@@ -1095,13 +1352,18 @@ export type Database = {
         }
         Insert: {
           ai_generated?: boolean | null
+          category?: string | null
           content: string
+          content_type?: string | null
           created_at?: string | null
           id?: string
+          media_urls?: string[] | null
+          meta_description?: string | null
           metadata?: Json | null
           platforms?: Database["public"]["Enums"]["post_platform"][] | null
           published_at?: string | null
           scheduled_at?: string | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["post_status"] | null
           tags?: string[] | null
           title?: string | null
@@ -1111,13 +1373,18 @@ export type Database = {
         }
         Update: {
           ai_generated?: boolean | null
+          category?: string | null
           content?: string
+          content_type?: string | null
           created_at?: string | null
           id?: string
+          media_urls?: string[] | null
+          meta_description?: string | null
           metadata?: Json | null
           platforms?: Database["public"]["Enums"]["post_platform"][] | null
           published_at?: string | null
           scheduled_at?: string | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["post_status"] | null
           tags?: string[] | null
           title?: string | null
@@ -1142,6 +1409,135 @@ export type Database = {
           },
           {
             foreignKeyName: "content_posts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      "content-media": {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          canceled_at: string | null
+          churn_risk_score: number | null
+          company: string | null
+          created_at: string | null
+          currency: string | null
+          days_until_renewal: number | null
+          email: string
+          failed_payment_count: number | null
+          id: string
+          last_invoice_date: string | null
+          last_payment_date: string | null
+          lifetime_value: number | null
+          metadata: Json | null
+          mrr: number | null
+          name: string | null
+          payment_count: number | null
+          plan_id: string | null
+          plan_name: string | null
+          status: Database["public"]["Enums"]["customer_status"] | null
+          stripe_customer_id: string
+          stripe_subscription_id: string | null
+          subscription_end_date: string | null
+          subscription_start_date: string | null
+          subscription_status:
+            | Database["public"]["Enums"]["subscription_status"]
+            | null
+          synced_at: string | null
+          trial_end_date: string | null
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          canceled_at?: string | null
+          churn_risk_score?: number | null
+          company?: string | null
+          created_at?: string | null
+          currency?: string | null
+          days_until_renewal?: number | null
+          email: string
+          failed_payment_count?: number | null
+          id?: string
+          last_invoice_date?: string | null
+          last_payment_date?: string | null
+          lifetime_value?: number | null
+          metadata?: Json | null
+          mrr?: number | null
+          name?: string | null
+          payment_count?: number | null
+          plan_id?: string | null
+          plan_name?: string | null
+          status?: Database["public"]["Enums"]["customer_status"] | null
+          stripe_customer_id: string
+          stripe_subscription_id?: string | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_status?:
+            | Database["public"]["Enums"]["subscription_status"]
+            | null
+          synced_at?: string | null
+          trial_end_date?: string | null
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          canceled_at?: string | null
+          churn_risk_score?: number | null
+          company?: string | null
+          created_at?: string | null
+          currency?: string | null
+          days_until_renewal?: number | null
+          email?: string
+          failed_payment_count?: number | null
+          id?: string
+          last_invoice_date?: string | null
+          last_payment_date?: string | null
+          lifetime_value?: number | null
+          metadata?: Json | null
+          mrr?: number | null
+          name?: string | null
+          payment_count?: number | null
+          plan_id?: string | null
+          plan_name?: string | null
+          status?: Database["public"]["Enums"]["customer_status"] | null
+          stripe_customer_id?: string
+          stripe_subscription_id?: string | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_status?:
+            | Database["public"]["Enums"]["subscription_status"]
+            | null
+          synced_at?: string | null
+          trial_end_date?: string | null
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -1356,18 +1752,26 @@ export type Database = {
       }
       feedback_submissions: {
         Row: {
+          assigned_to: string | null
+          attachment_urls: string[] | null
+          contact_id: string | null
           content: string
           created_at: string | null
           email: string | null
+          emoji_rating: string | null
           id: string
+          internal_notes: string | null
           ip_address: unknown
           metadata: Json | null
           name: string | null
           page_url: string | null
           priority: Database["public"]["Enums"]["task_priority"] | null
-          status: Database["public"]["Enums"]["feedback_status"] | null
+          rating: number | null
+          resolved_at: string | null
+          screen_size: string | null
+          status: string | null
           title: string | null
-          type: Database["public"]["Enums"]["feedback_type"] | null
+          type: string | null
           updated_at: string | null
           user_agent: string | null
           votes: number | null
@@ -1375,18 +1779,26 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          assigned_to?: string | null
+          attachment_urls?: string[] | null
+          contact_id?: string | null
           content: string
           created_at?: string | null
           email?: string | null
+          emoji_rating?: string | null
           id?: string
+          internal_notes?: string | null
           ip_address?: unknown
           metadata?: Json | null
           name?: string | null
           page_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
-          status?: Database["public"]["Enums"]["feedback_status"] | null
+          rating?: number | null
+          resolved_at?: string | null
+          screen_size?: string | null
+          status?: string | null
           title?: string | null
-          type?: Database["public"]["Enums"]["feedback_type"] | null
+          type?: string | null
           updated_at?: string | null
           user_agent?: string | null
           votes?: number | null
@@ -1394,18 +1806,26 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          assigned_to?: string | null
+          attachment_urls?: string[] | null
+          contact_id?: string | null
           content?: string
           created_at?: string | null
           email?: string | null
+          emoji_rating?: string | null
           id?: string
+          internal_notes?: string | null
           ip_address?: unknown
           metadata?: Json | null
           name?: string | null
           page_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
-          status?: Database["public"]["Enums"]["feedback_status"] | null
+          rating?: number | null
+          resolved_at?: string | null
+          screen_size?: string | null
+          status?: string | null
           title?: string | null
-          type?: Database["public"]["Enums"]["feedback_type"] | null
+          type?: string | null
           updated_at?: string | null
           user_agent?: string | null
           votes?: number | null
@@ -1413,6 +1833,20 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "feedback_submissions_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_submissions_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "feedback_submissions_widget_id_fkey"
             columns: ["widget_id"]
@@ -1438,40 +1872,73 @@ export type Database = {
       }
       feedback_widgets: {
         Row: {
+          allow_attachments: boolean | null
+          categories: string[] | null
           created_at: string | null
           description: string | null
           domains: string[] | null
           id: string
           is_active: boolean | null
           name: string
+          placeholder: string | null
+          position: string | null
+          primary_color: string | null
+          require_email: boolean | null
           settings: Json | null
+          show_emoji_rating: boolean | null
+          slug: string | null
           submission_count: number | null
+          success_message: string | null
+          theme: string | null
+          title: string | null
           updated_at: string | null
           user_id: string
           workspace_id: string
         }
         Insert: {
+          allow_attachments?: boolean | null
+          categories?: string[] | null
           created_at?: string | null
           description?: string | null
           domains?: string[] | null
           id?: string
           is_active?: boolean | null
           name: string
+          placeholder?: string | null
+          position?: string | null
+          primary_color?: string | null
+          require_email?: boolean | null
           settings?: Json | null
+          show_emoji_rating?: boolean | null
+          slug?: string | null
           submission_count?: number | null
+          success_message?: string | null
+          theme?: string | null
+          title?: string | null
           updated_at?: string | null
           user_id: string
           workspace_id: string
         }
         Update: {
+          allow_attachments?: boolean | null
+          categories?: string[] | null
           created_at?: string | null
           description?: string | null
           domains?: string[] | null
           id?: string
           is_active?: boolean | null
           name?: string
+          placeholder?: string | null
+          position?: string | null
+          primary_color?: string | null
+          require_email?: boolean | null
           settings?: Json | null
+          show_emoji_rating?: boolean | null
+          slug?: string | null
           submission_count?: number | null
+          success_message?: string | null
+          theme?: string | null
+          title?: string | null
           updated_at?: string | null
           user_id?: string
           workspace_id?: string
@@ -2129,6 +2596,145 @@ export type Database = {
           },
         ]
       }
+      mrr_history: {
+        Row: {
+          arr: number | null
+          churn_rate: number | null
+          churned_customers: number | null
+          created_at: string | null
+          growth_rate: number | null
+          id: string
+          mrr: number
+          mrr_churned: number | null
+          mrr_contraction: number | null
+          mrr_expansion: number | null
+          mrr_new: number | null
+          mrr_reactivation: number | null
+          net_mrr_change: number | null
+          new_customers: number | null
+          period_date: string
+          period_type: Database["public"]["Enums"]["metric_period"] | null
+          reactivated_customers: number | null
+          total_customers: number | null
+          workspace_id: string
+        }
+        Insert: {
+          arr?: number | null
+          churn_rate?: number | null
+          churned_customers?: number | null
+          created_at?: string | null
+          growth_rate?: number | null
+          id?: string
+          mrr?: number
+          mrr_churned?: number | null
+          mrr_contraction?: number | null
+          mrr_expansion?: number | null
+          mrr_new?: number | null
+          mrr_reactivation?: number | null
+          net_mrr_change?: number | null
+          new_customers?: number | null
+          period_date: string
+          period_type?: Database["public"]["Enums"]["metric_period"] | null
+          reactivated_customers?: number | null
+          total_customers?: number | null
+          workspace_id: string
+        }
+        Update: {
+          arr?: number | null
+          churn_rate?: number | null
+          churned_customers?: number | null
+          created_at?: string | null
+          growth_rate?: number | null
+          id?: string
+          mrr?: number
+          mrr_churned?: number | null
+          mrr_contraction?: number | null
+          mrr_expansion?: number | null
+          mrr_new?: number | null
+          mrr_reactivation?: number | null
+          net_mrr_change?: number | null
+          new_customers?: number | null
+          period_date?: string
+          period_type?: Database["public"]["Enums"]["metric_period"] | null
+          reactivated_customers?: number | null
+          total_customers?: number | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mrr_history_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrr_history_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          link: string | null
+          message: string | null
+          title: string
+          type: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string | null
+          title: string
+          type?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pipeline_stages: {
         Row: {
           color: string | null
@@ -2295,28 +2901,319 @@ export type Database = {
           },
         ]
       }
+      revenue_events: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          customer_id: string | null
+          description: string | null
+          event_date: string | null
+          event_type: string
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          mrr_impact: number | null
+          plan_from: string | null
+          plan_to: string | null
+          status: string | null
+          stripe_charge_id: string | null
+          stripe_event_id: string | null
+          stripe_invoice_id: string | null
+          subscription_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          customer_id?: string | null
+          description?: string | null
+          event_date?: string | null
+          event_type: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          mrr_impact?: number | null
+          plan_from?: string | null
+          plan_to?: string | null
+          status?: string | null
+          stripe_charge_id?: string | null
+          stripe_event_id?: string | null
+          stripe_invoice_id?: string | null
+          subscription_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          customer_id?: string | null
+          description?: string | null
+          event_date?: string | null
+          event_type?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          mrr_impact?: number | null
+          plan_from?: string | null
+          plan_to?: string | null
+          status?: string | null
+          stripe_charge_id?: string | null
+          stripe_event_id?: string | null
+          stripe_invoice_id?: string | null
+          subscription_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "revenue_events_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "revenue_events_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "stripe_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "revenue_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "revenue_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_subscriptions: {
+        Row: {
+          amount: number
+          billing_cycle_anchor: string | null
+          canceled_at: string | null
+          collection_method: string | null
+          created_at: string | null
+          currency: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          customer_id: string | null
+          ended_at: string | null
+          id: string
+          interval: string | null
+          interval_count: number | null
+          metadata: Json | null
+          mrr: number
+          plan_id: string | null
+          plan_name: string | null
+          price_id: string | null
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          synced_at: string | null
+          trial_end: string | null
+          trial_start: string | null
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          amount: number
+          billing_cycle_anchor?: string | null
+          canceled_at?: string | null
+          collection_method?: string | null
+          created_at?: string | null
+          currency?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          customer_id?: string | null
+          ended_at?: string | null
+          id?: string
+          interval?: string | null
+          interval_count?: number | null
+          metadata?: Json | null
+          mrr: number
+          plan_id?: string | null
+          plan_name?: string | null
+          price_id?: string | null
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          synced_at?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          amount?: number
+          billing_cycle_anchor?: string | null
+          canceled_at?: string | null
+          collection_method?: string | null
+          created_at?: string | null
+          currency?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          customer_id?: string | null
+          ended_at?: string | null
+          id?: string
+          interval?: string | null
+          interval_count?: number | null
+          metadata?: Json | null
+          mrr?: number
+          plan_id?: string | null
+          plan_name?: string | null
+          price_id?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          synced_at?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stripe_subscriptions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stripe_subscriptions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_sync_log: {
+        Row: {
+          completed_at: string | null
+          duration_ms: number | null
+          error_details: Json | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          records_created: number | null
+          records_failed: number | null
+          records_synced: number | null
+          records_updated: number | null
+          started_at: string | null
+          status: string
+          sync_type: string
+          triggered_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          error_details?: Json | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          records_created?: number | null
+          records_failed?: number | null
+          records_synced?: number | null
+          records_updated?: number | null
+          started_at?: string | null
+          status: string
+          sync_type: string
+          triggered_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          error_details?: Json | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          records_created?: number | null
+          records_failed?: number | null
+          records_synced?: number | null
+          records_updated?: number | null
+          started_at?: string | null
+          status?: string
+          sync_type?: string
+          triggered_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_sync_log_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stripe_sync_log_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
+          cancel_at_period_end: boolean | null
           created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
           id: string
           plan: string | null
           status: string | null
+          stripe_customer_id: string | null
+          stripe_price_id: string | null
+          stripe_subscription_id: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          cancel_at_period_end?: boolean | null
           created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
           id?: string
           plan?: string | null
           status?: string | null
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          cancel_at_period_end?: boolean | null
           created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
           id?: string
           plan?: string | null
           status?: string | null
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -2781,6 +3678,23 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_churn_risk: {
+        Args: {
+          p_days_until_renewal: number
+          p_failed_payment_count: number
+          p_last_payment_date: string
+          p_subscription_status: Database["public"]["Enums"]["subscription_status"]
+        }
+        Returns: number
+      }
+      calculate_mrr: {
+        Args: {
+          p_amount: number
+          p_interval: string
+          p_interval_count?: number
+        }
+        Returns: number
+      }
       calculate_next_cron_run: {
         Args: { cron_expr: string; from_time?: string; tz?: string }
         Returns: string
@@ -2789,6 +3703,19 @@ export type Database = {
       generate_invoice_number: {
         Args: { p_workspace_id: string }
         Returns: string
+      }
+      get_workspace_mrr_summary: {
+        Args: { p_workspace_id: string }
+        Returns: {
+          active_customers: number
+          at_risk_customers: number
+          avg_mrr_per_customer: number
+          churn_rate: number
+          churned_customers: number
+          total_arr: number
+          total_customers: number
+          total_mrr: number
+        }[]
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
@@ -2836,6 +3763,7 @@ export type Database = {
         | "api"
         | "integration"
       contact_status: "active" | "inactive" | "archived"
+      customer_status: "active" | "churned" | "at_risk" | "new"
       deal_activity_type:
         | "note"
         | "call"
@@ -2862,6 +3790,7 @@ export type Database = {
         | "overdue"
         | "cancelled"
         | "refunded"
+      metric_period: "daily" | "weekly" | "monthly" | "quarterly" | "yearly"
       page_status: "draft" | "published" | "archived"
       payment_method:
         | "stripe"
@@ -2879,6 +3808,15 @@ export type Database = {
         | "blog"
       post_status: "draft" | "scheduled" | "published" | "archived"
       project_status: "active" | "on_hold" | "completed" | "archived"
+      subscription_status:
+        | "active"
+        | "past_due"
+        | "canceled"
+        | "incomplete"
+        | "incomplete_expired"
+        | "trialing"
+        | "unpaid"
+        | "paused"
       task_priority: "low" | "medium" | "high" | "urgent"
       task_status: "todo" | "in_progress" | "review" | "done"
       user_role: "user" | "admin"
@@ -3057,6 +3995,7 @@ export const Constants = {
         "integration",
       ],
       contact_status: ["active", "inactive", "archived"],
+      customer_status: ["active", "churned", "at_risk", "new"],
       deal_activity_type: [
         "note",
         "call",
@@ -3086,6 +4025,7 @@ export const Constants = {
         "cancelled",
         "refunded",
       ],
+      metric_period: ["daily", "weekly", "monthly", "quarterly", "yearly"],
       page_status: ["draft", "published", "archived"],
       payment_method: [
         "stripe",
@@ -3105,6 +4045,16 @@ export const Constants = {
       ],
       post_status: ["draft", "scheduled", "published", "archived"],
       project_status: ["active", "on_hold", "completed", "archived"],
+      subscription_status: [
+        "active",
+        "past_due",
+        "canceled",
+        "incomplete",
+        "incomplete_expired",
+        "trialing",
+        "unpaid",
+        "paused",
+      ],
       task_priority: ["low", "medium", "high", "urgent"],
       task_status: ["todo", "in_progress", "review", "done"],
       user_role: ["user", "admin"],
