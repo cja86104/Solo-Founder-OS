@@ -13,9 +13,11 @@ import {
   Workspace,
   WorkspaceWithRole,
   WorkspaceRole,
+  WorkspacePlan,
   ProductPermissions,
   CreateWorkspaceInput,
   UpdateWorkspaceInput,
+  PLAN_LIMITS,
   generateSlug,
   canManageMembers,
   canManageSettings,
@@ -23,6 +25,7 @@ import {
   canDeleteWorkspace,
   canEditContent,
 } from '@/types/workspace';
+import type { Subscription } from '@/types/database';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -77,9 +80,10 @@ function setStoredWorkspaceId(id: string): void {
 
 interface WorkspaceProviderProps {
   children: ReactNode;
+  subscription?: Subscription | null;
 }
 
-export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
+export function WorkspaceProvider({ children, subscription }: WorkspaceProviderProps) {
   const [workspaces, setWorkspaces] = useState<WorkspaceWithRole[]>([]);
   const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceWithRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,7 +116,18 @@ export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
 
       if (fetchError) throw fetchError;
 
-      const workspaceList = (data || []) as WorkspaceWithRole[];
+      // Merge subscription plan data into workspace objects since the
+      // workspaces table doesn't store plan info — it lives on subscriptions.
+      const plan = (subscription?.plan as WorkspacePlan) || 'trial';
+      const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.trial;
+
+      const workspaceList = ((data || []) as WorkspaceWithRole[]).map((w) => ({
+        ...w,
+        plan,
+        plan_limits: planLimits,
+        stripe_customer_id: w.stripe_customer_id ?? subscription?.stripe_customer_id ?? null,
+        stripe_subscription_id: w.stripe_subscription_id ?? subscription?.stripe_subscription_id ?? null,
+      }));
       setWorkspaces(workspaceList);
 
       // Restore previously selected workspace or use first one
@@ -133,7 +148,7 @@ export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [supabase]);
+  }, [supabase, subscription]);
 
   // Initial fetch
   useEffect(() => {

@@ -121,7 +121,11 @@ const ROLE_PERMISSIONS: Record<Role, string[]> = {
 
 export function usePermissions(): UsePermissionsReturn {
   const { currentWorkspace } = useWorkspace();
-  const role = (currentWorkspace?.role as Role) || null;
+  // Default to 'owner' when a workspace is loaded but role is missing
+  // (e.g. workspace creator without a workspace_members row yet)
+  const role: Role | null = currentWorkspace
+    ? (currentWorkspace.role as Role) || 'owner'
+    : null;
 
   const isOwner = role === 'owner';
   const isAdmin = role === 'admin';

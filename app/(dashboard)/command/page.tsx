@@ -381,6 +381,7 @@ export default function CommandCenterPage() {
             onViewCustomer={handleViewCustomer}
             onEmailCustomer={handleEmailCustomer}
             onViewInStripe={handleViewInStripe}
+            onSync={() => handleSync('customers')}
             onRefresh={fetchData}
             pageSize={15}
           />

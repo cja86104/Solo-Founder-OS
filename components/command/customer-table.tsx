@@ -79,6 +79,7 @@ export interface CustomerTableProps {
   onEmailCustomer?: (customer: Customer) => void;
   onViewInStripe?: (customer: Customer) => void;
   onRefresh?: () => void;
+  onSync?: () => void;
   onExport?: () => void;
   selectable?: boolean;
   selectedIds?: string[];
@@ -338,6 +339,7 @@ export function CustomerTable({
   onEmailCustomer,
   onViewInStripe,
   onRefresh,
+  onSync,
   onExport,
   selectable = false,
   selectedIds = [],
@@ -446,8 +448,8 @@ export function CustomerTable({
           <p className="text-sm text-muted-foreground mb-4">
             Sync your Stripe account to import customers.
           </p>
-          {onRefresh && (
-            <Button onClick={onRefresh}>
+          {(onSync || onRefresh) && (
+            <Button onClick={onSync || onRefresh}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Sync Customers
             </Button>

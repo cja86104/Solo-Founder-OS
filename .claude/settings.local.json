@@ -39,7 +39,12 @@
       "Bash(wc:*)",
       "Bash(git show:*)",
       "Bash(npx next dev --turbopack)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(/dev/null -exec grep -l \"create_workspace_with_owner\" {} ;)",
+      "Bash(for file in \"C:\\\\Users\\\\cja86\\\\Desktop\\\\Solo-Founder-OS\\\\supabase\\\\migrations\"/*.sql)",
+      "Bash(do if grep -q \"create_workspace_with_owner\" \"$file\")",
+      "Bash(then echo \"Found in: $file\")",
+      "Bash(fi)"
     ]
   }
 }

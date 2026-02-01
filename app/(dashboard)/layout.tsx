@@ -49,7 +49,7 @@ export default async function DashboardLayout({
   const activeSubscription = subscription || defaultSubscription;
 
   return (
-    <WorkspaceProvider>
+    <WorkspaceProvider subscription={activeSubscription}>
       <SubscriptionProvider subscription={activeSubscription}>
         <AppShell
           user={user}
