@@ -182,7 +182,7 @@ export async function POST(
     }
 
     // Build invite URL
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.foundershelm.com';
     const inviteUrl = `${appUrl}/invite/${invite.token}`;
 
     // Send email if Resend is configured

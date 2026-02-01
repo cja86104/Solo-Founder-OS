@@ -151,7 +151,7 @@ export function LandingPageEditor({ page: initialPage }: LandingPageEditorProps)
     setContent({ ...content, sections });
   };
 
-  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/p/${page.slug}`;
+  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "")}/p/${page.slug}`;
 
   return (
     <div className="min-h-screen bg-muted/30">

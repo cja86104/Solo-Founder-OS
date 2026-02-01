@@ -50,7 +50,7 @@ export function LandingPageCard({ page }: { page: LandingPage }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/p/${page.slug}`;
+  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "")}/p/${page.slug}`;
   const conversionRate = (page.view_count || 0) > 0
     ? (((page.conversion_count || 0) / (page.view_count || 1)) * 100).toFixed(1)
     : "0";

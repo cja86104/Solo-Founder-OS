@@ -167,7 +167,9 @@ export function getErrorMessage(error: unknown): string {
 }
 
 export function absoluteUrl(path: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "");
   return `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 }
 

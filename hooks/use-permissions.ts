@@ -84,6 +84,10 @@ const ROLE_PERMISSIONS: Record<Role, string[]> = {
     'projects.*',
     'feedback.*',
     'automations.*',
+    'command.view',
+    'advisor.view',
+    'advisor.chat',
+    'analytics.view',
   ],
   editor: [
     'products.create',
@@ -107,6 +111,10 @@ const ROLE_PERMISSIONS: Record<Role, string[]> = {
     'automations.view',
     'automations.create',
     'automations.update',
+    'command.view',
+    'advisor.view',
+    'advisor.chat',
+    'analytics.view',
   ],
   viewer: [
     'products.view',
@@ -116,6 +124,9 @@ const ROLE_PERMISSIONS: Record<Role, string[]> = {
     'projects.view',
     'feedback.view',
     'automations.view',
+    'command.view',
+    'advisor.view',
+    'analytics.view',
   ],
 };
 

@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Founders Helm" }],
   creator: "Founders Helm",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    process.env.NEXT_PUBLIC_APP_URL || "https://www.foundershelm.com"
   ),
   openGraph: {
     type: "website",

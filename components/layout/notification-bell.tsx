@@ -126,7 +126,7 @@ export function NotificationBell() {
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      {formatTime(n.created_at)}
+                      {n.created_at ? formatTime(n.created_at) : ""}
                     </p>
                   </div>
                 </div>

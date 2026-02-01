@@ -3186,6 +3186,7 @@ export type Database = {
           stripe_customer_id: string | null
           stripe_price_id: string | null
           stripe_subscription_id: string | null
+          trial_ends_at: string | null
           updated_at: string | null
           user_id: string
         }
@@ -3200,6 +3201,7 @@ export type Database = {
           stripe_customer_id?: string | null
           stripe_price_id?: string | null
           stripe_subscription_id?: string | null
+          trial_ends_at?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -3214,6 +3216,7 @@ export type Database = {
           stripe_customer_id?: string | null
           stripe_price_id?: string | null
           stripe_subscription_id?: string | null
+          trial_ends_at?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -4063,3 +4066,8 @@ export const Constants = {
     },
   },
 } as const
+
+// Convenience type aliases for common table row types
+export type Profile = Database["public"]["Tables"]["profiles"]["Row"]
+export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"]
+export type Notification = Database["public"]["Tables"]["notifications"]["Row"]
