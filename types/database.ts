@@ -7,8 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
@@ -63,6 +65,600 @@ export type Database = {
           },
           {
             foreignKeyName: "activities_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_conversions: {
+        Row: {
+          attribution_campaign: string | null
+          attribution_medium: string | null
+          attribution_source: string | null
+          conversion_value: number
+          converted_at: string
+          goal_id: string
+          id: string
+          session_id: string | null
+          visitor_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          attribution_campaign?: string | null
+          attribution_medium?: string | null
+          attribution_source?: string | null
+          conversion_value?: number
+          converted_at?: string
+          goal_id: string
+          id?: string
+          session_id?: string | null
+          visitor_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          attribution_campaign?: string | null
+          attribution_medium?: string | null
+          attribution_source?: string | null
+          conversion_value?: number
+          converted_at?: string
+          goal_id?: string
+          id?: string
+          session_id?: string | null
+          visitor_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_conversions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_conversions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_conversions_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_visitors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_conversions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_conversions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_category: string
+          event_name: string
+          event_value: number | null
+          id: string
+          page_path: string | null
+          properties: Json | null
+          session_id: string | null
+          visitor_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_category?: string
+          event_name: string
+          event_value?: number | null
+          id?: string
+          page_path?: string | null
+          properties?: Json | null
+          session_id?: string | null
+          visitor_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          event_category?: string
+          event_name?: string
+          event_value?: number | null
+          id?: string
+          page_path?: string | null
+          properties?: Json | null
+          session_id?: string | null
+          visitor_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_visitors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_funnels: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          steps: Json
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          steps?: Json
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          steps?: Json
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_funnels_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_funnels_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_goals: {
+        Row: {
+          conversion_value: number
+          created_at: string
+          description: string | null
+          goal_type: string
+          id: string
+          is_active: boolean
+          name: string
+          target_operator: string
+          target_value: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          conversion_value?: number
+          created_at?: string
+          description?: string | null
+          goal_type: string
+          id?: string
+          is_active?: boolean
+          name: string
+          target_operator?: string
+          target_value: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          conversion_value?: number
+          created_at?: string
+          description?: string | null
+          goal_type?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          target_operator?: string
+          target_value?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_goals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_goals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_page_views: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          duration_seconds: number
+          id: string
+          is_exit: boolean
+          os: string | null
+          page_path: string
+          page_title: string | null
+          referrer: string | null
+          scroll_depth: number
+          session_id: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          visitor_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          duration_seconds?: number
+          id?: string
+          is_exit?: boolean
+          os?: string | null
+          page_path: string
+          page_title?: string | null
+          referrer?: string | null
+          scroll_depth?: number
+          session_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visitor_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          duration_seconds?: number
+          id?: string
+          is_exit?: boolean
+          os?: string | null
+          page_path?: string
+          page_title?: string | null
+          referrer?: string | null
+          scroll_depth?: number
+          session_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visitor_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_page_views_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_page_views_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_visitors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_page_views_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_page_views_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_reports: {
+        Row: {
+          config: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          report_type: string
+          schedule: Json | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          report_type?: string
+          schedule?: Json | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          report_type?: string
+          schedule?: Json | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_reports_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_reports_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_sessions: {
+        Row: {
+          browser: string | null
+          browser_version: string | null
+          city: string | null
+          conversion_value: number
+          converted: boolean
+          country: string | null
+          created_at: string
+          device_type: string | null
+          duration_seconds: number
+          ended_at: string | null
+          entry_page: string
+          exit_page: string | null
+          id: string
+          ip_hash: string | null
+          is_bounce: boolean
+          os: string | null
+          os_version: string | null
+          page_views: number
+          referrer: string | null
+          region: string | null
+          screen_resolution: string | null
+          started_at: string
+          updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          visitor_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          browser?: string | null
+          browser_version?: string | null
+          city?: string | null
+          conversion_value?: number
+          converted?: boolean
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          duration_seconds?: number
+          ended_at?: string | null
+          entry_page: string
+          exit_page?: string | null
+          id?: string
+          ip_hash?: string | null
+          is_bounce?: boolean
+          os?: string | null
+          os_version?: string | null
+          page_views?: number
+          referrer?: string | null
+          region?: string | null
+          screen_resolution?: string | null
+          started_at?: string
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          visitor_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          browser?: string | null
+          browser_version?: string | null
+          city?: string | null
+          conversion_value?: number
+          converted?: boolean
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          duration_seconds?: number
+          ended_at?: string | null
+          entry_page?: string
+          exit_page?: string | null
+          id?: string
+          ip_hash?: string | null
+          is_bounce?: boolean
+          os?: string | null
+          os_version?: string | null
+          page_views?: number
+          referrer?: string | null
+          region?: string | null
+          screen_resolution?: string | null
+          started_at?: string
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          visitor_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_sessions_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_visitors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_sessions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_sessions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_visitors: {
+        Row: {
+          country: string | null
+          created_at: string
+          device_type: string | null
+          first_seen: string
+          id: string
+          is_returning: boolean
+          last_seen: string
+          lifetime_value: number
+          metadata: Json | null
+          tags: string[] | null
+          total_duration_seconds: number
+          total_page_views: number
+          total_sessions: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          first_seen?: string
+          id?: string
+          is_returning?: boolean
+          last_seen?: string
+          lifetime_value?: number
+          metadata?: Json | null
+          tags?: string[] | null
+          total_duration_seconds?: number
+          total_page_views?: number
+          total_sessions?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          first_seen?: string
+          id?: string
+          is_returning?: boolean
+          last_seen?: string
+          lifetime_value?: number
+          metadata?: Json | null
+          tags?: string[] | null
+          total_duration_seconds?: number
+          total_page_views?: number
+          total_sessions?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_visitors_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "user_workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_visitors_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -430,18 +1026,6 @@ export type Database = {
           tags: string[] | null
           updated_at: string | null
           workspace_id: string
-          avatar_url: string | null
-          source_id: string | null
-          source_url: string | null
-          lists: string[] | null
-          last_seen_at: string | null
-          total_visits: number | null
-          total_emails_sent: number | null
-          total_emails_opened: number | null
-          total_emails_clicked: number | null
-          custom_fields: Json | null
-          stripe_customer_id: string | null
-          external_id: string | null
         }
         Insert: {
           company?: string | null
@@ -458,18 +1042,6 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           workspace_id: string
-          avatar_url?: string | null
-          source_id?: string | null
-          source_url?: string | null
-          lists?: string[] | null
-          last_seen_at?: string | null
-          total_visits?: number | null
-          total_emails_sent?: number | null
-          total_emails_opened?: number | null
-          total_emails_clicked?: number | null
-          custom_fields?: Json | null
-          stripe_customer_id?: string | null
-          external_id?: string | null
         }
         Update: {
           company?: string | null
@@ -486,18 +1058,6 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           workspace_id?: string
-          avatar_url?: string | null
-          source_id?: string | null
-          source_url?: string | null
-          lists?: string[] | null
-          last_seen_at?: string | null
-          total_visits?: number | null
-          total_emails_sent?: number | null
-          total_emails_opened?: number | null
-          total_emails_clicked?: number | null
-          custom_fields?: Json | null
-          stripe_customer_id?: string | null
-          external_id?: string | null
         }
         Relationships: [
           {
@@ -532,11 +1092,6 @@ export type Database = {
           updated_at: string | null
           user_id: string
           workspace_id: string
-          content_type: string | null
-          media_urls: string[] | null
-          slug: string | null
-          meta_description: string | null
-          category: string | null
         }
         Insert: {
           ai_generated?: boolean | null
@@ -553,11 +1108,6 @@ export type Database = {
           updated_at?: string | null
           user_id: string
           workspace_id: string
-          content_type?: string | null
-          media_urls?: string[] | null
-          slug?: string | null
-          meta_description?: string | null
-          category?: string | null
         }
         Update: {
           ai_generated?: boolean | null
@@ -574,11 +1124,6 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           workspace_id?: string
-          content_type?: string | null
-          media_urls?: string[] | null
-          slug?: string | null
-          meta_description?: string | null
-          category?: string | null
         }
         Relationships: [
           {
@@ -820,22 +1365,14 @@ export type Database = {
           name: string | null
           page_url: string | null
           priority: Database["public"]["Enums"]["task_priority"] | null
-          status: string | null
+          status: Database["public"]["Enums"]["feedback_status"] | null
           title: string | null
-          type: string | null
+          type: Database["public"]["Enums"]["feedback_type"] | null
           updated_at: string | null
           user_agent: string | null
           votes: number | null
           widget_id: string
           workspace_id: string
-          rating: number | null
-          emoji_rating: string | null
-          attachment_urls: string[] | null
-          screen_size: string | null
-          contact_id: string | null
-          internal_notes: string | null
-          assigned_to: string | null
-          resolved_at: string | null
         }
         Insert: {
           content: string
@@ -847,22 +1384,14 @@ export type Database = {
           name?: string | null
           page_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
           title?: string | null
-          type?: string | null
+          type?: Database["public"]["Enums"]["feedback_type"] | null
           updated_at?: string | null
           user_agent?: string | null
           votes?: number | null
           widget_id: string
           workspace_id: string
-          rating?: number | null
-          emoji_rating?: string | null
-          attachment_urls?: string[] | null
-          screen_size?: string | null
-          contact_id?: string | null
-          internal_notes?: string | null
-          assigned_to?: string | null
-          resolved_at?: string | null
         }
         Update: {
           content?: string
@@ -874,22 +1403,14 @@ export type Database = {
           name?: string | null
           page_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
           title?: string | null
-          type?: string | null
+          type?: Database["public"]["Enums"]["feedback_type"] | null
           updated_at?: string | null
           user_agent?: string | null
           votes?: number | null
           widget_id?: string
           workspace_id?: string
-          rating?: number | null
-          emoji_rating?: string | null
-          attachment_urls?: string[] | null
-          screen_size?: string | null
-          contact_id?: string | null
-          internal_notes?: string | null
-          assigned_to?: string | null
-          resolved_at?: string | null
         }
         Relationships: [
           {
@@ -928,17 +1449,6 @@ export type Database = {
           updated_at: string | null
           user_id: string
           workspace_id: string
-          slug: string | null
-          theme: string | null
-          primary_color: string | null
-          position: string | null
-          title: string | null
-          placeholder: string | null
-          success_message: string | null
-          allow_attachments: boolean | null
-          require_email: boolean | null
-          show_emoji_rating: boolean | null
-          categories: string[] | null
         }
         Insert: {
           created_at?: string | null
@@ -952,17 +1462,6 @@ export type Database = {
           updated_at?: string | null
           user_id: string
           workspace_id: string
-          slug?: string | null
-          theme?: string | null
-          primary_color?: string | null
-          position?: string | null
-          title?: string | null
-          placeholder?: string | null
-          success_message?: string | null
-          allow_attachments?: boolean | null
-          require_email?: boolean | null
-          show_emoji_rating?: boolean | null
-          categories?: string[] | null
         }
         Update: {
           created_at?: string | null
@@ -976,17 +1475,6 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           workspace_id?: string
-          slug?: string | null
-          theme?: string | null
-          primary_color?: string | null
-          position?: string | null
-          title?: string | null
-          placeholder?: string | null
-          success_message?: string | null
-          allow_attachments?: boolean | null
-          require_email?: boolean | null
-          show_emoji_rating?: boolean | null
-          categories?: string[] | null
         }
         Relationships: [
           {
@@ -1813,45 +2301,24 @@ export type Database = {
           id: string
           plan: string | null
           status: string | null
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
-          trial_ends_at: string | null
           updated_at: string | null
           user_id: string
-          stripe_price_id: string | null
-          current_period_start: string | null
-          current_period_end: string | null
-          cancel_at_period_end: boolean | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           plan?: string | null
           status?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          trial_ends_at?: string | null
           updated_at?: string | null
           user_id: string
-          stripe_price_id?: string | null
-          current_period_start?: string | null
-          current_period_end?: string | null
-          cancel_at_period_end?: boolean | null
         }
         Update: {
           created_at?: string | null
           id?: string
           plan?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           status?: string | null
-          trial_ends_at?: string | null
           updated_at?: string | null
           user_id?: string
-          stripe_price_id?: string | null
-          current_period_start?: string | null
-          current_period_end?: string | null
-          cancel_at_period_end?: boolean | null
         }
         Relationships: [
           {
@@ -2286,1089 +2753,6 @@ export type Database = {
           },
         ]
       }
-      advisor_conversations: {
-        Row: {
-          id: string
-          workspace_id: string
-          user_id: string
-          title: string
-          topic: string
-          message_count: number
-          last_message_at: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          user_id: string
-          title: string
-          topic?: string
-          message_count?: number
-          last_message_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          user_id?: string
-          title?: string
-          topic?: string
-          message_count?: number
-          last_message_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      advisor_messages: {
-        Row: {
-          id: string
-          conversation_id: string
-          role: string
-          content: string
-          topic: string | null
-          tokens_used: number | null
-          model: string | null
-          metadata: Json
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          conversation_id: string
-          role: string
-          content: string
-          topic?: string | null
-          tokens_used?: number | null
-          model?: string | null
-          metadata?: Json
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          conversation_id?: string
-          role?: string
-          content?: string
-          topic?: string | null
-          tokens_used?: number | null
-          model?: string | null
-          metadata?: Json
-          created_at?: string
-        }
-        Relationships: []
-      }
-      advisor_suggestions: {
-        Row: {
-          id: string
-          workspace_id: string
-          conversation_id: string | null
-          type: string
-          topic: string
-          title: string
-          description: string | null
-          rationale: string | null
-          action_steps: string[]
-          priority: string
-          status: string
-          impact_score: number | null
-          effort_score: number | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          conversation_id?: string | null
-          type: string
-          topic: string
-          title: string
-          description?: string | null
-          rationale?: string | null
-          action_steps?: string[]
-          priority?: string
-          status?: string
-          impact_score?: number | null
-          effort_score?: number | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          conversation_id?: string | null
-          type?: string
-          topic?: string
-          title?: string
-          description?: string | null
-          rationale?: string | null
-          action_steps?: string[]
-          priority?: string
-          status?: string
-          impact_score?: number | null
-          effort_score?: number | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      analytics_events: {
-        Row: {
-          id: string
-          workspace_id: string
-          session_id: string | null
-          visitor_id: string
-          event_name: string
-          event_category: string
-          event_value: number | null
-          properties: Json
-          page_path: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          session_id?: string | null
-          visitor_id: string
-          event_name: string
-          event_category?: string
-          event_value?: number | null
-          properties?: Json
-          page_path?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          session_id?: string | null
-          visitor_id?: string
-          event_name?: string
-          event_category?: string
-          event_value?: number | null
-          properties?: Json
-          page_path?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
-      analytics_goals: {
-        Row: {
-          id: string
-          workspace_id: string
-          name: string
-          description: string | null
-          goal_type: string
-          target_value: string
-          target_operator: string
-          conversion_value: number
-          is_active: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          name: string
-          description?: string | null
-          goal_type: string
-          target_value: string
-          target_operator?: string
-          conversion_value?: number
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          name?: string
-          description?: string | null
-          goal_type?: string
-          target_value?: string
-          target_operator?: string
-          conversion_value?: number
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      analytics_conversions: {
-        Row: {
-          id: string
-          workspace_id: string
-          goal_id: string
-          session_id: string | null
-          visitor_id: string
-          conversion_value: number
-          converted_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          goal_id: string
-          session_id?: string | null
-          visitor_id: string
-          conversion_value?: number
-          converted_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          goal_id?: string
-          session_id?: string | null
-          visitor_id?: string
-          conversion_value?: number
-          converted_at?: string
-        }
-        Relationships: []
-      }
-      analytics_sessions: {
-        Row: {
-          id: string
-          workspace_id: string
-          visitor_id: string
-          started_at: string
-          ended_at: string | null
-          page_views: number
-          duration_seconds: number
-          entry_page: string
-          exit_page: string | null
-          referrer: string | null
-          utm_source: string | null
-          utm_medium: string | null
-          utm_campaign: string | null
-          device_type: string
-          browser: string | null
-          os: string | null
-          country: string | null
-          is_bounce: boolean
-          converted: boolean
-          conversion_value: number
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          visitor_id: string
-          started_at?: string
-          ended_at?: string | null
-          page_views?: number
-          duration_seconds?: number
-          entry_page: string
-          exit_page?: string | null
-          referrer?: string | null
-          utm_source?: string | null
-          utm_medium?: string | null
-          utm_campaign?: string | null
-          device_type?: string
-          browser?: string | null
-          os?: string | null
-          country?: string | null
-          is_bounce?: boolean
-          converted?: boolean
-          conversion_value?: number
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          visitor_id?: string
-          started_at?: string
-          ended_at?: string | null
-          page_views?: number
-          duration_seconds?: number
-          entry_page?: string
-          exit_page?: string | null
-          referrer?: string | null
-          utm_source?: string | null
-          utm_medium?: string | null
-          utm_campaign?: string | null
-          device_type?: string
-          browser?: string | null
-          os?: string | null
-          country?: string | null
-          is_bounce?: boolean
-          converted?: boolean
-          conversion_value?: number
-        }
-        Relationships: []
-      }
-      analytics_page_views: {
-        Row: {
-          id: string
-          workspace_id: string
-          session_id: string | null
-          page_path: string
-          page_title: string | null
-          referrer: string | null
-          utm_source: string | null
-          utm_medium: string | null
-          utm_campaign: string | null
-          device_type: string
-          browser: string | null
-          os: string | null
-          country: string | null
-          city: string | null
-          duration_seconds: number
-          scroll_depth: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          session_id?: string | null
-          page_path: string
-          page_title?: string | null
-          referrer?: string | null
-          utm_source?: string | null
-          utm_medium?: string | null
-          utm_campaign?: string | null
-          device_type?: string
-          browser?: string | null
-          os?: string | null
-          country?: string | null
-          city?: string | null
-          duration_seconds?: number
-          scroll_depth?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          session_id?: string | null
-          page_path?: string
-          page_title?: string | null
-          referrer?: string | null
-          utm_source?: string | null
-          utm_medium?: string | null
-          utm_campaign?: string | null
-          device_type?: string
-          browser?: string | null
-          os?: string | null
-          country?: string | null
-          city?: string | null
-          duration_seconds?: number
-          scroll_depth?: number
-          created_at?: string
-        }
-        Relationships: []
-      }
-      api_keys: {
-        Row: {
-          id: string
-          workspace_id: string
-          user_id: string
-          name: string
-          key_hash: string
-          key_preview: string
-          last_used_at: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          user_id: string
-          name: string
-          key_hash: string
-          key_preview: string
-          last_used_at?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          user_id?: string
-          name?: string
-          key_hash?: string
-          key_preview?: string
-          last_used_at?: string | null
-          created_at?: string
-        }
-        Relationships: []
-      }
-      contact_notes: {
-        Row: {
-          id: string
-          contact_id: string
-          workspace_id: string
-          user_id: string
-          content: string
-          is_pinned: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          contact_id: string
-          workspace_id: string
-          user_id: string
-          content: string
-          is_pinned?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          contact_id?: string
-          workspace_id?: string
-          user_id?: string
-          content?: string
-          is_pinned?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      customers: {
-        Row: {
-          id: string
-          workspace_id: string
-          stripe_customer_id: string
-          stripe_subscription_id: string | null
-          email: string
-          name: string | null
-          company: string | null
-          status: string
-          subscription_status: string | null
-          plan_name: string | null
-          plan_id: string | null
-          mrr: number
-          currency: string
-          lifetime_value: number
-          subscription_start_date: string | null
-          subscription_end_date: string | null
-          trial_end_date: string | null
-          canceled_at: string | null
-          last_payment_date: string | null
-          last_invoice_date: string | null
-          payment_count: number
-          failed_payment_count: number
-          churn_risk_score: number
-          days_until_renewal: number | null
-          created_at: string
-          updated_at: string
-          synced_at: string
-          metadata: Json
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          stripe_customer_id: string
-          stripe_subscription_id?: string | null
-          email: string
-          name?: string | null
-          company?: string | null
-          status?: string
-          subscription_status?: string | null
-          plan_name?: string | null
-          plan_id?: string | null
-          mrr?: number
-          currency?: string
-          lifetime_value?: number
-          subscription_start_date?: string | null
-          subscription_end_date?: string | null
-          trial_end_date?: string | null
-          canceled_at?: string | null
-          last_payment_date?: string | null
-          last_invoice_date?: string | null
-          payment_count?: number
-          failed_payment_count?: number
-          churn_risk_score?: number
-          days_until_renewal?: number | null
-          created_at?: string
-          updated_at?: string
-          synced_at?: string
-          metadata?: Json
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          stripe_customer_id?: string
-          stripe_subscription_id?: string | null
-          email?: string
-          name?: string | null
-          company?: string | null
-          status?: string
-          subscription_status?: string | null
-          plan_name?: string | null
-          plan_id?: string | null
-          mrr?: number
-          currency?: string
-          lifetime_value?: number
-          subscription_start_date?: string | null
-          subscription_end_date?: string | null
-          trial_end_date?: string | null
-          canceled_at?: string | null
-          last_payment_date?: string | null
-          last_invoice_date?: string | null
-          payment_count?: number
-          failed_payment_count?: number
-          churn_risk_score?: number
-          days_until_renewal?: number | null
-          created_at?: string
-          updated_at?: string
-          synced_at?: string
-          metadata?: Json
-        }
-        Relationships: []
-      }
-      mrr_history: {
-        Row: {
-          id: string
-          workspace_id: string
-          period_date: string
-          period_type: string
-          mrr: number
-          mrr_new: number
-          mrr_expansion: number
-          mrr_contraction: number
-          mrr_churned: number
-          mrr_reactivation: number
-          net_mrr_change: number
-          total_customers: number
-          new_customers: number
-          churned_customers: number
-          reactivated_customers: number
-          arr: number
-          churn_rate: number
-          growth_rate: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          period_date: string
-          period_type: string
-          mrr?: number
-          mrr_new?: number
-          mrr_expansion?: number
-          mrr_contraction?: number
-          mrr_churned?: number
-          mrr_reactivation?: number
-          net_mrr_change?: number
-          total_customers?: number
-          new_customers?: number
-          churned_customers?: number
-          reactivated_customers?: number
-          arr?: number
-          churn_rate?: number
-          growth_rate?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          period_date?: string
-          period_type?: string
-          mrr?: number
-          mrr_new?: number
-          mrr_expansion?: number
-          mrr_contraction?: number
-          mrr_churned?: number
-          mrr_reactivation?: number
-          net_mrr_change?: number
-          total_customers?: number
-          new_customers?: number
-          churned_customers?: number
-          reactivated_customers?: number
-          arr?: number
-          churn_rate?: number
-          growth_rate?: number
-          created_at?: string
-        }
-        Relationships: []
-      }
-      revenue_events: {
-        Row: {
-          id: string
-          workspace_id: string
-          customer_id: string | null
-          subscription_id: string | null
-          stripe_event_id: string | null
-          stripe_invoice_id: string | null
-          stripe_charge_id: string | null
-          event_type: string
-          amount: number
-          currency: string
-          mrr_impact: number
-          description: string | null
-          plan_from: string | null
-          plan_to: string | null
-          status: string | null
-          failure_reason: string | null
-          event_date: string
-          created_at: string
-          metadata: Json
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          customer_id?: string | null
-          subscription_id?: string | null
-          stripe_event_id?: string | null
-          stripe_invoice_id?: string | null
-          stripe_charge_id?: string | null
-          event_type: string
-          amount: number
-          currency?: string
-          mrr_impact?: number
-          description?: string | null
-          plan_from?: string | null
-          plan_to?: string | null
-          status?: string | null
-          failure_reason?: string | null
-          event_date?: string
-          created_at?: string
-          metadata?: Json
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          customer_id?: string | null
-          subscription_id?: string | null
-          stripe_event_id?: string | null
-          stripe_invoice_id?: string | null
-          stripe_charge_id?: string | null
-          event_type?: string
-          amount?: number
-          currency?: string
-          mrr_impact?: number
-          description?: string | null
-          plan_from?: string | null
-          plan_to?: string | null
-          status?: string | null
-          failure_reason?: string | null
-          event_date?: string
-          created_at?: string
-          metadata?: Json
-        }
-        Relationships: []
-      }
-      stripe_sync_log: {
-        Row: {
-          id: string
-          workspace_id: string
-          sync_type: string
-          status: string
-          records_synced: number
-          records_created: number
-          records_updated: number
-          records_failed: number
-          error_message: string | null
-          error_details: Json | null
-          started_at: string
-          completed_at: string | null
-          duration_ms: number | null
-          triggered_by: string | null
-          metadata: Json
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          sync_type: string
-          status: string
-          records_synced?: number
-          records_created?: number
-          records_updated?: number
-          records_failed?: number
-          error_message?: string | null
-          error_details?: Json | null
-          started_at?: string
-          completed_at?: string | null
-          duration_ms?: number | null
-          triggered_by?: string | null
-          metadata?: Json
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          sync_type?: string
-          status?: string
-          records_synced?: number
-          records_created?: number
-          records_updated?: number
-          records_failed?: number
-          error_message?: string | null
-          error_details?: Json | null
-          started_at?: string
-          completed_at?: string | null
-          duration_ms?: number | null
-          triggered_by?: string | null
-          metadata?: Json
-        }
-        Relationships: []
-      }
-      workspace_invites: {
-        Row: {
-          id: string
-          workspace_id: string
-          email: string
-          role: string
-          permissions: Json
-          invited_by: string
-          token: string
-          accepted_at: string | null
-          expires_at: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          email: string
-          role: string
-          permissions?: Json
-          invited_by: string
-          token?: string
-          accepted_at?: string | null
-          expires_at?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          email?: string
-          role?: string
-          permissions?: Json
-          invited_by?: string
-          token?: string
-          accepted_at?: string | null
-          expires_at?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
-      notifications: {
-        Row: {
-          id: string
-          workspace_id: string
-          user_id: string
-          title: string
-          message: string | null
-          type: string
-          link: string | null
-          is_read: boolean
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          user_id: string
-          title: string
-          message?: string | null
-          type?: string
-          link?: string | null
-          is_read?: boolean
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          user_id?: string
-          title?: string
-          message?: string | null
-          type?: string
-          link?: string | null
-          is_read?: boolean
-          created_at?: string
-        }
-        Relationships: []
-      }
-      content_engagement: {
-        Row: {
-          id: string
-          post_id: string
-          views: number
-          likes: number
-          shares: number
-          comments: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          post_id: string
-          views?: number
-          likes?: number
-          shares?: number
-          comments?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          post_id?: string
-          views?: number
-          likes?: number
-          shares?: number
-          comments?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      stripe_subscriptions: {
-        Row: {
-          id: string
-          workspace_id: string
-          customer_id: string
-          stripe_subscription_id: string
-          stripe_customer_id: string
-          status: string
-          plan_name: string | null
-          plan_id: string | null
-          price_id: string | null
-          amount: number
-          currency: string
-          interval: string | null
-          interval_count: number
-          mrr: number
-          current_period_start: string | null
-          current_period_end: string | null
-          trial_start: string | null
-          trial_end: string | null
-          canceled_at: string | null
-          ended_at: string | null
-          billing_cycle_anchor: string | null
-          collection_method: string | null
-          created_at: string
-          updated_at: string
-          synced_at: string
-          metadata: Json
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          customer_id: string
-          stripe_subscription_id: string
-          stripe_customer_id: string
-          status: string
-          plan_name?: string | null
-          plan_id?: string | null
-          price_id?: string | null
-          amount?: number
-          currency?: string
-          interval?: string | null
-          interval_count?: number
-          mrr?: number
-          current_period_start?: string | null
-          current_period_end?: string | null
-          trial_start?: string | null
-          trial_end?: string | null
-          canceled_at?: string | null
-          ended_at?: string | null
-          billing_cycle_anchor?: string | null
-          collection_method?: string | null
-          created_at?: string
-          updated_at?: string
-          synced_at?: string
-          metadata?: Json
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          customer_id?: string
-          stripe_subscription_id?: string
-          stripe_customer_id?: string
-          status?: string
-          plan_name?: string | null
-          plan_id?: string | null
-          price_id?: string | null
-          amount?: number
-          currency?: string
-          interval?: string | null
-          interval_count?: number
-          mrr?: number
-          current_period_start?: string | null
-          current_period_end?: string | null
-          trial_start?: string | null
-          trial_end?: string | null
-          canceled_at?: string | null
-          ended_at?: string | null
-          billing_cycle_anchor?: string | null
-          collection_method?: string | null
-          created_at?: string
-          updated_at?: string
-          synced_at?: string
-          metadata?: Json
-        }
-        Relationships: []
-      }
-      analytics_visitors: {
-        Row: {
-          id: string
-          workspace_id: string
-          first_seen: string
-          last_seen: string
-          total_sessions: number
-          total_page_views: number
-          total_duration_seconds: number
-          country: string | null
-          device_type: string
-          is_returning: boolean
-          lifetime_value: number
-          tags: string[] | null
-          metadata: Json
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          first_seen?: string
-          last_seen?: string
-          total_sessions?: number
-          total_page_views?: number
-          total_duration_seconds?: number
-          country?: string | null
-          device_type?: string
-          is_returning?: boolean
-          lifetime_value?: number
-          tags?: string[] | null
-          metadata?: Json
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          first_seen?: string
-          last_seen?: string
-          total_sessions?: number
-          total_page_views?: number
-          total_duration_seconds?: number
-          country?: string | null
-          device_type?: string
-          is_returning?: boolean
-          lifetime_value?: number
-          tags?: string[] | null
-          metadata?: Json
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      analytics_funnels: {
-        Row: {
-          id: string
-          workspace_id: string
-          name: string
-          description: string | null
-          steps: Json
-          is_active: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          name: string
-          description?: string | null
-          steps?: Json
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          name?: string
-          description?: string | null
-          steps?: Json
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      analytics_reports: {
-        Row: {
-          id: string
-          workspace_id: string
-          name: string
-          description: string | null
-          report_type: string
-          config: Json
-          schedule: Json | null
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          name: string
-          description?: string | null
-          report_type?: string
-          config?: Json
-          schedule?: Json | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          name?: string
-          description?: string | null
-          report_type?: string
-          config?: Json
-          schedule?: Json | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      audit_logs: {
-        Row: {
-          id: string
-          workspace_id: string | null
-          user_id: string | null
-          user_email: string | null
-          event_type: string
-          event_category: string
-          resource_type: string | null
-          resource_id: string | null
-          description: string
-          ip_address: unknown
-          user_agent: string | null
-          metadata: Json | null
-          severity: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          workspace_id?: string | null
-          user_id?: string | null
-          user_email?: string | null
-          event_type: string
-          event_category: string
-          resource_type?: string | null
-          resource_id?: string | null
-          description: string
-          ip_address?: unknown
-          user_agent?: string | null
-          metadata?: Json | null
-          severity?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          workspace_id?: string | null
-          user_id?: string | null
-          user_email?: string | null
-          event_type?: string
-          event_category?: string
-          resource_type?: string | null
-          resource_id?: string | null
-          description?: string
-          ip_address?: unknown
-          user_agent?: string | null
-          metadata?: Json | null
-          severity?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       user_workspaces: {
@@ -3405,10 +2789,6 @@ export type Database = {
       generate_invoice_number: {
         Args: { p_workspace_id: string }
         Returns: string
-      }
-      create_default_pipeline_stages: {
-        Args: { p_workspace_id: string }
-        Returns: undefined
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
@@ -3504,36 +2884,12 @@ export type Database = {
       user_role: "user" | "admin"
       vault_item_type: "snippet" | "prompt" | "component" | "template" | "note"
       workspace_role: "owner" | "admin" | "editor" | "viewer"
-      audit_event_category:
-        | "authentication"
-        | "authorization"
-        | "data_access"
-        | "data_modification"
-        | "settings_change"
-        | "billing"
-        | "security"
-      audit_severity: "info" | "warning" | "critical"
-      subscription_status:
-        | "active"
-        | "past_due"
-        | "canceled"
-        | "incomplete"
-        | "incomplete_expired"
-        | "trialing"
-        | "unpaid"
-        | "paused"
-      customer_status: "active" | "churned" | "at_risk" | "new"
-      metric_period: "daily" | "weekly" | "monthly" | "quarterly" | "yearly"
     }
     CompositeTypes: {
       [_ in never]: never
     }
   }
 }
-
-// Convenience type aliases
-export type Profile = Database['public']['Tables']['profiles']['Row'];
-export type Subscription = Database['public']['Tables']['subscriptions']['Row'];
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
@@ -3754,40 +3110,6 @@ export const Constants = {
       user_role: ["user", "admin"],
       vault_item_type: ["snippet", "prompt", "component", "template", "note"],
       workspace_role: ["owner", "admin", "editor", "viewer"],
-      audit_event_category: [
-        "authentication",
-        "authorization",
-        "data_access",
-        "data_modification",
-        "settings_change",
-        "billing",
-        "security",
-      ],
-      audit_severity: ["info", "warning", "critical"],
-      subscription_status: [
-        "active",
-        "past_due",
-        "canceled",
-        "incomplete",
-        "incomplete_expired",
-        "trialing",
-        "unpaid",
-        "paused",
-      ],
-      customer_status: ["active", "churned", "at_risk", "new"],
-      metric_period: ["daily", "weekly", "monthly", "quarterly", "yearly"],
     },
   },
 } as const
-
-export interface Notification {
-  id: string;
-  workspace_id: string;
-  user_id: string;
-  title: string;
-  message: string | null;
-  type: "info" | "success" | "warning" | "action";
-  link: string | null;
-  is_read: boolean;
-  created_at: string;
-}
