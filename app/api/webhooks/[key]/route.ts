@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { createHmac } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
 
 // =============================================================================
 // POST /api/webhooks/[key] — Receive external webhook and trigger automation
@@ -77,15 +77,22 @@ export async function POST(
         .update(bodyText)
         .digest('hex');
 
-      if (signature !== expected) {
+      try {
+        if (!timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+          return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+        }
+      } catch {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
       }
     }
 
-    // Collect headers and query params for trigger data
+    // Collect headers and query params for trigger data (exclude sensitive ones)
+    const sensitiveHeaders = new Set(['authorization', 'cookie', 'x-api-key', 'x-auth-token', 'proxy-authorization']);
     const headers: Record<string, string> = {};
     request.headers.forEach((v, k) => {
-      headers[k] = v;
+      if (!sensitiveHeaders.has(k.toLowerCase())) {
+        headers[k] = v;
+      }
     });
 
     const query: Record<string, string> = {};

@@ -113,8 +113,8 @@ export default function ContactsPage() {
       if (!response.ok) throw new Error('Failed to fetch contacts');
 
       const data = await response.json();
-      setContacts(data.contacts);
-      setPagination(data.pagination);
+      setContacts(data.contacts || []);
+      if (data.pagination) setPagination(data.pagination);
     } catch (error) {
       toast.error('Failed to load contacts');
     } finally {

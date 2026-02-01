@@ -39,9 +39,9 @@ export function ResetPasswordForm() {
   useEffect(() => {
     const checkSession = async () => {
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
         setIsValidSession(true);
       }
       setIsChecking(false);

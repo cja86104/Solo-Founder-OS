@@ -180,6 +180,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid event type' }, { status: 400 });
     }
 
+    // Validate post_id is a valid UUID to prevent enumeration
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(post_id)) {
+      return NextResponse.json({ error: 'Invalid post_id' }, { status: 400 });
+    }
+
     const column = event_type === 'view' ? 'views' : `${event_type}s`;
 
     // Use admin client to bypass RLS for engagement tracking

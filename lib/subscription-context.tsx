@@ -47,7 +47,9 @@ export function SubscriptionProvider({ children, subscription }: SubscriptionPro
       (plan === 'trial' && trialEndsAt !== null && trialEndsAt <= now) ||
       plan === 'expired';
 
-    const isPro = plan === 'pro' && subscription?.status === 'active';
+    // Allow both 'active' and 'past_due' (Stripe is still retrying payment)
+    // Also allow 'trialing' status from Stripe-native trials
+    const isPro = plan === 'pro' && ['active', 'past_due', 'trialing'].includes(subscription?.status || '');
     const isLifetime = plan === 'lifetime';
     const isActive = isPro || isLifetime || isTrialActive;
     const isReadOnly = !isActive;

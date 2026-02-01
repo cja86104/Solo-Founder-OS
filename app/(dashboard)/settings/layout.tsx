@@ -16,10 +16,16 @@ import {
 
 const settingsNavItems = [
   {
-    title: 'Account',
-    href: '/settings/account',
+    title: 'Profile',
+    href: '/settings/profile',
     icon: User,
     description: 'Your personal settings',
+  },
+  {
+    title: 'Account',
+    href: '/settings/account',
+    icon: Shield,
+    description: 'Account security',
   },
   {
     title: 'Workspace',
@@ -34,10 +40,10 @@ const settingsNavItems = [
     description: 'Subscription and payments',
   },
   {
-    title: 'Data Export',
-    href: '/settings/export',
-    icon: Download,
-    description: 'Export your data',
+    title: 'Notifications',
+    href: '/settings/notifications',
+    icon: Bell,
+    description: 'Notification preferences',
   },
   {
     title: 'Integrations',
@@ -50,6 +56,12 @@ const settingsNavItems = [
     href: '/settings/api-keys',
     icon: Key,
     description: 'Manage API access',
+  },
+  {
+    title: 'Data Export',
+    href: '/settings/export',
+    icon: Download,
+    description: 'Export your data',
   },
 ];
 

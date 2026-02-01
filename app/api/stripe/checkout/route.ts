@@ -20,6 +20,21 @@ export async function POST(request: NextRequest) {
       interval?: "monthly" | "yearly";
     };
 
+    // Determine price ID early so we can validate before creating a customer
+    let priceId: string;
+    if (priceType === "lifetime") {
+      priceId = PRICE_IDS.LIFETIME;
+    } else {
+      priceId = interval === "yearly" ? PRICE_IDS.PRO_YEARLY : PRICE_IDS.PRO_MONTHLY;
+    }
+
+    if (!priceId) {
+      return NextResponse.json(
+        { error: "Price not configured. Please contact support." },
+        { status: 500 }
+      );
+    }
+
     // Get or create Stripe customer
     const { data: subscription } = await (supabase
       .from("subscriptions") as any)
@@ -32,26 +47,26 @@ export async function POST(request: NextRequest) {
     if (!customerId) {
       // Create new Stripe customer
       const customer = await stripe.customers.create({
-        email: user.email!,
+        email: user.email || undefined,
         metadata: {
           supabase_user_id: user.id,
         },
       });
       customerId = customer.id;
 
-      // Save customer ID
-      await (supabase
+      // Save customer ID — use upsert to handle missing subscription row
+      const { error: saveError } = await (supabase
         .from("subscriptions") as any)
-        .update({ stripe_customer_id: customerId })
-        .eq("user_id", user.id);
-    }
+        .upsert({
+          user_id: user.id,
+          stripe_customer_id: customerId,
+          plan: "expired",
+          status: "expired",
+        }, { onConflict: "user_id" });
 
-    // Determine price ID
-    let priceId: string;
-    if (priceType === "lifetime") {
-      priceId = PRICE_IDS.LIFETIME;
-    } else {
-      priceId = interval === "yearly" ? PRICE_IDS.PRO_YEARLY : PRICE_IDS.PRO_MONTHLY;
+      if (saveError) {
+        console.error("Failed to save stripe_customer_id:", saveError);
+      }
     }
 
     // Create checkout session

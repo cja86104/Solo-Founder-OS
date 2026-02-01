@@ -268,7 +268,7 @@ export default function CommandCenterPage() {
   }
 
   // Permission check
-  if (!can('content.view')) {
+  if (!can('command.view')) {
     return (
       <div className="container py-6">
         <Card>
@@ -290,7 +290,7 @@ export default function CommandCenterPage() {
       <CommandCenterHeader
         lastSync={data.lastSync}
         isSyncing={isSyncing}
-        onSync={can('content.update') ? handleSync : undefined}
+        onSync={can('command.update') ? handleSync : undefined}
         onSettings={handleSettings}
       />
 
@@ -422,7 +422,7 @@ export default function CommandCenterPage() {
             <SyncStatus
               lastSync={data.lastSync}
               isSyncing={isSyncing}
-              onSync={can('content.update') ? handleSync : undefined}
+              onSync={can('command.update') ? handleSync : undefined}
             />
             <SyncHistory
               logs={data.syncLogs}

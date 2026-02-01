@@ -727,18 +727,20 @@ async function handleSubscriptionEvent(
     .eq('stripe_customer_id', subscription.customer as string)
     .single();
 
-  if (!customer) {
+  let customerId = customer?.id;
+
+  if (!customerId) {
     // Fetch and create customer first
     const stripeCustomer = await stripe.customers.retrieve(subscription.customer as string, {
       expand: ['subscriptions'],
     });
-    if (!stripeCustomer.deleted) {
-      await upsertCustomer(workspaceId, stripeCustomer as Stripe.Customer, dbClient);
-    }
-    return;
+    if (stripeCustomer.deleted) return;
+
+    const result = await upsertCustomer(workspaceId, stripeCustomer as Stripe.Customer, dbClient);
+    customerId = result.customerId;
   }
 
-  await upsertSubscription(workspaceId, customer.id, subscription, dbClient);
+  await upsertSubscription(workspaceId, customerId, subscription, dbClient);
 
   // Record revenue event
   const price = subscription.items.data[0]?.price;

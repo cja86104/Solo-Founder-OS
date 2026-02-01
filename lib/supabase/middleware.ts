@@ -39,13 +39,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Protected routes
-  const protectedPaths = ['/dashboard', '/settings', '/vault', '/crm', '/content', '/feedback', '/projects', '/advisor', '/automations', '/analytics', '/command', '/contacts', '/activity', '/landing', '/workspaces'];
+  const protectedPaths = ['/dashboard', '/settings', '/vault', '/crm', '/content', '/feedback', '/projects', '/advisor', '/automations', '/analytics', '/command', '/contacts', '/activity', '/landing', '/workspaces', '/invoices'];
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
 
   // Auth routes (redirect to dashboard if already logged in)
-  const authPaths = ['/login', '/register', '/forgot-password'];
+  const authPaths = ['/login', '/signup', '/register', '/forgot-password', '/reset-password', '/verify-email'];
   const isAuthPath = authPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );

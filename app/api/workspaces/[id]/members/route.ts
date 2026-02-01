@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // ============================================================================
 // GET /api/workspaces/[id]/members - List workspace members
@@ -57,17 +58,23 @@ export async function GET(
     // Get emails from auth.users (need to do separately)
     const userIds = members?.map(m => m.user_id) || [];
     
-    // For each member, get their email
+    // For each member, get their email using the admin client
+    const adminClient = createAdminClient();
     const membersWithEmail = await Promise.all(
       (members || []).map(async (member) => {
-        // Get user email from auth
-        const { data: { user: memberUser } } = await supabase.auth.admin.getUserById(member.user_id);
-        
+        let email = 'Unknown';
+        try {
+          const { data: { user: memberUser } } = await adminClient.auth.admin.getUserById(member.user_id);
+          email = memberUser?.email || 'Unknown';
+        } catch {
+          // Fallback if admin lookup fails
+        }
+
         return {
           ...member,
           full_name: (member.profiles as any)?.full_name || null,
           avatar_url: (member.profiles as any)?.avatar_url || null,
-          email: memberUser?.email || 'Unknown',
+          email,
         };
       })
     );

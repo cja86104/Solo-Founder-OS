@@ -33,15 +33,16 @@ export default async function DashboardLayout({
     .eq("user_id", user.id)
     .single();
 
-  // Default subscription for users without one (trial)
+  // Default subscription for users without one (expired -- forces upgrade)
+  // Do NOT recalculate trial_ends_at on every load, as that creates a perpetual trial.
   const defaultSubscription = {
     id: "default",
     user_id: user.id,
-    plan: "trial" as const,
-    status: "trialing" as const,
+    plan: "expired" as const,
+    status: "expired" as const,
     stripe_customer_id: null,
     stripe_subscription_id: null,
-    trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    trial_ends_at: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

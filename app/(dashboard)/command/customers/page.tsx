@@ -107,7 +107,7 @@ export default function CustomersPage() {
   }
 
   // Permission check
-  if (!can('content.view')) {
+  if (!can('command.view')) {
     return (
       <Card>
         <CardContent className="py-12 text-center">

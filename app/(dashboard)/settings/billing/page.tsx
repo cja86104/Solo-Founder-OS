@@ -74,7 +74,7 @@ export default function BillingSettingsPage() {
   const handleUpgrade = async (planId: string) => {
     setIsLoading(planId);
     try {
-      const response = await fetch('/api/billing/checkout', {
+      const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -101,7 +101,7 @@ export default function BillingSettingsPage() {
   const handleManageBilling = async () => {
     setIsLoading('manage');
     try {
-      const response = await fetch('/api/billing/portal', {
+      const response = await fetch('/api/stripe/portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

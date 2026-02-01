@@ -430,6 +430,18 @@ export type Database = {
           tags: string[] | null
           updated_at: string | null
           workspace_id: string
+          avatar_url: string | null
+          source_id: string | null
+          source_url: string | null
+          lists: string[] | null
+          last_seen_at: string | null
+          total_visits: number | null
+          total_emails_sent: number | null
+          total_emails_opened: number | null
+          total_emails_clicked: number | null
+          custom_fields: Json | null
+          stripe_customer_id: string | null
+          external_id: string | null
         }
         Insert: {
           company?: string | null
@@ -446,6 +458,18 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           workspace_id: string
+          avatar_url?: string | null
+          source_id?: string | null
+          source_url?: string | null
+          lists?: string[] | null
+          last_seen_at?: string | null
+          total_visits?: number | null
+          total_emails_sent?: number | null
+          total_emails_opened?: number | null
+          total_emails_clicked?: number | null
+          custom_fields?: Json | null
+          stripe_customer_id?: string | null
+          external_id?: string | null
         }
         Update: {
           company?: string | null
@@ -462,6 +486,18 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           workspace_id?: string
+          avatar_url?: string | null
+          source_id?: string | null
+          source_url?: string | null
+          lists?: string[] | null
+          last_seen_at?: string | null
+          total_visits?: number | null
+          total_emails_sent?: number | null
+          total_emails_opened?: number | null
+          total_emails_clicked?: number | null
+          custom_fields?: Json | null
+          stripe_customer_id?: string | null
+          external_id?: string | null
         }
         Relationships: [
           {
@@ -496,6 +532,11 @@ export type Database = {
           updated_at: string | null
           user_id: string
           workspace_id: string
+          content_type: string | null
+          media_urls: string[] | null
+          slug: string | null
+          meta_description: string | null
+          category: string | null
         }
         Insert: {
           ai_generated?: boolean | null
@@ -512,6 +553,11 @@ export type Database = {
           updated_at?: string | null
           user_id: string
           workspace_id: string
+          content_type?: string | null
+          media_urls?: string[] | null
+          slug?: string | null
+          meta_description?: string | null
+          category?: string | null
         }
         Update: {
           ai_generated?: boolean | null
@@ -528,6 +574,11 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           workspace_id?: string
+          content_type?: string | null
+          media_urls?: string[] | null
+          slug?: string | null
+          meta_description?: string | null
+          category?: string | null
         }
         Relationships: [
           {
@@ -769,14 +820,22 @@ export type Database = {
           name: string | null
           page_url: string | null
           priority: Database["public"]["Enums"]["task_priority"] | null
-          status: Database["public"]["Enums"]["feedback_status"] | null
+          status: string | null
           title: string | null
-          type: Database["public"]["Enums"]["feedback_type"] | null
+          type: string | null
           updated_at: string | null
           user_agent: string | null
           votes: number | null
           widget_id: string
           workspace_id: string
+          rating: number | null
+          emoji_rating: string | null
+          attachment_urls: string[] | null
+          screen_size: string | null
+          contact_id: string | null
+          internal_notes: string | null
+          assigned_to: string | null
+          resolved_at: string | null
         }
         Insert: {
           content: string
@@ -788,14 +847,22 @@ export type Database = {
           name?: string | null
           page_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
-          status?: Database["public"]["Enums"]["feedback_status"] | null
+          status?: string | null
           title?: string | null
-          type?: Database["public"]["Enums"]["feedback_type"] | null
+          type?: string | null
           updated_at?: string | null
           user_agent?: string | null
           votes?: number | null
           widget_id: string
           workspace_id: string
+          rating?: number | null
+          emoji_rating?: string | null
+          attachment_urls?: string[] | null
+          screen_size?: string | null
+          contact_id?: string | null
+          internal_notes?: string | null
+          assigned_to?: string | null
+          resolved_at?: string | null
         }
         Update: {
           content?: string
@@ -807,14 +874,22 @@ export type Database = {
           name?: string | null
           page_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
-          status?: Database["public"]["Enums"]["feedback_status"] | null
+          status?: string | null
           title?: string | null
-          type?: Database["public"]["Enums"]["feedback_type"] | null
+          type?: string | null
           updated_at?: string | null
           user_agent?: string | null
           votes?: number | null
           widget_id?: string
           workspace_id?: string
+          rating?: number | null
+          emoji_rating?: string | null
+          attachment_urls?: string[] | null
+          screen_size?: string | null
+          contact_id?: string | null
+          internal_notes?: string | null
+          assigned_to?: string | null
+          resolved_at?: string | null
         }
         Relationships: [
           {
@@ -853,6 +928,17 @@ export type Database = {
           updated_at: string | null
           user_id: string
           workspace_id: string
+          slug: string | null
+          theme: string | null
+          primary_color: string | null
+          position: string | null
+          title: string | null
+          placeholder: string | null
+          success_message: string | null
+          allow_attachments: boolean | null
+          require_email: boolean | null
+          show_emoji_rating: boolean | null
+          categories: string[] | null
         }
         Insert: {
           created_at?: string | null
@@ -866,6 +952,17 @@ export type Database = {
           updated_at?: string | null
           user_id: string
           workspace_id: string
+          slug?: string | null
+          theme?: string | null
+          primary_color?: string | null
+          position?: string | null
+          title?: string | null
+          placeholder?: string | null
+          success_message?: string | null
+          allow_attachments?: boolean | null
+          require_email?: boolean | null
+          show_emoji_rating?: boolean | null
+          categories?: string[] | null
         }
         Update: {
           created_at?: string | null
@@ -879,6 +976,17 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           workspace_id?: string
+          slug?: string | null
+          theme?: string | null
+          primary_color?: string | null
+          position?: string | null
+          title?: string | null
+          placeholder?: string | null
+          success_message?: string | null
+          allow_attachments?: boolean | null
+          require_email?: boolean | null
+          show_emoji_rating?: boolean | null
+          categories?: string[] | null
         }
         Relationships: [
           {
@@ -1710,6 +1818,10 @@ export type Database = {
           trial_ends_at: string | null
           updated_at: string | null
           user_id: string
+          stripe_price_id: string | null
+          current_period_start: string | null
+          current_period_end: string | null
+          cancel_at_period_end: boolean | null
         }
         Insert: {
           created_at?: string | null
@@ -1721,6 +1833,10 @@ export type Database = {
           trial_ends_at?: string | null
           updated_at?: string | null
           user_id: string
+          stripe_price_id?: string | null
+          current_period_start?: string | null
+          current_period_end?: string | null
+          cancel_at_period_end?: boolean | null
         }
         Update: {
           created_at?: string | null
@@ -1732,6 +1848,10 @@ export type Database = {
           trial_ends_at?: string | null
           updated_at?: string | null
           user_id?: string
+          stripe_price_id?: string | null
+          current_period_start?: string | null
+          current_period_end?: string | null
+          cancel_at_period_end?: boolean | null
         }
         Relationships: [
           {
@@ -2916,6 +3036,339 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          id: string
+          workspace_id: string
+          user_id: string
+          title: string
+          message: string | null
+          type: string
+          link: string | null
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          user_id: string
+          title: string
+          message?: string | null
+          type?: string
+          link?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          user_id?: string
+          title?: string
+          message?: string | null
+          type?: string
+          link?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      content_engagement: {
+        Row: {
+          id: string
+          post_id: string
+          views: number
+          likes: number
+          shares: number
+          comments: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          views?: number
+          likes?: number
+          shares?: number
+          comments?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          views?: number
+          likes?: number
+          shares?: number
+          comments?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stripe_subscriptions: {
+        Row: {
+          id: string
+          workspace_id: string
+          customer_id: string
+          stripe_subscription_id: string
+          stripe_customer_id: string
+          status: string
+          plan_name: string | null
+          plan_id: string | null
+          price_id: string | null
+          amount: number
+          currency: string
+          interval: string | null
+          interval_count: number
+          mrr: number
+          current_period_start: string | null
+          current_period_end: string | null
+          trial_start: string | null
+          trial_end: string | null
+          canceled_at: string | null
+          ended_at: string | null
+          billing_cycle_anchor: string | null
+          collection_method: string | null
+          created_at: string
+          updated_at: string
+          synced_at: string
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          customer_id: string
+          stripe_subscription_id: string
+          stripe_customer_id: string
+          status: string
+          plan_name?: string | null
+          plan_id?: string | null
+          price_id?: string | null
+          amount?: number
+          currency?: string
+          interval?: string | null
+          interval_count?: number
+          mrr?: number
+          current_period_start?: string | null
+          current_period_end?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          canceled_at?: string | null
+          ended_at?: string | null
+          billing_cycle_anchor?: string | null
+          collection_method?: string | null
+          created_at?: string
+          updated_at?: string
+          synced_at?: string
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          customer_id?: string
+          stripe_subscription_id?: string
+          stripe_customer_id?: string
+          status?: string
+          plan_name?: string | null
+          plan_id?: string | null
+          price_id?: string | null
+          amount?: number
+          currency?: string
+          interval?: string | null
+          interval_count?: number
+          mrr?: number
+          current_period_start?: string | null
+          current_period_end?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          canceled_at?: string | null
+          ended_at?: string | null
+          billing_cycle_anchor?: string | null
+          collection_method?: string | null
+          created_at?: string
+          updated_at?: string
+          synced_at?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      analytics_visitors: {
+        Row: {
+          id: string
+          workspace_id: string
+          first_seen: string
+          last_seen: string
+          total_sessions: number
+          total_page_views: number
+          total_duration_seconds: number
+          country: string | null
+          device_type: string
+          is_returning: boolean
+          lifetime_value: number
+          tags: string[] | null
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          first_seen?: string
+          last_seen?: string
+          total_sessions?: number
+          total_page_views?: number
+          total_duration_seconds?: number
+          country?: string | null
+          device_type?: string
+          is_returning?: boolean
+          lifetime_value?: number
+          tags?: string[] | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          first_seen?: string
+          last_seen?: string
+          total_sessions?: number
+          total_page_views?: number
+          total_duration_seconds?: number
+          country?: string | null
+          device_type?: string
+          is_returning?: boolean
+          lifetime_value?: number
+          tags?: string[] | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      analytics_funnels: {
+        Row: {
+          id: string
+          workspace_id: string
+          name: string
+          description: string | null
+          steps: Json
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          name: string
+          description?: string | null
+          steps?: Json
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          name?: string
+          description?: string | null
+          steps?: Json
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      analytics_reports: {
+        Row: {
+          id: string
+          workspace_id: string
+          name: string
+          description: string | null
+          report_type: string
+          config: Json
+          schedule: Json | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          name: string
+          description?: string | null
+          report_type?: string
+          config?: Json
+          schedule?: Json | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          name?: string
+          description?: string | null
+          report_type?: string
+          config?: Json
+          schedule?: Json | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          id: string
+          workspace_id: string | null
+          user_id: string | null
+          user_email: string | null
+          event_type: string
+          event_category: string
+          resource_type: string | null
+          resource_id: string | null
+          description: string
+          ip_address: unknown
+          user_agent: string | null
+          metadata: Json | null
+          severity: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id?: string | null
+          user_id?: string | null
+          user_email?: string | null
+          event_type: string
+          event_category: string
+          resource_type?: string | null
+          resource_id?: string | null
+          description: string
+          ip_address?: unknown
+          user_agent?: string | null
+          metadata?: Json | null
+          severity?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string | null
+          user_id?: string | null
+          user_email?: string | null
+          event_type?: string
+          event_category?: string
+          resource_type?: string | null
+          resource_id?: string | null
+          description?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          metadata?: Json | null
+          severity?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       user_workspaces: {
@@ -3051,6 +3504,26 @@ export type Database = {
       user_role: "user" | "admin"
       vault_item_type: "snippet" | "prompt" | "component" | "template" | "note"
       workspace_role: "owner" | "admin" | "editor" | "viewer"
+      audit_event_category:
+        | "authentication"
+        | "authorization"
+        | "data_access"
+        | "data_modification"
+        | "settings_change"
+        | "billing"
+        | "security"
+      audit_severity: "info" | "warning" | "critical"
+      subscription_status:
+        | "active"
+        | "past_due"
+        | "canceled"
+        | "incomplete"
+        | "incomplete_expired"
+        | "trialing"
+        | "unpaid"
+        | "paused"
+      customer_status: "active" | "churned" | "at_risk" | "new"
+      metric_period: "daily" | "weekly" | "monthly" | "quarterly" | "yearly"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3281,6 +3754,28 @@ export const Constants = {
       user_role: ["user", "admin"],
       vault_item_type: ["snippet", "prompt", "component", "template", "note"],
       workspace_role: ["owner", "admin", "editor", "viewer"],
+      audit_event_category: [
+        "authentication",
+        "authorization",
+        "data_access",
+        "data_modification",
+        "settings_change",
+        "billing",
+        "security",
+      ],
+      audit_severity: ["info", "warning", "critical"],
+      subscription_status: [
+        "active",
+        "past_due",
+        "canceled",
+        "incomplete",
+        "incomplete_expired",
+        "trialing",
+        "unpaid",
+        "paused",
+      ],
+      customer_status: ["active", "churned", "at_risk", "new"],
+      metric_period: ["daily", "weekly", "monthly", "quarterly", "yearly"],
     },
   },
 } as const

@@ -26,7 +26,9 @@ import { Separator } from "@/components/ui/separator";
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/dashboard";
+  const redirectParam = searchParams.get("redirect") || "/dashboard";
+  // Prevent open redirect -- only allow relative paths starting with /
+  const redirectTo = redirectParam.startsWith("/") && !redirectParam.startsWith("//") ? redirectParam : "/dashboard";
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<LoginInput>({

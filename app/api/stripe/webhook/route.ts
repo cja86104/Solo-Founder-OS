@@ -5,9 +5,13 @@ import { stripe } from "@/lib/stripe/config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { handleStripeWebhook } from "@/lib/stripe/sync";
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
 export async function POST(request: NextRequest) {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("STRIPE_WEBHOOK_SECRET is not set");
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+  }
+
   const body = await request.text();
   const headersList = await headers();
   const signature = headersList.get("stripe-signature");
@@ -45,6 +49,15 @@ export async function POST(request: NextRequest) {
             .update({
               plan: "lifetime",
               status: "active",
+              stripe_customer_id: session.customer as string,
+            })
+            .eq("user_id", userId);
+        } else if (session.mode === "subscription") {
+          // Subscription purchase -- save stripe_customer_id so the
+          // customer.subscription.created webhook can find this user.
+          await (supabase
+            .from("subscriptions") as any)
+            .update({
               stripe_customer_id: session.customer as string,
             })
             .eq("user_id", userId);
@@ -107,12 +120,17 @@ export async function POST(request: NextRequest) {
         // Find user by customer ID
         const { data: existingSub } = await (supabase
           .from("subscriptions") as any)
-          .select("user_id")
+          .select("user_id, plan")
           .eq("stripe_customer_id", customerId)
           .single();
 
         if (!existingSub) {
           console.error("No subscription found for customer:", customerId);
+          break;
+        }
+
+        // Do NOT downgrade lifetime users -- they paid once for permanent access
+        if (existingSub.plan === "lifetime") {
           break;
         }
 
@@ -132,6 +150,7 @@ export async function POST(request: NextRequest) {
         break;
       }
 
+      case "invoice.paid":
       case "invoice.payment_succeeded": {
         // Payment succeeded - no action needed, subscription status handled by other events
         break;
@@ -166,7 +185,7 @@ export async function POST(request: NextRequest) {
     const commandCenterEvents = [
       'customer.created', 'customer.updated',
       'customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted',
-      'invoice.paid', 'invoice.payment_failed',
+      'invoice.paid', 'invoice.payment_succeeded', 'invoice.payment_failed',
     ];
 
     if (commandCenterEvents.includes(event.type)) {

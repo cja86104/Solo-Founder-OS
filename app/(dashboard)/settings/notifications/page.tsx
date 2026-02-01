@@ -47,7 +47,7 @@ export default function NotificationsSettingsPage() {
   // Load preferences from workspace settings
   useEffect(() => {
     if (currentWorkspace?.settings) {
-      const saved = (currentWorkspace.settings as Record<string, unknown>).notification_preferences;
+      const saved = (currentWorkspace.settings as unknown as Record<string, unknown>).notification_preferences;
       if (saved && typeof saved === 'object') {
         setPreferences({ ...defaultPreferences, ...(saved as Partial<NotificationPreferences>) });
       }
@@ -68,7 +68,7 @@ export default function NotificationsSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           settings: {
-            ...(currentWorkspace.settings as Record<string, unknown> || {}),
+            ...((currentWorkspace.settings as unknown as Record<string, unknown>) || {}),
             notification_preferences: preferences,
           },
         }),
