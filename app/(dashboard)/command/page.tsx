@@ -148,7 +148,16 @@ export default function CommandCenterPage() {
         lastSync: null,
       };
       if (syncRes.ok) {
-        syncData = await syncRes.json();
+        const syncJson = await syncRes.json();
+        syncData = {
+          logs: syncJson.sync_history || [],
+          lastSync:
+            (syncJson.sync_history || []).find(
+              (s: StripeSyncLog) => s.status === 'completed'
+            ) ||
+            (syncJson.sync_history || [])[0] ||
+            null,
+        };
       }
 
       setData({

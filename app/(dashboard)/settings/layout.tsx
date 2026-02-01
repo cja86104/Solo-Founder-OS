@@ -11,6 +11,7 @@ import {
   Bell,
   Shield,
   Key,
+  Plug,
 } from 'lucide-react';
 
 const settingsNavItems = [
@@ -37,6 +38,12 @@ const settingsNavItems = [
     href: '/settings/export',
     icon: Download,
     description: 'Export your data',
+  },
+  {
+    title: 'Integrations',
+    href: '/settings/integrations',
+    icon: Plug,
+    description: 'Connected services',
   },
   {
     title: 'API Keys',
