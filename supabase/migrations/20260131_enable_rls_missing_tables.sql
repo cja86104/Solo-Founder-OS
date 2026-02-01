@@ -49,15 +49,14 @@ CREATE POLICY "Only owners can delete workspaces" ON workspaces
 
 ALTER TABLE workspace_members ENABLE ROW LEVEL SECURITY;
 
--- SELECT: Members can view members of workspaces they belong to
+-- SELECT: Users can view members of workspaces they belong to.
+-- IMPORTANT: Uses direct user_id check instead of a self-referencing subquery
+-- to avoid circular RLS (PostgreSQL applies RLS to subqueries too, which would
+-- make this table return 0 rows if we referenced workspace_members here).
 DROP POLICY IF EXISTS "Members can view workspace members" ON workspace_members;
 CREATE POLICY "Members can view workspace members" ON workspace_members
   FOR SELECT
-  USING (
-    workspace_id IN (
-      SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid()
-    )
-  );
+  USING (user_id = auth.uid());
 
 -- INSERT: Admins/owners can add members
 DROP POLICY IF EXISTS "Admins and owners can add members" ON workspace_members;

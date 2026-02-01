@@ -108,11 +108,16 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
         return;
       }
 
-      // Fetch workspaces with member role using the view
-      const { data, error: fetchError } = await supabase
-        .from('user_workspaces')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Fetch this user's workspace memberships with joined workspace data.
+      // We query workspace_members directly (with an explicit user_id filter)
+      // instead of the user_workspaces view, because the view depends on RLS
+      // resolving correctly on workspace_members — which can fail if the RLS
+      // policy is self-referencing. The explicit .eq() filter works regardless.
+      const { data: memberData, error: fetchError } = await (supabase
+        .from('workspace_members') as any)
+        .select('role, permissions, joined_at, workspaces(*)')
+        .eq('user_id', user.id)
+        .order('joined_at', { ascending: false });
 
       if (fetchError) throw fetchError;
 
@@ -121,19 +126,90 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
       const plan = (subscription?.plan as WorkspacePlan) || 'trial';
       const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.trial;
 
-      const workspaceList = ((data || []) as WorkspaceWithRole[]).map((w) => ({
-        ...w,
-        plan,
-        plan_limits: planLimits,
-        stripe_customer_id: w.stripe_customer_id ?? subscription?.stripe_customer_id ?? null,
-        stripe_subscription_id: w.stripe_subscription_id ?? subscription?.stripe_subscription_id ?? null,
-      }));
+      // Flatten the nested join result into the WorkspaceWithRole shape
+      // (workspace columns at top level + role/permissions/joined_at).
+      const workspaceList = ((memberData || []) as any[])
+        .filter((m) => m.workspaces) // guard against orphaned memberships
+        .map((m) => ({
+          ...m.workspaces,
+          role: m.role,
+          permissions: m.permissions,
+          joined_at: m.joined_at,
+          plan,
+          plan_limits: planLimits,
+          stripe_customer_id: m.workspaces.stripe_customer_id ?? subscription?.stripe_customer_id ?? null,
+          stripe_subscription_id: m.workspaces.stripe_subscription_id ?? subscription?.stripe_subscription_id ?? null,
+        })) as WorkspaceWithRole[];
+      // Auto-create a workspace if the user has none (handles the case where
+      // the handle_new_user trigger failed or was skipped).
+      if (workspaceList.length === 0) {
+        const displayName =
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          user.email?.split('@')[0] ||
+          'My';
+        const slug =
+          displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-') +
+          '-' +
+          user.id.substring(0, 8);
+
+        const { data: newWs, error: wsError } = await (supabase
+          .from('workspaces') as any)
+          .insert({
+            name: `${displayName}'s Workspace`,
+            slug,
+            owner_id: user.id,
+          })
+          .select()
+          .single();
+
+        if (newWs && !wsError) {
+          await (supabase.from('workspace_members') as any).insert({
+            workspace_id: newWs.id,
+            user_id: user.id,
+            role: 'owner',
+            permissions: {
+              landing_pages: true,
+              code_vault: true,
+              crm: true,
+              content: true,
+              feedback: true,
+              projects: true,
+              command: true,
+              advisor: true,
+              analytics: true,
+            },
+          });
+
+          workspaceList.push({
+            ...newWs,
+            role: 'owner' as WorkspaceRole,
+            permissions: {
+              landing_pages: true,
+              code_vault: true,
+              crm: true,
+              content: true,
+              feedback: true,
+              projects: true,
+              command: true,
+              advisor: true,
+              analytics: true,
+            },
+            joined_at: new Date().toISOString(),
+            plan,
+            plan_limits: planLimits,
+            stripe_customer_id: subscription?.stripe_customer_id ?? null,
+            stripe_subscription_id: subscription?.stripe_subscription_id ?? null,
+          } as WorkspaceWithRole);
+        }
+      }
+
       setWorkspaces(workspaceList);
 
       // Restore previously selected workspace or use first one
       const storedId = getStoredWorkspaceId();
       const restored = workspaceList.find(w => w.id === storedId);
-      
+
       if (restored) {
         setCurrentWorkspace(restored);
       } else if (workspaceList.length > 0) {
