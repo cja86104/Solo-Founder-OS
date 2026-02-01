@@ -169,7 +169,7 @@ export function getErrorMessage(error: unknown): string {
 export function absoluteUrl(path: string): string {
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
-    (typeof window !== "undefined" ? window.location.origin : "");
+    (typeof window !== "undefined" ? window.location.origin : "https://www.foundershelm.com");
   return `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
