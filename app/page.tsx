@@ -9,6 +9,7 @@ import {
   LineChart,
   MessageSquare,
   BarChart3,
+  Zap,
   ArrowRight,
   Check,
   Sparkles,
@@ -73,6 +74,12 @@ const products = [
     description: "Collect and manage user feedback with embeddable widgets",
     icon: MessageSquare,
     color: "from-red-600 to-orange-600",
+  },
+  {
+    name: "Automations",
+    description: "Build workflows that run your business on autopilot",
+    icon: Zap,
+    color: "from-yellow-400 to-orange-500",
   },
   {
     name: "Command Center",
