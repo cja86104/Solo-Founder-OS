@@ -20,8 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { OAuthButtons } from "@/components/auth/oauth-buttons";
-import { Separator } from "@/components/ui/separator";
+
 
 export function LoginForm() {
   const router = useRouter();
@@ -81,18 +80,6 @@ export function LoginForm() {
         </p>
       </div>
 
-      <OAuthButtons />
-
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with email
-          </span>
-        </div>
-      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
