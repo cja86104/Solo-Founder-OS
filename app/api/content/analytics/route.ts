@@ -165,6 +165,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createClient();
+
+    // Authenticate the requesting user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { post_id, event_type } = body;
 
@@ -186,9 +194,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid post_id' }, { status: 400 });
     }
 
+    // Verify the post exists and belongs to a workspace this user is a member of.
+    // The user-scoped client enforces RLS — if the post is in a workspace the user
+    // doesn't belong to, this query returns null and we exit with 404.
+    // This establishes a DB-verified trust chain before the admin client is used.
+    const { data: post, error: postError } = await (supabase
+      .from('content_posts') as any)
+      .select('id, workspace_id')
+      .eq('id', post_id)
+      .single();
+
+    if (postError || !post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
     const column = event_type === 'view' ? 'views' : `${event_type}s`;
 
-    // Use admin client to bypass RLS for engagement tracking
+    // Safe to use admin client now — workspace ownership confirmed above via RLS
     try {
       const admin = createAdminClient();
 
