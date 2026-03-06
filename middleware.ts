@@ -15,6 +15,6 @@ export const config = {
      * - public files (images, etc.)
      * - api routes that don't need auth
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$|api/stripe/webhook|api/analytics/collect|embed).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$|api/stripe/webhook|embed).*)",
   ],
 };

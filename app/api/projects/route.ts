@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
+
+type ProjectRow = Database['public']['Tables']['projects']['Row'];
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,7 +32,10 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('projects')
-      .select('*')
+      .select(`
+        *,
+        owner:profiles!projects_user_id_fkey(id, full_name, avatar_url)
+      `)
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
 
@@ -39,7 +45,35 @@ export async function GET(request: NextRequest) {
     const { data: projects, error } = await query;
     if (error) throw error;
 
-    return NextResponse.json({ projects: projects || [] });
+    // Compute per-project task stats
+    const projectsWithStats = await Promise.all(
+      (projects || []).map(async (project: ProjectRow) => {
+        const { data: tasks } = await supabase
+          .from('tasks')
+          .select('status, due_date')
+          .eq('project_id', project.id);
+
+        const now = new Date();
+        const total_tasks = tasks?.length ?? 0;
+        const completed_tasks = tasks?.filter((t) => t.status === 'done').length ?? 0;
+        const in_progress_tasks = tasks?.filter((t) => t.status === 'in_progress').length ?? 0;
+        const overdue_tasks = tasks?.filter(
+          (t) => t.status !== 'done' && t.due_date && new Date(t.due_date) < now
+        ).length ?? 0;
+
+        return {
+          ...project,
+          total_tasks,
+          completed_tasks,
+          in_progress_tasks,
+          overdue_tasks,
+          total_estimated_hours: 0,
+          total_logged_hours: 0,
+        };
+      })
+    );
+
+    return NextResponse.json({ projects: projectsWithStats });
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
