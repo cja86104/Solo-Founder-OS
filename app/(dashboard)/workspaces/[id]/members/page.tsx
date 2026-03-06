@@ -34,7 +34,6 @@ import {
   WorkspaceMemberDetails,
   WorkspaceInvite,
   WorkspaceWithRole,
-  PLAN_LIMITS,
   formatLimit,
 } from '@/types/workspace';
 
@@ -45,7 +44,7 @@ export default function WorkspaceMembersPage() {
   const supabase = createClient();
 
   const { workspaces, isLoading: contextLoading } = useWorkspace();
-  const { canManageTeam, isOwner, isAdmin } = usePermissions();
+  const { canManageTeam } = usePermissions();
 
   const [workspace, setWorkspace] = useState<WorkspaceWithRole | null>(null);
   const [members, setMembers] = useState<WorkspaceMemberDetails[]>([]);

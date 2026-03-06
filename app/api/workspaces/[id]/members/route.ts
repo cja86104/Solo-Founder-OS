@@ -21,8 +21,8 @@ export async function GET(
     }
 
     // Check if user is a member of this workspace
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -33,8 +33,8 @@ export async function GET(
     }
 
     // Get all members with profile info
-    const { data: members, error: membersError } = await (supabase
-      .from('workspace_members') as any)
+    const { data: members, error: membersError } = await supabase
+      .from('workspace_members')
       .select(`
         id,
         workspace_id,
@@ -56,7 +56,7 @@ export async function GET(
     }
 
     // Get emails from auth.users (need to do separately)
-    const userIds = members?.map(m => m.user_id) || [];
+    const _userIds = members?.map(m => m.user_id) || [];
     
     // For each member, get their email using the admin client
     const adminClient = createAdminClient();
@@ -70,10 +70,11 @@ export async function GET(
           // Fallback if admin lookup fails
         }
 
+        const profiles = member.profiles as { full_name: string | null; avatar_url: string | null } | null;
         return {
           ...member,
-          full_name: (member.profiles as any)?.full_name || null,
-          avatar_url: (member.profiles as any)?.avatar_url || null,
+          full_name: profiles?.full_name || null,
+          avatar_url: profiles?.avatar_url || null,
           email,
         };
       })
@@ -119,8 +120,8 @@ export async function PATCH(
     }
 
     // Get current user's role
-    const { data: currentMember } = await (supabase
-      .from('workspace_members') as any)
+    const { data: currentMember } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -136,8 +137,8 @@ export async function PATCH(
     }
 
     // Get target member's role
-    const { data: targetMember } = await (supabase
-      .from('workspace_members') as any)
+    const { data: targetMember } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId)
@@ -158,12 +159,12 @@ export async function PATCH(
     }
 
     // Update member
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, unknown> = {};
     if (role) updateData.role = role;
     if (permissions) updateData.permissions = permissions;
 
-    const { error: updateError } = await (supabase
-      .from('workspace_members') as any)
+    const { error: updateError } = await supabase
+      .from('workspace_members')
       .update(updateData)
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId);
@@ -209,8 +210,8 @@ export async function DELETE(
     }
 
     // Get current user's role
-    const { data: currentMember } = await (supabase
-      .from('workspace_members') as any)
+    const { data: currentMember } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -223,8 +224,8 @@ export async function DELETE(
     const isSelf = user.id === targetUserId;
 
     // Get target member
-    const { data: targetMember } = await (supabase
-      .from('workspace_members') as any)
+    const { data: targetMember } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId)
@@ -258,8 +259,8 @@ export async function DELETE(
     }
 
     // Remove member
-    const { error: deleteError } = await (supabase
-      .from('workspace_members') as any)
+    const { error: deleteError } = await supabase
+      .from('workspace_members')
       .delete()
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId);

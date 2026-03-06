@@ -6,11 +6,19 @@ export type WorkspaceRole = 'owner' | 'admin' | 'editor' | 'viewer';
 
 export type WorkspacePlan = 'trial' | 'expired' | 'pro' | 'lifetime';
 
+export interface WorkspaceNotificationSettings {
+  emailDigest: boolean;
+  newLeads: boolean;
+  teamActivity: boolean;
+  weeklyReport: boolean;
+}
+
 export interface WorkspaceSettings {
   theme: 'light' | 'dark' | 'system';
   timezone: string;
   dateFormat: string;
   currency: string;
+  notifications?: WorkspaceNotificationSettings;
 }
 
 export interface WorkspacePlanLimits {

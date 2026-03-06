@@ -14,8 +14,6 @@ import {
   Check,
   Sparkles,
   Heart,
-  Shield,
-  Headphones,
   Rocket,
   TrendingUp,
   DollarSign,

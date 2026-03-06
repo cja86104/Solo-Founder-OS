@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify user has admin access to workspace
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -53,8 +53,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for recent sync to prevent spam (if table exists)
-    const { data: recentSync, error: syncCheckError } = await (supabase
-      .from('stripe_sync_log') as any)
+    const { data: recentSync, error: syncCheckError } = await supabase
+      .from('stripe_sync_log')
       .select('started_at')
       .eq('workspace_id', workspace_id)
       .eq('status', 'started')
@@ -138,8 +138,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify user has access to workspace
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -150,8 +150,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Get sync history
-    const { data: syncHistory, error } = await (supabase
-      .from('stripe_sync_log') as any)
+    const { data: syncHistory, error } = await supabase
+      .from('stripe_sync_log')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('started_at', { ascending: false })

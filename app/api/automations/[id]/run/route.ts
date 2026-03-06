@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import type { AutomationRunStatus, TriggerDataManual } from '@/types/automations';
+import type { Database, Json } from '@/types/database';
+import type { AutomationRunStatus } from '@/types/automations';
 import { executeAction as executeActionImpl } from '@/lib/automations/action-executor';
+
+type AutomationActionRow = Database['public']['Tables']['automation_actions']['Row'];
 
 // =============================================================================
 // POST /api/automations/[id]/run - Manually trigger an automation run
@@ -30,8 +33,8 @@ export async function POST(
     }
 
     // Fetch automation with actions
-    const { data: automation, error: fetchError } = await (supabase
-      .from('automations') as any)
+    const { data: automation, error: fetchError } = await supabase
+      .from('automations')
       .select('*')
       .eq('id', id)
       .single();
@@ -44,8 +47,8 @@ export async function POST(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -79,8 +82,8 @@ export async function POST(
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
-      const { count: todayRunCount } = await (supabase
-        .from('automation_runs') as any)
+      const { count: todayRunCount } = await supabase
+        .from('automation_runs')
         .select('*', { count: 'exact', head: true })
         .eq('automation_id', id)
         .gte('created_at', todayStart.toISOString());
@@ -108,20 +111,20 @@ export async function POST(
     }
 
     // Build trigger data for manual execution
-    const triggerData: TriggerDataManual = {
+    const triggerData = {
       triggered_by: user.id,
       custom_data: customData,
     };
 
     // Create the run record
-    const { data: run, error: runError } = await (supabase
-      .from('automation_runs') as any)
+    const { data: run, error: runError } = await supabase
+      .from('automation_runs')
       .insert({
         automation_id: id,
         workspace_id: automation.workspace_id,
         status: 'pending' as AutomationRunStatus,
         trigger_type: 'manual',
-        trigger_data: triggerData as any,
+        trigger_data: triggerData as Json,
         started_at: new Date().toISOString(),
       })
       .select()
@@ -133,7 +136,7 @@ export async function POST(
     }
 
     // Log the start of execution
-    await (supabase.from('automation_run_logs') as any).insert({
+    await supabase.from('automation_run_logs').insert({
       run_id: run.id,
       level: 'info',
       message: 'Automation run started manually',
@@ -141,15 +144,15 @@ export async function POST(
     });
 
     // Fetch actions to execute
-    const { data: actions } = await (supabase
-      .from('automation_actions') as any)
+    const { data: actions } = await supabase
+      .from('automation_actions')
       .select('*')
       .eq('automation_id', id)
       .order('position', { ascending: true });
 
     // Update run status to running
-    await (supabase
-      .from('automation_runs') as any)
+    await supabase
+      .from('automation_runs')
       .update({ status: 'running' as AutomationRunStatus })
       .eq('id', run.id);
 
@@ -162,7 +165,7 @@ export async function POST(
       for (const action of actions) {
         try {
           // Log action start
-          await (supabase.from('automation_run_logs') as any).insert({
+          await supabase.from('automation_run_logs').insert({
             run_id: run.id,
             action_id: action.id,
             level: 'info',
@@ -172,12 +175,12 @@ export async function POST(
 
           // Simulate action execution (actual implementation would go here)
           // In a real system, this would call action-specific handlers
-          await executeAction(supabase, action as any, triggerData as any, run.id);
+          await executeAction(supabase, action, triggerData, run.id);
 
           actionsExecuted++;
 
           // Log action success
-          await (supabase.from('automation_run_logs') as any).insert({
+          await supabase.from('automation_run_logs').insert({
             run_id: run.id,
             action_id: action.id,
             level: 'info',
@@ -189,7 +192,7 @@ export async function POST(
 
           // Condition not met — stop executing further actions (not a failure)
           if (errMsg === 'CONDITION_NOT_MET') {
-            await (supabase.from('automation_run_logs') as any).insert({
+            await supabase.from('automation_run_logs').insert({
               run_id: run.id,
               action_id: action.id,
               level: 'info',
@@ -202,7 +205,7 @@ export async function POST(
           actionsFailed++;
 
           // Log action failure
-          await (supabase.from('automation_run_logs') as any).insert({
+          await supabase.from('automation_run_logs').insert({
             run_id: run.id,
             action_id: action.id,
             level: 'error',
@@ -230,8 +233,8 @@ export async function POST(
       'completed';
 
     // Update run with results
-    const { data: updatedRun, error: updateError } = await (supabase
-      .from('automation_runs') as any)
+    const { data: updatedRun, error: updateError } = await supabase
+      .from('automation_runs')
       .update({
         status: finalStatus,
         actions_executed: actionsExecuted,
@@ -249,7 +252,7 @@ export async function POST(
     }
 
     // Log completion
-    await (supabase.from('automation_run_logs') as any).insert({
+    await supabase.from('automation_run_logs').insert({
       run_id: run.id,
       level: actionsFailed > 0 ? 'warning' : 'info',
       message: `Automation run completed`,
@@ -283,9 +286,10 @@ export async function POST(
 // =============================================================================
 async function executeAction(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  action: { id: string; action_type: string; action_config: Record<string, unknown> },
+  action: AutomationActionRow,
   triggerData: Record<string, unknown>,
   _runId: string
 ): Promise<void> {
-  await executeActionImpl(supabase, action.action_type, action.action_config, triggerData);
+  const actionConfig = action.action_config as Record<string, unknown>;
+  await executeActionImpl(supabase, action.action_type, actionConfig, triggerData);
 }

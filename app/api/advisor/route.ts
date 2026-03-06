@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import type {
-  AdvisorMessage,
-  AdvisorSuggestion,
-  AdvisorTopic,
-  ChatRequest,
-  ChatResponse,
-  AdvisorContext,
-} from '@/types/advisor';
 import {
   ADVISOR_SYSTEM_PROMPT,
   buildContextPrompt,
+  type AdvisorMessage,
+  type AdvisorSuggestion,
+  type AdvisorTopic,
+  type ChatRequest,
+  type ChatResponse,
+  type AdvisorContext,
 } from '@/types/advisor';
 
 // OpenRouter API configuration
@@ -47,8 +45,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership, error: memberError } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership, error: memberError } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -67,8 +65,8 @@ export async function GET(request: NextRequest) {
 
     // If conversation_id provided, return messages for that conversation
     if (conversationId) {
-      const { data: messages, error } = await (supabase
-        .from('advisor_messages') as any)
+      const { data: messages, error } = await supabase
+        .from('advisor_messages')
         .select('*')
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true });
@@ -83,8 +81,8 @@ export async function GET(request: NextRequest) {
 
     // Otherwise return conversations list
     const topicFilter = searchParams.get('topic');
-    let query = (supabase
-      .from('advisor_conversations') as any)
+    let query = supabase
+      .from('advisor_conversations')
       .select('*')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -146,8 +144,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -164,8 +162,8 @@ export async function POST(request: NextRequest) {
     let convId = conversation_id;
     if (!convId) {
       // Create new conversation
-      const { data: newConv, error: convError } = await (supabase
-        .from('advisor_conversations') as any)
+      const { data: newConv, error: convError } = await supabase
+        .from('advisor_conversations')
         .insert({
           workspace_id,
           user_id: user.id,
@@ -189,8 +187,8 @@ export async function POST(request: NextRequest) {
     const conversationId = convId!;
 
     // Save user message
-    const { data: userMessage, error: userMsgError } = await (supabase
-      .from('advisor_messages') as any)
+    const { data: _userMessage, error: userMsgError } = await supabase
+      .from('advisor_messages')
       .insert({
         conversation_id: conversationId,
         role: 'user',
@@ -211,8 +209,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch conversation history for context
-    const { data: history } = await (supabase
-      .from('advisor_messages') as any)
+    const { data: history } = await supabase
+      .from('advisor_messages')
       .select('role, content')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true })
@@ -225,8 +223,8 @@ export async function POST(request: NextRequest) {
     const aiResponse = await getAIResponse(messages, topic);
 
     // Save assistant message
-    const { data: assistantMessage, error: assistantMsgError } = await (supabase
-      .from('advisor_messages') as any)
+    const { data: assistantMessage, error: assistantMsgError } = await supabase
+      .from('advisor_messages')
       .insert({
         conversation_id: conversationId,
         role: 'assistant',
@@ -251,8 +249,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Update conversation
-    await (supabase
-      .from('advisor_conversations') as any)
+    await supabase
+      .from('advisor_conversations')
       .update({
         message_count: (history?.length || 0) + 2,
         last_message_at: new Date().toISOString(),
@@ -344,7 +342,7 @@ interface AIResponseResult {
 
 async function getAIResponse(
   messages: AIMessage[],
-  topic: AdvisorTopic
+  _topic: AdvisorTopic
 ): Promise<AIResponseResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   
@@ -464,8 +462,8 @@ async function generateSuggestions(
     effort_score: 50,
   }));
 
-  const { data } = await (supabase
-    .from('advisor_suggestions') as any)
+  const { data } = await supabase
+    .from('advisor_suggestions')
     .insert(suggestions)
     .select();
 

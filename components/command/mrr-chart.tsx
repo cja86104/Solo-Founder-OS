@@ -6,6 +6,8 @@ import {
   Area,
   LineChart,
   Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -16,8 +18,7 @@ import {
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
-import type { MRRHistory } from '@/types/command';
-import { formatCurrency } from '@/types/command';
+import { formatCurrency, type MRRHistory } from '@/types/command';
 import {
   Card,
   CardContent,
@@ -415,8 +416,6 @@ export function MRRChart({
 // =============================================================================
 // MRR Breakdown Bar Chart
 // =============================================================================
-
-import { BarChart, Bar } from 'recharts';
 
 export interface MRRBreakdownChartProps {
   data: MRRHistory[];

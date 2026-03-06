@@ -3,6 +3,7 @@
 import { BaseSectionProps, getSectionBackground, getSectionPadding } from './index'
 import { Star, Quote } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 interface Testimonial {
   quote: string
@@ -168,15 +169,18 @@ function TestimonialCard({
       )}
 
       <blockquote className={`${textColor} text-lg mb-6`}>
-        "{testimonial.quote}"
+        &quot;{testimonial.quote}&quot;
       </blockquote>
 
       <div className="flex items-center gap-4">
         {testimonial.author.avatar ? (
-          <img
+          <Image
             src={testimonial.author.avatar}
             alt={testimonial.author.name}
+            width={48}
+            height={48}
             className="w-12 h-12 rounded-full object-cover"
+            unoptimized
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
@@ -235,15 +239,18 @@ function TestimonialCarousel({
       )}
 
       <blockquote className={`${textColor} text-2xl md:text-3xl font-medium mb-8 max-w-3xl mx-auto`}>
-        "{featured.quote}"
+        &quot;{featured.quote}&quot;
       </blockquote>
 
       <div className="flex items-center gap-4 justify-center">
         {featured.author.avatar ? (
-          <img
+          <Image
             src={featured.author.avatar}
             alt={featured.author.name}
+            width={56}
+            height={56}
             className="w-14 h-14 rounded-full object-cover"
+            unoptimized
           />
         ) : (
           <div className="w-14 h-14 rounded-full bg-orange-500/20 flex items-center justify-center">

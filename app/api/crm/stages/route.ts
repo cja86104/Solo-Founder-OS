@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
+
+type PipelineStage = Database['public']['Tables']['pipeline_stages']['Row'];
+
+interface StageUpdate {
+  id: string;
+  position: number;
+  name: string;
+  color: string;
+}
 
 // ============================================================================
 // GET /api/crm/stages - List pipeline stages
@@ -24,8 +34,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -36,43 +46,37 @@ export async function GET(request: NextRequest) {
     }
 
     // Get stages
-    let { data: stages, error } = await (supabase
-      .from('pipeline_stages') as any)
+    const { data, error } = await supabase
+      .from('pipeline_stages')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('position', { ascending: true });
+
+    let stages = data;
 
     if (error) throw error;
 
     // If no stages exist, create defaults
     if (!stages || stages.length === 0) {
-      const { error: createError } = await (supabase as any).rpc(
-        'create_default_pipeline_stages',
-        { p_workspace_id: workspaceId }
-      );
+      const defaultStages = [
+        { name: 'Lead', color: '#6366f1', position: 0 },
+        { name: 'Qualified', color: '#8b5cf6', position: 1 },
+        { name: 'Proposal', color: '#a855f7', position: 2 },
+        { name: 'Negotiation', color: '#d946ef', position: 3 },
+        { name: 'Won', color: '#22c55e', position: 4, is_won: true },
+        { name: 'Lost', color: '#ef4444', position: 5, is_lost: true },
+      ];
 
-      if (createError) {
-        // Fallback: create manually
-        const defaultStages = [
-          { name: 'Lead', color: '#6366f1', position: 0 },
-          { name: 'Qualified', color: '#8b5cf6', position: 1 },
-          { name: 'Proposal', color: '#a855f7', position: 2 },
-          { name: 'Negotiation', color: '#d946ef', position: 3 },
-          { name: 'Won', color: '#22c55e', position: 4, is_won: true },
-          { name: 'Lost', color: '#ef4444', position: 5, is_lost: true },
-        ];
-
-        for (const stage of defaultStages) {
-          await (supabase.from('pipeline_stages') as any).insert({
-            workspace_id: workspaceId,
-            ...stage,
-          });
-        }
+      for (const stage of defaultStages) {
+        await supabase.from('pipeline_stages').insert({
+          workspace_id: workspaceId,
+          ...stage,
+        });
       }
 
       // Fetch again
-      const { data: newStages } = await (supabase
-        .from('pipeline_stages') as any)
+      const { data: newStages } = await supabase
+        .from('pipeline_stages')
         .select('*')
         .eq('workspace_id', workspaceId)
         .order('position', { ascending: true });
@@ -114,8 +118,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -128,19 +132,19 @@ export async function POST(request: NextRequest) {
     // Get max position if not provided
     let stagePosition = position;
     if (stagePosition === undefined) {
-      const { data: maxPos } = await (supabase
-        .from('pipeline_stages') as any)
+      const { data: maxPos } = await supabase
+        .from('pipeline_stages')
         .select('position')
         .eq('workspace_id', workspace_id)
         .order('position', { ascending: false })
         .limit(1)
         .single();
 
-      stagePosition = (maxPos?.position ?? -1) + 1;
+      stagePosition = ((maxPos as PipelineStage | null)?.position ?? -1) + 1;
     }
 
-    const { data: stage, error } = await (supabase
-      .from('pipeline_stages') as any)
+    const { data: stage, error } = await supabase
+      .from('pipeline_stages')
       .insert({
         workspace_id,
         name,
@@ -178,7 +182,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { workspace_id, stages } = body;
+    const { workspace_id, stages } = body as { workspace_id: string; stages: StageUpdate[] };
 
     if (!workspace_id || !stages) {
       return NextResponse.json(
@@ -188,8 +192,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -201,8 +205,8 @@ export async function PATCH(request: NextRequest) {
 
     // Update each stage position
     for (const stage of stages) {
-      await (supabase
-        .from('pipeline_stages') as any)
+      await supabase
+        .from('pipeline_stages')
         .update({ position: stage.position, name: stage.name, color: stage.color })
         .eq('id', stage.id)
         .eq('workspace_id', workspace_id);

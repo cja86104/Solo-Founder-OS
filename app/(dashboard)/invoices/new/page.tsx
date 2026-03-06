@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useWorkspace } from '@/lib/workspace-context';
 import { InvoiceForm } from '@/components/invoices/invoice-form';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { toast } from 'sonner';
@@ -186,7 +186,7 @@ export default function NewInvoicePage() {
 
       {/* Form */}
       <InvoiceForm
-        invoice={defaultInvoice as any}
+        invoice={defaultInvoice}
         contacts={contacts}
         projects={projects}
         onSubmit={handleSubmit}

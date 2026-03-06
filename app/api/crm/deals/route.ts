@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    let query = (supabase
-      .from('deals') as any)
+    let query = supabase
+      .from('deals')
       .select(`*, stage:pipeline_stages(*), contact:contacts(id, email, name)`)
       .eq('workspace_id', workspaceId)
       .order('position', { ascending: true });
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     if (stageId) query = query.eq('stage_id', stageId);
 
     const status = searchParams.get('status');
-    if (status) query = query.eq('status', status as any);
+    if (status) query = query.eq('status', status);
 
     const { data: deals, error } = await query;
     if (error) throw error;
@@ -65,8 +65,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id and name are required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -77,8 +77,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get max position for ordering
-    const { data: maxPos } = await (supabase
-      .from('deals') as any)
+    const { data: maxPos } = await supabase
+      .from('deals')
       .select('position')
       .eq('workspace_id', workspace_id)
       .eq('stage_id', stage_id)
@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
       .limit(1)
       .single();
 
-    const { data: deal, error } = await (supabase
-      .from('deals') as any)
+    const { data: deal, error } = await supabase
+      .from('deals')
       .insert({
         workspace_id,
         name,
@@ -133,8 +133,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Get existing deal to check workspace
-    const { data: existingDeal } = await (supabase
-      .from('deals') as any)
+    const { data: existingDeal } = await supabase
+      .from('deals')
       .select('workspace_id, stage_id')
       .eq('id', deal_id)
       .single();
@@ -144,8 +144,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existingDeal.workspace_id)
       .eq('user_id', user.id)
@@ -176,8 +176,8 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    const { data: deal, error } = await (supabase
-      .from('deals') as any)
+    const { data: deal, error } = await supabase
+      .from('deals')
       .update(updateData)
       .eq('id', deal_id)
       .select(`*, stage:pipeline_stages(*), contact:contacts(id, email, name)`)

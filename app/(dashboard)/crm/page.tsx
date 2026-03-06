@@ -11,9 +11,6 @@ import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Select,
@@ -128,7 +125,7 @@ export default function CRMPage() {
         const data = await contactsRes.json();
         setContacts(data.contacts || []);
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to load CRM data');
     } finally {
       setIsLoading(false);
@@ -236,7 +233,7 @@ export default function CRMPage() {
             : d
         )
       );
-    } catch (error) {
+    } catch {
       toast.error('Failed to move deal');
       fetchData();
     }
@@ -257,7 +254,7 @@ export default function CRMPage() {
 
       toast.success('Deal marked as won! 🎉');
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update deal');
     }
   };
@@ -283,7 +280,7 @@ export default function CRMPage() {
       setDealToLose(null);
       setLostReason('');
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update deal');
     }
   };
@@ -302,7 +299,7 @@ export default function CRMPage() {
       setDeleteDialogOpen(false);
       setDealToDelete(null);
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete deal');
     }
   };

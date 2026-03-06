@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
@@ -14,8 +12,11 @@ import {
 } from '@/components/ui/select';
 import { Send, Brain, User } from 'lucide-react';
 import { toast } from 'sonner';
-import type { AdvisorMessage, AdvisorTopic } from '@/types/advisor';
-import { ADVISOR_TOPIC_LABELS } from '@/types/advisor';
+import {
+  ADVISOR_TOPIC_LABELS,
+  type AdvisorMessage,
+  type AdvisorTopic,
+} from '@/types/advisor';
 
 interface AdvisorChatProps {
   workspaceId: string;
@@ -82,8 +83,9 @@ export function AdvisorChat({
       }
 
       onMessageSent();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to get response');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to get response';
+      toast.error(message);
     } finally {
       setSending(false);
     }

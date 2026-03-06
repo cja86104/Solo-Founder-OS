@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database, Json } from '@/types/database';
 import type {
-  Automation,
-  AutomationWithActions,
   CreateAutomationInput,
   AutomationStatus,
   AutomationTriggerType,
 } from '@/types/automations';
+
+type AutomationRow = Database['public']['Tables']['automations']['Row'];
+type AutomationActionRow = Database['public']['Tables']['automation_actions']['Row'];
+type AutomationWithActionsRow = AutomationRow & { actions: AutomationActionRow[] };
 
 // =============================================================================
 // GET /api/automations - List all automations for a workspace
@@ -32,8 +35,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -47,8 +50,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query with optional filters
-    let query = (supabase
-      .from('automations') as any)
+    let query = supabase
+      .from('automations')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -85,12 +88,12 @@ export async function GET(request: NextRequest) {
 
     // Optionally include actions if requested
     const includeActions = searchParams.get('include_actions') === 'true';
-    let automationsWithActions: AutomationWithActions[] | Automation[] = (automations || []) as any;
+    let automationsWithActions: AutomationWithActionsRow[] | AutomationRow[] = automations || [];
 
     if (includeActions && automations && automations.length > 0) {
       const automationIds = automations.map((a) => a.id);
-      const { data: actions } = await (supabase
-        .from('automation_actions') as any)
+      const { data: actions } = await supabase
+        .from('automation_actions')
         .select('*')
         .in('automation_id', automationIds)
         .order('position', { ascending: true });
@@ -99,7 +102,7 @@ export async function GET(request: NextRequest) {
         automationsWithActions = automations.map((automation) => ({
           ...automation,
           actions: actions.filter((action) => action.automation_id === automation.id),
-        })) as any;
+        }));
       }
     }
 
@@ -176,8 +179,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -198,15 +201,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the automation
-    const { data: automation, error: createError } = await (supabase
-      .from('automations') as any)
+    const { data: automation, error: createError } = await supabase
+      .from('automations')
       .insert({
         workspace_id,
         name: name.trim(),
         description: description?.trim() || null,
         trigger_type,
-        trigger_config: (trigger_config || {}) as any,
-        filter_conditions: (filter_conditions || []) as any,
+        trigger_config: (trigger_config || {}) as Json,
+        filter_conditions: (filter_conditions || []) as unknown as Json,
         run_limit: run_limit ?? null,
         cooldown_seconds: cooldown_seconds ?? 0,
         status: status || 'draft',
@@ -221,20 +224,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Create actions if provided
-    let createdActions: Array<Record<string, unknown>> = [];
+    let createdActions: AutomationActionRow[] = [];
     if (actions && actions.length > 0) {
       const actionsToInsert = actions.map((action, index) => ({
         automation_id: automation.id,
-        action_type: action.action_type,
-        action_config: (action.action_config || {}) as any,
+        action_type: action.action_type as Database['public']['Enums']['automation_action_type'],
+        action_config: (action.action_config || {}) as Json,
         position: action.position ?? index,
         parent_action_id: action.parent_action_id || null,
-        branch_condition: (action.branch_condition || null) as any,
+        branch_condition: action.branch_condition || null,
       }));
 
-      const { data: insertedActions, error: actionsError } = await (supabase
-        .from('automation_actions') as any)
-        .insert(actionsToInsert as any)
+      const { data: insertedActions, error: actionsError } = await supabase
+        .from('automation_actions')
+        .insert(actionsToInsert)
         .select();
 
       if (actionsError) {
@@ -249,8 +252,8 @@ export async function POST(request: NextRequest) {
     if (trigger_type === 'scheduled' && trigger_config) {
       const scheduleConfig = trigger_config as { cron_expression?: string; timezone?: string };
       if (scheduleConfig.cron_expression) {
-        const { error: scheduleError } = await (supabase
-          .from('automation_schedules') as any)
+        const { error: scheduleError } = await supabase
+          .from('automation_schedules')
           .insert({
             automation_id: automation.id,
             cron_expression: scheduleConfig.cron_expression,
@@ -266,8 +269,8 @@ export async function POST(request: NextRequest) {
     // Handle webhook automations - create webhook record
     if (trigger_type === 'webhook') {
       const webhookConfig = trigger_config as { require_signature?: boolean; allowed_ips?: string[] };
-      const { error: webhookError } = await (supabase
-        .from('automation_webhooks') as any)
+      const { error: webhookError } = await supabase
+        .from('automation_webhooks')
         .insert({
           automation_id: automation.id,
           workspace_id,

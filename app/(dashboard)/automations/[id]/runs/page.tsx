@@ -8,7 +8,6 @@ import type {
   Automation,
   AutomationRun,
   AutomationRunLog,
-  AutomationRunWithLogs,
 } from '@/types/automations';
 import {
   AutomationStatusBadge,
@@ -20,17 +19,9 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   Sheet,
   SheetContent,
@@ -51,7 +42,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 
 // =============================================================================
 // Types
@@ -69,7 +60,7 @@ export default function AutomationRunsPage() {
   const router = useRouter();
   const params = useParams();
   const automationId = params.id as string;
-  const { currentWorkspace, isLoading: workspaceLoading } = useWorkspace();
+  const { isLoading: workspaceLoading } = useWorkspace();
   const { can } = usePermissions();
 
   // Data state

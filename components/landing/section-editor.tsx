@@ -8,8 +8,7 @@ import {
   GripVertical,
   ChevronRight,
 } from "lucide-react";
-import type { PageSection } from "@/types/landing";
-import { SECTION_TEMPLATES } from "@/types/landing";
+import { SECTION_TEMPLATES, type PageSection } from "@/types/landing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

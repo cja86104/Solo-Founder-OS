@@ -20,6 +20,7 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface InvoicePreviewProps {
   invoice: InvoiceWithRelations;
@@ -109,10 +110,13 @@ export function InvoicePreview({
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
             <div>
               {invoice.logo_url ? (
-                <img
+                <Image
                   src={invoice.logo_url}
                   alt="Logo"
+                  width={200}
+                  height={48}
                   className="h-12 max-w-[200px] object-contain mb-4"
+                  unoptimized
                 />
               ) : (
                 <h1

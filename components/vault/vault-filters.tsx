@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X, Filter } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ interface VaultFiltersProps {
 export function VaultFilters({ collections, currentFilters }: VaultFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState(currentFilters.search || "");
 
   const updateFilter = (key: string, value: string | null) => {

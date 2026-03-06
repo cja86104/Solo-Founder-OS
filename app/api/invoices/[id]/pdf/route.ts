@@ -16,8 +16,8 @@ export async function GET(
 
     // Check for public access via token
     if (publicToken) {
-      const { data, error } = await (supabase
-        .from('invoices') as any)
+      const { data, error } = await supabase
+        .from('invoices')
         .select(`
           *,
           contact:contacts(id, name, email, company),
@@ -38,8 +38,8 @@ export async function GET(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
-      const { data, error } = await (supabase
-        .from('invoices') as any)
+      const { data, error } = await supabase
+        .from('invoices')
         .select(`
           *,
           contact:contacts(id, name, email, company),
@@ -53,8 +53,8 @@ export async function GET(
       }
 
       // Verify membership
-      const { data: membership } = await (supabase
-        .from('workspace_members') as any)
+      const { data: membership } = await supabase
+        .from('workspace_members')
         .select('role')
         .eq('workspace_id', data.workspace_id)
         .eq('user_id', user.id)
@@ -68,15 +68,15 @@ export async function GET(
     }
 
     // Fetch invoice items
-    const { data: items } = await (supabase
-      .from('invoice_items') as any)
+    const { data: items } = await supabase
+      .from('invoice_items')
       .select('*')
       .eq('invoice_id', id)
       .order('position', { ascending: true });
 
     // Fetch workspace for branding
-    const { data: workspace } = await (supabase
-      .from('workspaces') as any)
+    const { data: workspace } = await supabase
+      .from('workspaces')
       .select('name, logo_url, settings')
       .eq('id', invoice.workspace_id)
       .single();

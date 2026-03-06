@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { MediaUploadDialog } from '@/components/editor/media-upload-dialog';
 import { useMediaUpload } from '@/hooks/use-media-upload';
 import { Button } from '@/components/ui/button';
 import { ImageIcon, Plus, Trash2, GripVertical } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export interface ThreadSegment {
   text: string;
@@ -132,10 +132,13 @@ export function ThreadEditor({
           {/* Segment media */}
           {segment.media_url && (
             <div className="relative group rounded-lg border overflow-hidden">
-              <img
+              <Image
                 src={segment.media_url}
                 alt=""
+                width={400}
+                height={160}
                 className="w-full max-h-40 object-cover"
+                unoptimized
               />
               <Button
                 type="button"

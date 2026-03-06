@@ -122,7 +122,7 @@ export default function FeedbackPage() {
         const data = await submissionsRes.json();
         setSubmissions(data.submissions || []);
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to load feedback data');
     } finally {
       setIsLoading(false);
@@ -190,7 +190,7 @@ export default function FeedbackPage() {
       if (selectedSubmission?.id === submission.id) {
         setSelectedSubmission({ ...selectedSubmission, status });
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to update status');
     }
   };
@@ -213,7 +213,7 @@ export default function FeedbackPage() {
         setSelectedSubmission(null);
       }
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete feedback');
     }
   };

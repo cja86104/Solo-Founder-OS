@@ -81,13 +81,13 @@ export interface Visitor {
 export interface AnalyticsEvent {
   id: string;
   workspace_id: string;
-  session_id: string;
-  visitor_id: string;
+  session_id: string | null;
+  visitor_id: string | null;
   event_name: string;
   event_category: string;
   event_value: number | null;
   properties: Record<string, unknown>;
-  page_path: string;
+  page_path: string | null;
   created_at: string;
 }
 

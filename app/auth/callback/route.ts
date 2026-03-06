@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database";
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -32,15 +33,16 @@ export async function GET(request: NextRequest) {
 
     if (data.user) {
       // Check if profile exists, if not create one
-      const { data: existingProfile } = await (supabase
-        .from("profiles") as any)
+      const { data: existingProfile } = await supabase
+        .from("profiles")
         .select("id")
         .eq("id", data.user.id)
         .single();
 
       if (!existingProfile) {
         // Create profile from OAuth data
-        const { error: profileError } = await (supabase.from("profiles") as any).insert({
+        // Note: Using type assertion due to Supabase client type inference limitations
+        const profileData: Database["public"]["Tables"]["profiles"]["Insert"] = {
           id: data.user.id,
           email: data.user.email!,
           full_name: data.user.user_metadata?.full_name ||
@@ -50,19 +52,25 @@ export async function GET(request: NextRequest) {
           avatar_url: data.user.user_metadata?.avatar_url ||
                       data.user.user_metadata?.picture ||
                       null,
-        });
+        };
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert(profileData as unknown as never);
 
         if (profileError) {
           console.error("Profile creation error:", profileError);
         }
 
         // Create trial subscription for new users (14-day free trial)
-        const { error: subscriptionError } = await (supabase.from("subscriptions") as any).insert({
+        const subscriptionData: Database["public"]["Tables"]["subscriptions"]["Insert"] = {
           user_id: data.user.id,
           plan: "trial",
           status: "trialing",
           trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-        });
+        };
+        const { error: subscriptionError } = await supabase
+          .from("subscriptions")
+          .insert(subscriptionData as unknown as never);
 
         if (subscriptionError) {
           console.error("Subscription creation error:", subscriptionError);

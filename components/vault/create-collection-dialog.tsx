@@ -11,6 +11,9 @@ import { createClient } from "@/lib/supabase/client";
 import { useWorkspace } from "@/lib/workspace-context";
 import { vaultCollectionSchema, type VaultCollectionInput } from "@/lib/validations/vault";
 import { COLLECTION_COLORS } from "@/types/vault";
+import type { Database } from "@/types/database";
+
+type VaultCollectionInsert = Database["public"]["Tables"]["vault_collections"]["Insert"];
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,14 +74,15 @@ export function CreateCollectionDialog() {
         return;
       }
 
-      const { error } = await (supabase.from("vault_collections") as any).insert({
+      const insertData: VaultCollectionInsert = {
         workspace_id: currentWorkspace.id,
         user_id: user.id,
         name: data.name,
         description: data.description || null,
         color: data.color || COLLECTION_COLORS[0],
         is_public: data.is_public || false,
-      });
+      };
+      const { error } = await supabase.from("vault_collections").insert(insertData);
 
       if (error) throw error;
 

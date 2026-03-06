@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -50,8 +49,6 @@ import {
   RefreshCw,
   ListTodo,
   Clock,
-  LayoutGrid,
-  List,
   CheckCircle,
   Circle,
   AlertCircle,
@@ -63,7 +60,6 @@ import {
   TimeEntryWithRelations,
   CreateTaskInput,
   calculateProgress,
-  formatDuration,
 } from '@/types/projects';
 
 export default function ProjectsPage() {
@@ -80,7 +76,6 @@ export default function ProjectsPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
-  const [view, setView] = useState<'list' | 'board'>('list');
 
   // Form state
   const [taskFormOpen, setTaskFormOpen] = useState(false);
@@ -131,7 +126,7 @@ export default function ProjectsPage() {
         const data = await entriesRes.json();
         setTimeEntries(data.entries || []);
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to load data');
     } finally {
       setIsLoading(false);
@@ -221,9 +216,9 @@ export default function ProjectsPage() {
 
       // Optimistic update
       setTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, status: status as any } : t))
+        prev.map((t) => (t.id === task.id ? { ...t, status: status as TaskWithRelations['status'] } : t))
       );
-    } catch (error) {
+    } catch {
       toast.error('Failed to update task');
       fetchData();
     }
@@ -243,7 +238,7 @@ export default function ProjectsPage() {
       setDeleteDialogOpen(false);
       setTaskToDelete(null);
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete task');
     }
   };
@@ -267,7 +262,7 @@ export default function ProjectsPage() {
       setProjectFormOpen(false);
       setNewProjectName('');
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Failed to create project');
     }
   };

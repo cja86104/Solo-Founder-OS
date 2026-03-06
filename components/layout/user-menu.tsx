@@ -8,7 +8,6 @@ import type { Profile, Subscription } from "@/types/database";
 import {
   User as UserIcon,
   Settings,
-  CreditCard,
   Users,
   LogOut,
   Shield,
@@ -37,7 +36,7 @@ interface UserMenuProps {
   subscription: Subscription | null;
 }
 
-export function UserMenu({ user, profile, subscription }: UserMenuProps) {
+export function UserMenu({ user, profile, subscription: _subscription }: UserMenuProps) {
   const router = useRouter();
   const supabase = createClient();
   const [mounted, setMounted] = useState(false);

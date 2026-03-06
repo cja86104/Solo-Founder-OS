@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query - only join with tables that exist
-    let query = (supabase
-      .from('feedback_submissions') as any)
+    let query = supabase
+      .from('feedback_submissions')
       .select(`
         *,
         widget:feedback_widgets(id, name)
@@ -48,12 +48,12 @@ export async function GET(request: NextRequest) {
     // Apply filters
     const status = searchParams.get('status');
     if (status) {
-      query = query.eq('status', status as any);
+      query = query.eq('status', status);
     }
 
     const type = searchParams.get('type');
     if (type) {
-      query = query.eq('type', type as any);
+      query = query.eq('type', type);
     }
 
     const widgetId = searchParams.get('widget_id');
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     // Map DB field names to frontend field names
     // DB: content -> message, type -> category
-    const mapped = (submissions || []).map((s: any) => ({
+    const mapped = (submissions || []).map((s) => ({
       ...s,
       message: s.content,
       category: s.type || 'other',
@@ -137,8 +137,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get widget to find workspace_id and validate
-    const { data: widget, error: widgetError } = await (supabase
-      .from('feedback_widgets') as any)
+    const { data: widget, error: widgetError } = await supabase
+      .from('feedback_widgets')
       .select('workspace_id, is_active')
       .eq('id', widget_id)
       .single();
@@ -154,8 +154,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: submission, error } = await (supabase
-      .from('feedback_submissions') as any)
+    const { data: submission, error } = await supabase
+      .from('feedback_submissions')
       .insert({
         workspace_id: widget.workspace_id,
         widget_id,
@@ -208,8 +208,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Get submission to check workspace
-    const { data: existing } = await (supabase
-      .from('feedback_submissions') as any)
+    const { data: existing } = await supabase
+      .from('feedback_submissions')
       .select('workspace_id')
       .eq('id', submission_id)
       .single();
@@ -219,8 +219,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existing.workspace_id)
       .eq('user_id', user.id)
@@ -242,8 +242,8 @@ export async function PATCH(request: NextRequest) {
     if (body.internal_notes !== undefined) updateData.internal_notes = body.internal_notes;
     if (body.assigned_to !== undefined) updateData.assigned_to = body.assigned_to;
 
-    const { data: submission, error } = await (supabase
-      .from('feedback_submissions') as any)
+    const { data: submission, error } = await supabase
+      .from('feedback_submissions')
       .update(updateData)
       .eq('id', submission_id)
       .select()

@@ -7,24 +7,26 @@ import {
   ArrowLeft,
   Save,
   Eye,
-  Settings,
   Loader2,
   Globe,
-  MoreHorizontal,
   Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
-import type { LandingPage, PageContent, PageSection } from "@/types/landing";
-import { SECTION_TEMPLATES } from "@/types/landing";
+import {
+  SECTION_TEMPLATES,
+  type LandingPage,
+  type PageContent,
+  type PageSection,
+} from "@/types/landing";
+import type { Json } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,7 +39,7 @@ interface LandingPageEditorProps {
 }
 
 export function LandingPageEditor({ page: initialPage }: LandingPageEditorProps) {
-  const router = useRouter();
+  const _router = useRouter();
   const supabase = createClient();
   const [page, setPage] = useState(initialPage);
   const [content, setContent] = useState<PageContent>(
@@ -51,9 +53,9 @@ export function LandingPageEditor({ page: initialPage }: LandingPageEditorProps)
     setIsSaving(true);
 
     try {
-      const { error } = await (supabase
-        .from("landing_pages") as any)
-        .update({ content })
+      const { error } = await supabase
+        .from("landing_pages")
+        .update({ content: content as unknown as Json })
         .eq("id", page.id);
 
       if (error) throw error;
@@ -72,17 +74,21 @@ export function LandingPageEditor({ page: initialPage }: LandingPageEditorProps)
 
     try {
       const newStatus = page.status === "published" ? "draft" : "published";
-      const updates: Partial<LandingPage> = {
-        status: newStatus,
-        content,
+      const updates: {
+        status: "draft" | "published" | "archived";
+        content: Json;
+        published_at?: string;
+      } = {
+        status: newStatus as "draft" | "published",
+        content: content as unknown as Json,
       };
 
       if (newStatus === "published" && !page.published_at) {
         updates.published_at = new Date().toISOString();
       }
 
-      const { error } = await (supabase
-        .from("landing_pages") as any)
+      const { error } = await supabase
+        .from("landing_pages")
         .update(updates)
         .eq("id", page.id);
 

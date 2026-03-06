@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { Goal, GoalPerformance } from '@/types/analytics';
+import type { Database } from '@/types/database';
+
+// Type aliases for database rows
+type AnalyticsConversionRow = Database['public']['Tables']['analytics_conversions']['Row'];
 
 // =============================================================================
 // GET - List Goals
@@ -32,8 +36,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -47,8 +51,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch goals
-    const { data: goals, error: goalsError } = await (supabase
-      .from('analytics_goals') as any)
+    const { data: goals, error: goalsError } = await supabase
+      .from('analytics_goals')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -66,7 +70,7 @@ export async function GET(request: NextRequest) {
       const performance = await fetchGoalPerformance(
         supabase,
         workspaceId,
-        goals as any,
+        goals as Goal[],
         period
       );
       return NextResponse.json({ goals, performance });
@@ -119,8 +123,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace access with write permission
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -134,8 +138,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create goal
-    const { data: goal, error: createError } = await (supabase
-      .from('analytics_goals') as any)
+    const { data: goal, error: createError } = await supabase
+      .from('analytics_goals')
       .insert({
         workspace_id,
         name,
@@ -188,42 +192,42 @@ async function fetchGoalPerformance(
   prevStartDate.setDate(prevStartDate.getDate() - days);
 
   // Fetch conversions for current period
-  const { data: currentConversions } = await (supabase
-    .from('analytics_conversions') as any)
+  const { data: currentConversions } = await supabase
+    .from('analytics_conversions')
     .select('*')
     .eq('workspace_id', workspaceId)
     .gte('converted_at', startDate.toISOString())
     .lte('converted_at', endDate.toISOString());
 
   // Fetch conversions for previous period
-  const { data: prevConversions } = await (supabase
-    .from('analytics_conversions') as any)
+  const { data: prevConversions } = await supabase
+    .from('analytics_conversions')
     .select('*')
     .eq('workspace_id', workspaceId)
     .gte('converted_at', prevStartDate.toISOString())
     .lt('converted_at', startDate.toISOString());
 
   // Fetch total sessions for conversion rate calculation
-  const { count: totalSessions } = await (supabase
-    .from('analytics_sessions') as any)
+  const { count: totalSessions } = await supabase
+    .from('analytics_sessions')
     .select('*', { count: 'exact', head: true })
     .eq('workspace_id', workspaceId)
     .gte('started_at', startDate.toISOString())
     .lte('started_at', endDate.toISOString());
 
-  const conversions = currentConversions || [];
-  const prevConvs = prevConversions || [];
+  const conversions: AnalyticsConversionRow[] = currentConversions || [];
+  const prevConvs: AnalyticsConversionRow[] = prevConversions || [];
   const sessions = totalSessions || 0;
 
   // Calculate performance for each goal
   return goals.map((goal) => {
-    const goalConversions = conversions.filter((c: any) => c.goal_id === goal.id);
-    const prevGoalConversions = prevConvs.filter((c: any) => c.goal_id === goal.id);
+    const goalConversions = conversions.filter((c) => c.goal_id === goal.id);
+    const prevGoalConversions = prevConvs.filter((c) => c.goal_id === goal.id);
 
     const completions = goalConversions.length;
     const prevCompletions = prevGoalConversions.length;
     const totalValue = goalConversions.reduce(
-      (sum: number, c: any) => sum + (c.conversion_value || 0),
+      (sum, c) => sum + (c.conversion_value || 0),
       0
     );
     const conversionRate = sessions > 0 ? (completions / sessions) * 100 : 0;

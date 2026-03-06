@@ -38,7 +38,7 @@ export function PipelineBoard({
   onDealMarkWon,
   onDealMarkLost,
   onAddDeal,
-  onEditStages,
+  onEditStages: _onEditStages,
   className,
 }: PipelineBoardProps) {
   const [draggedDeal, setDraggedDeal] = useState<DealWithRelations | null>(null);

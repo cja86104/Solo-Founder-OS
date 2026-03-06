@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -35,8 +35,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    const { data: widgets, error } = await (supabase
-      .from('feedback_widgets') as any)
+    const { data: widgets, error } = await supabase
+      .from('feedback_widgets')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     if (error) throw error;
 
     // Map 'domains' DB column to 'allowed_domains' for frontend
-    const mapped = (widgets || []).map((w: any) => ({
+    const mapped = (widgets || []).map((w) => ({
       ...w,
       allowed_domains: w.domains || [],
     }));
@@ -100,8 +100,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -111,8 +111,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { data: widget, error } = await (supabase
-      .from('feedback_widgets') as any)
+    const { data: widget, error } = await supabase
+      .from('feedback_widgets')
       .insert({
         workspace_id,
         user_id: user.id,
@@ -171,8 +171,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Get widget to check workspace
-    const { data: existing } = await (supabase
-      .from('feedback_widgets') as any)
+    const { data: existing } = await supabase
+      .from('feedback_widgets')
       .select('workspace_id')
       .eq('id', widget_id)
       .single();
@@ -182,8 +182,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existing.workspace_id)
       .eq('user_id', user.id)
@@ -207,8 +207,8 @@ export async function PATCH(request: NextRequest) {
     if (fields.allowed_domains !== undefined) updateData.domains = fields.allowed_domains;
     if (fields.domains !== undefined) updateData.domains = fields.domains;
 
-    const { data: widget, error } = await (supabase
-      .from('feedback_widgets') as any)
+    const { data: widget, error } = await supabase
+      .from('feedback_widgets')
       .update(updateData)
       .eq('id', widget_id)
       .select()
@@ -249,8 +249,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get widget to check workspace
-    const { data: existing } = await (supabase
-      .from('feedback_widgets') as any)
+    const { data: existing } = await supabase
+      .from('feedback_widgets')
       .select('workspace_id')
       .eq('id', widgetId)
       .single();
@@ -260,8 +260,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check membership - only admins/owners can delete
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existing.workspace_id)
       .eq('user_id', user.id)
@@ -271,8 +271,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { error } = await (supabase
-      .from('feedback_widgets') as any)
+    const { error } = await supabase
+      .from('feedback_widgets')
       .delete()
       .eq('id', widgetId);
 

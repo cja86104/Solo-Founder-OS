@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -12,8 +11,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus, MessageSquare } from 'lucide-react';
-import type { AdvisorConversation, AdvisorTopic } from '@/types/advisor';
-import { ADVISOR_TOPIC_LABELS } from '@/types/advisor';
+import {
+  ADVISOR_TOPIC_LABELS,
+  type AdvisorConversation,
+  type AdvisorTopic,
+} from '@/types/advisor';
 import { formatDistanceToNow } from 'date-fns';
 
 interface ConversationListProps {

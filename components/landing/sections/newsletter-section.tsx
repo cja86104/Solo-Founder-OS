@@ -247,7 +247,7 @@ function EmailForm({
 
       setStatus('success')
       setEmail('')
-    } catch (error) {
+    } catch {
       setStatus('error')
       setErrorMessage('Something went wrong. Please try again.')
     }

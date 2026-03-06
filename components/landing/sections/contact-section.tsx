@@ -125,7 +125,7 @@ export function ContactSection({ content, settings, theme, pageId }: BaseSection
 
 function ContactInfoDisplay({
   info,
-  textColor,
+  textColor: _textColor,
   mutedColor,
   centered,
 }: {
@@ -223,7 +223,7 @@ function ContactForm({
       }
 
       setStatus('success')
-    } catch (error) {
+    } catch {
       setStatus('error')
       setErrorMessage('Something went wrong. Please try again.')
     }

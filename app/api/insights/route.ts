@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getPeriodDays } from '@/types/analytics';
-import type { AnalyticsPeriod } from '@/types/analytics';
+import { getPeriodDays, type AnalyticsPeriod } from '@/types/analytics';
 import type {
   InsightsResponse,
   OverviewInsights,
@@ -49,8 +48,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify workspace access
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -158,48 +157,48 @@ async function fetchOverview(
   const startISO = startDate.toISOString();
   const endISO = endDate.toISOString();
   const prevStartISO = prevStartDate.toISOString();
-  const prevEndISO = prevEndDate.toISOString();
+  const _prevEndISO = prevEndDate.toISOString();
 
   // Parallel queries
   const [invoicesRes, prevInvoicesRes, dealsRes, contactsRes, prevContactsRes, tasksRes, prevTasksRes] =
     await Promise.all([
       // Current period paid invoices
-      (supabase.from('invoices') as any)
+      supabase.from('invoices')
         .select('amount_paid, paid_date')
         .eq('workspace_id', workspaceId)
         .eq('status', 'paid')
         .gte('paid_date', startISO)
         .lte('paid_date', endISO),
       // Previous period paid invoices
-      (supabase.from('invoices') as any)
+      supabase.from('invoices')
         .select('amount_paid')
         .eq('workspace_id', workspaceId)
         .eq('status', 'paid')
         .gte('paid_date', prevStartISO)
         .lt('paid_date', startISO),
       // Active deals
-      (supabase.from('deals') as any)
+      supabase.from('deals')
         .select('value')
         .eq('workspace_id', workspaceId)
         .eq('status', 'open'),
       // Current period contacts
-      (supabase.from('contacts') as any)
+      supabase.from('contacts')
         .select('id, created_at')
         .eq('workspace_id', workspaceId),
       // Previous period contacts
-      (supabase.from('contacts') as any)
+      supabase.from('contacts')
         .select('id')
         .eq('workspace_id', workspaceId)
         .lt('created_at', startISO),
       // Current period completed tasks
-      (supabase.from('tasks') as any)
+      supabase.from('tasks')
         .select('id, completed_at')
         .eq('workspace_id', workspaceId)
         .eq('status', 'done')
         .gte('completed_at', startISO)
         .lte('completed_at', endISO),
       // Previous period completed tasks
-      (supabase.from('tasks') as any)
+      supabase.from('tasks')
         .select('id')
         .eq('workspace_id', workspaceId)
         .eq('status', 'done')
@@ -215,21 +214,21 @@ async function fetchOverview(
   const tasks = tasksRes.data || [];
   const prevTasks = prevTasksRes.data || [];
 
-  const totalRevenue = invoices.reduce((sum: number, i: any) => sum + (i.amount_paid || 0), 0);
-  const prevRevenue = prevInvoices.reduce((sum: number, i: any) => sum + (i.amount_paid || 0), 0);
+  const totalRevenue = invoices.reduce((sum, i) => sum + (i.amount_paid || 0), 0);
+  const prevRevenue = prevInvoices.reduce((sum, i) => sum + (i.amount_paid || 0), 0);
 
   const currentContactCount = contacts.length;
   const prevContactCount = prevContacts.length;
 
   // Revenue trend
   const revenueTrend = groupByDate(
-    invoices.map((i: any) => ({ date: i.paid_date, value: i.amount_paid || 0 }))
+    invoices.map((i) => ({ date: i.paid_date, value: i.amount_paid || 0 }))
   );
 
   return {
     total_revenue: totalRevenue,
     total_revenue_change: calcChange(totalRevenue, prevRevenue),
-    active_deals_value: deals.reduce((sum: number, d: any) => sum + (d.value || 0), 0),
+    active_deals_value: deals.reduce((sum, d) => sum + (d.value || 0), 0),
     active_deals_count: deals.length,
     total_contacts: currentContactCount,
     total_contacts_change: calcChange(currentContactCount, prevContactCount),
@@ -246,21 +245,21 @@ async function fetchOverview(
 async function fetchRevenue(
   supabase: SupabaseClient,
   workspaceId: string,
-  startDate: Date,
-  endDate: Date
+  _startDate: Date,
+  _endDate: Date
 ): Promise<RevenueInsights> {
   const [invoicesRes, dealsRes, stagesRes] = await Promise.all([
     // All invoices (not just paid) for status breakdown
-    (supabase.from('invoices') as any)
+    supabase.from('invoices')
       .select('status, total, amount_paid, due_date, paid_date')
       .eq('workspace_id', workspaceId),
     // Open deals with stage
-    (supabase.from('deals') as any)
+    supabase.from('deals')
       .select('value, status, stage_id')
       .eq('workspace_id', workspaceId)
       .eq('status', 'open'),
     // Pipeline stages
-    (supabase.from('pipeline_stages') as any)
+    supabase.from('pipeline_stages')
       .select('id, name, position, is_won, is_lost')
       .eq('workspace_id', workspaceId)
       .order('position', { ascending: true }),
@@ -271,35 +270,36 @@ async function fetchRevenue(
   const stages = stagesRes.data || [];
 
   const now = new Date();
-  const totalInvoiced = invoices.reduce((sum: number, i: any) => sum + (i.total || 0), 0);
+  const totalInvoiced = invoices.reduce((sum, i) => sum + (i.total || 0), 0);
   const totalPaid = invoices
-    .filter((i: any) => i.status === 'paid')
-    .reduce((sum: number, i: any) => sum + (i.amount_paid || 0), 0);
+    .filter((i) => i.status === 'paid')
+    .reduce((sum, i) => sum + (i.amount_paid || 0), 0);
   const overdue = invoices.filter(
-    (i: any) => ['sent', 'viewed'].includes(i.status) && i.due_date && new Date(i.due_date) < now
+    (i) => i.status && ['sent', 'viewed'].includes(i.status) && i.due_date && new Date(i.due_date) < now
   );
-  const totalOverdue = overdue.reduce((sum: number, i: any) => sum + (i.total - (i.amount_paid || 0)), 0);
+  const totalOverdue = overdue.reduce((sum, i) => sum + (i.total - (i.amount_paid || 0)), 0);
   const totalOutstanding = invoices
-    .filter((i: any) => ['sent', 'viewed', 'overdue'].includes(i.status))
-    .reduce((sum: number, i: any) => sum + (i.total - (i.amount_paid || 0)), 0);
+    .filter((i) => i.status && ['sent', 'viewed', 'overdue'].includes(i.status))
+    .reduce((sum, i) => sum + (i.total - (i.amount_paid || 0)), 0);
 
   // Revenue trend (paid invoices by date)
-  const paidInvoices = invoices.filter((i: any) => i.status === 'paid' && i.paid_date);
+  const paidInvoices = invoices.filter((i) => i.status === 'paid' && i.paid_date);
   const revenueTrend = groupByDate(
-    paidInvoices.map((i: any) => ({ date: i.paid_date, value: i.amount_paid || 0 }))
+    paidInvoices.map((i) => ({ date: i.paid_date || '', value: i.amount_paid || 0 }))
   );
 
   // Deal pipeline
-  const stageMap = new Map(stages.map((s: any) => [s.id, s]));
+  const _stageMap = new Map(stages.map((s) => [s.id, s]));
   const pipelineMap = new Map<string, { count: number; value: number }>();
-  deals.forEach((d: any) => {
+  deals.forEach((d) => {
+    if (!d.stage_id) return;
     const existing = pipelineMap.get(d.stage_id) || { count: 0, value: 0 };
     existing.count++;
     existing.value += d.value || 0;
     pipelineMap.set(d.stage_id, existing);
   });
 
-  const dealPipeline: DealPipelineStage[] = stages.map((s: any) => {
+  const dealPipeline: DealPipelineStage[] = stages.map((s) => {
     const stats = pipelineMap.get(s.id) || { count: 0, value: 0 };
     return {
       stage_name: s.name,
@@ -313,8 +313,9 @@ async function fetchRevenue(
 
   // Invoice status breakdown
   const statusCounts = new Map<string, number>();
-  invoices.forEach((i: any) => {
-    statusCounts.set(i.status, (statusCounts.get(i.status) || 0) + 1);
+  invoices.forEach((i) => {
+    const status = i.status || 'unknown';
+    statusCounts.set(status, (statusCounts.get(status) || 0) + 1);
   });
   const invoiceStatusBreakdown: StatusCount[] = Array.from(statusCounts.entries())
     .map(([status, count]) => ({ status, count }));
@@ -325,7 +326,7 @@ async function fetchRevenue(
     total_outstanding: totalOutstanding,
     total_overdue: totalOverdue,
     invoice_count: invoices.length,
-    paid_count: invoices.filter((i: any) => i.status === 'paid').length,
+    paid_count: invoices.filter((i) => i.status === 'paid').length,
     overdue_count: overdue.length,
     revenue_trend: revenueTrend,
     deal_pipeline: dealPipeline,
@@ -341,23 +342,23 @@ async function fetchGrowth(
   supabase: SupabaseClient,
   workspaceId: string,
   startDate: Date,
-  endDate: Date
+  _endDate: Date
 ): Promise<GrowthInsights> {
   const [contactsRes, landingPagesRes, leadsRes, contentRes] = await Promise.all([
     // All contacts
-    (supabase.from('contacts') as any)
+    supabase.from('contacts')
       .select('id, source, created_at')
       .eq('workspace_id', workspaceId),
     // Landing pages
-    (supabase.from('landing_pages') as any)
+    supabase.from('landing_pages')
       .select('id, title, status, view_count, conversion_count')
       .eq('workspace_id', workspaceId),
     // Landing page leads
-    (supabase.from('landing_page_leads') as any)
+    supabase.from('landing_page_leads')
       .select('id, created_at')
       .eq('workspace_id', workspaceId),
     // Published content
-    (supabase.from('content_posts') as any)
+    supabase.from('content_posts')
       .select('id, published_at, created_at, status')
       .eq('workspace_id', workspaceId)
       .eq('status', 'published'),
@@ -369,16 +370,16 @@ async function fetchGrowth(
   const content = contentRes.data || [];
 
   const startISO = startDate.toISOString();
-  const newContacts = contacts.filter((c: any) => c.created_at >= startISO);
+  const newContacts = contacts.filter((c) => c.created_at && c.created_at >= startISO);
 
   // Contact growth over time
   const contactGrowth = groupByDate(
-    contacts.map((c: any) => ({ date: c.created_at, value: 1 }))
+    contacts.map((c) => ({ date: c.created_at, value: 1 }))
   );
 
   // Lead sources breakdown
   const sourceCounts = new Map<string, number>();
-  contacts.forEach((c: any) => {
+  contacts.forEach((c) => {
     const source = c.source || 'unknown';
     sourceCounts.set(source, (sourceCounts.get(source) || 0) + 1);
   });
@@ -392,23 +393,23 @@ async function fetchGrowth(
     .sort((a, b) => b.count - a.count);
 
   // Landing page stats
-  const totalViews = landingPages.reduce((sum: number, p: any) => sum + (p.view_count || 0), 0);
-  const totalConversions = landingPages.reduce((sum: number, p: any) => sum + (p.conversion_count || 0), 0);
+  const totalViews = landingPages.reduce((sum, p) => sum + (p.view_count || 0), 0);
+  const totalConversions = landingPages.reduce((sum, p) => sum + (p.conversion_count || 0), 0);
 
   const landingPageStats: LandingPageStat[] = landingPages
-    .map((p: any) => ({
+    .map((p) => ({
       id: p.id,
       title: p.title,
-      status: p.status,
+      status: p.status || 'draft',
       view_count: p.view_count || 0,
       conversion_count: p.conversion_count || 0,
-      conversion_rate: p.view_count > 0 ? (p.conversion_count / p.view_count) * 100 : 0,
+      conversion_rate: p.view_count && p.view_count > 0 ? ((p.conversion_count || 0) / p.view_count) * 100 : 0,
     }))
-    .sort((a: LandingPageStat, b: LandingPageStat) => b.view_count - a.view_count);
+    .sort((a, b) => b.view_count - a.view_count);
 
   // Content publishing trend
   const contentTrend = groupByDate(
-    content.map((c: any) => ({ date: c.published_at || c.created_at, value: 1 }))
+    content.map((c) => ({ date: c.published_at || c.created_at, value: 1 }))
   );
 
   return {
@@ -432,17 +433,17 @@ async function fetchGrowth(
 async function fetchProductivity(
   supabase: SupabaseClient,
   workspaceId: string,
-  startDate: Date,
-  endDate: Date
+  _startDate: Date,
+  _endDate: Date
 ): Promise<ProductivityInsights> {
   const [tasksRes, projectsRes, feedbackRes] = await Promise.all([
-    (supabase.from('tasks') as any)
+    supabase.from('tasks')
       .select('id, status, priority, due_date, completed_at')
       .eq('workspace_id', workspaceId),
-    (supabase.from('projects') as any)
+    supabase.from('projects')
       .select('id, status')
       .eq('workspace_id', workspaceId),
-    (supabase.from('feedback_submissions') as any)
+    supabase.from('feedback_submissions')
       .select('id, type, status')
       .eq('workspace_id', workspaceId),
   ]);
@@ -453,12 +454,12 @@ async function fetchProductivity(
 
   const now = new Date();
   const overdueTasks = tasks.filter(
-    (t: any) => t.status !== 'done' && t.due_date && new Date(t.due_date) < now
+    (t) => t.status !== 'done' && t.due_date && new Date(t.due_date) < now
   );
 
   // Tasks by priority
   const priorityCounts = new Map<string, number>();
-  tasks.forEach((t: any) => {
+  tasks.forEach((t) => {
     const priority = t.priority || 'medium';
     priorityCounts.set(priority, (priorityCounts.get(priority) || 0) + 1);
   });
@@ -467,7 +468,7 @@ async function fetchProductivity(
 
   // Feedback by type
   const feedbackTypeCounts = new Map<string, number>();
-  feedback.forEach((f: any) => {
+  feedback.forEach((f) => {
     const type = f.type || 'other';
     feedbackTypeCounts.set(type, (feedbackTypeCounts.get(type) || 0) + 1);
   });
@@ -477,18 +478,18 @@ async function fetchProductivity(
 
   return {
     tasks_total: tasks.length,
-    tasks_todo: tasks.filter((t: any) => t.status === 'todo').length,
-    tasks_in_progress: tasks.filter((t: any) => t.status === 'in_progress').length,
-    tasks_done: tasks.filter((t: any) => t.status === 'done').length,
+    tasks_todo: tasks.filter((t) => t.status === 'todo').length,
+    tasks_in_progress: tasks.filter((t) => t.status === 'in_progress').length,
+    tasks_done: tasks.filter((t) => t.status === 'done').length,
     tasks_overdue: overdueTasks.length,
-    projects_active: projects.filter((p: any) => p.status === 'active').length,
-    projects_completed: projects.filter((p: any) => p.status === 'completed').length,
-    projects_on_hold: projects.filter((p: any) => p.status === 'on_hold').length,
+    projects_active: projects.filter((p) => p.status === 'active').length,
+    projects_completed: projects.filter((p) => p.status === 'completed').length,
+    projects_on_hold: projects.filter((p) => p.status === 'on_hold').length,
     tasks_by_priority: tasksByPriority,
     feedback_total: feedback.length,
-    feedback_new: feedback.filter((f: any) => f.status === 'new').length,
-    feedback_in_progress: feedback.filter((f: any) => f.status === 'in_progress').length,
-    feedback_completed: feedback.filter((f: any) => f.status === 'completed').length,
+    feedback_new: feedback.filter((f) => f.status === 'new').length,
+    feedback_in_progress: feedback.filter((f) => f.status === 'in_progress').length,
+    feedback_completed: feedback.filter((f) => f.status === 'completed').length,
     feedback_by_type: feedbackByType,
   };
 }
@@ -501,20 +502,20 @@ async function fetchActivity(
   supabase: SupabaseClient,
   workspaceId: string
 ): Promise<ActivityInsights> {
-  const { data } = await (supabase.from('activities') as any)
+  const { data } = await supabase.from('activities')
     .select('id, action, entity_type, description, metadata, created_at')
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false })
     .limit(15);
 
   return {
-    recent: (data || []).map((a: any) => ({
+    recent: (data || []).map((a) => ({
       id: a.id,
       action: a.action,
       entity_type: a.entity_type,
       description: a.description,
-      metadata: a.metadata,
-      created_at: a.created_at,
+      metadata: a.metadata as Record<string, unknown> | null,
+      created_at: a.created_at || new Date().toISOString(),
     })),
   };
 }

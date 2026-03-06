@@ -102,6 +102,7 @@ export interface TriggerConfigWebhook {
   allowed_ips?: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface TriggerConfigManual {
   // No config needed for manual triggers
 }

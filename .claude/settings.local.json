@@ -44,7 +44,9 @@
       "Bash(for file in \"C:\\\\Users\\\\cja86\\\\Desktop\\\\Solo-Founder-OS\\\\supabase\\\\migrations\"/*.sql)",
       "Bash(do if grep -q \"create_workspace_with_owner\" \"$file\")",
       "Bash(then echo \"Found in: $file\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(echo:*)",
+      "Bash(npm ls:*)"
     ]
   }
 }

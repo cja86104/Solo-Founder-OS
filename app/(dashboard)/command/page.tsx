@@ -47,7 +47,6 @@ import {
   Command,
   LayoutDashboard,
   Users,
-  CreditCard,
   TrendingUp,
   Settings,
   AlertTriangle,

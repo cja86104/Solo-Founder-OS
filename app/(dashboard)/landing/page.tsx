@@ -39,7 +39,7 @@ export default async function LandingPagesPage() {
   // Calculate stats
   const totalViews = pages?.reduce((sum, p) => sum + (p.view_count || 0), 0) || 0;
   const totalConversions = pages?.reduce((sum, p) => sum + (p.conversion_count || 0), 0) || 0;
-  const publishedCount = pages?.filter((p) => p.status === "published").length || 0;
+  const _publishedCount = pages?.filter((p) => p.status === "published").length || 0;
 
   return (
     <>
@@ -111,7 +111,7 @@ export default async function LandingPagesPage() {
       {pages && pages.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {pages.map((page) => (
-            <LandingPageCard key={page.id} page={page as any} />
+            <LandingPageCard key={page.id} page={page} />
           ))}
         </div>
       ) : (

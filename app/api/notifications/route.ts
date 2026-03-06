@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get('workspace_id');
 
-    let query = (supabase
-      .from('notifications') as any)
+    let query = supabase
+      .from('notifications')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
@@ -55,8 +55,8 @@ export async function PATCH(request: NextRequest) {
       mark_all_read?: boolean;
     };
 
-    let query = (supabase
-      .from('notifications') as any)
+    let query = supabase
+      .from('notifications')
       .update({ is_read: true })
       .eq('user_id', user.id);
 

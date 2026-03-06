@@ -80,7 +80,7 @@ interface TaskFormProps {
 export function TaskForm({
   task,
   projects = [],
-  teamMembers = [],
+  teamMembers: _teamMembers = [],
   defaultProjectId,
   onSubmit,
   onCancel,

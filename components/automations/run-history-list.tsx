@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import type { AutomationRun, AutomationRunStatus } from '@/types/automations';
 import { RunStatusBadge } from './automation-status-badge';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -38,8 +37,6 @@ import {
 import {
   Clock,
   Timer,
-  CheckCircle2,
-  XCircle,
   Loader2,
   Filter,
   ExternalLink,

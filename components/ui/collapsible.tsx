@@ -1,6 +1,7 @@
 "use client";
 
-import * as React from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type * as React from "react";
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
 
 const Collapsible = CollapsiblePrimitive.Root;

@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
 
-// ============================================================================
-// GET /api/projects - List projects
-// ============================================================================
+type Project = Database['public']['Tables']['projects']['Row'];
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,8 +23,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -35,8 +34,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    let query = (supabase
-      .from('projects') as any)
+    let query = supabase
+      .from('projects')
       .select(`
         *,
         owner:profiles!projects_user_id_fkey(id, full_name, avatar_url)
@@ -47,7 +46,7 @@ export async function GET(request: NextRequest) {
     // Filter by status
     const status = searchParams.get('status');
     if (status) {
-      query = query.eq('status', status as any);
+      query = query.eq('status', status);
     }
 
     const { data: projects, error } = await query;
@@ -56,15 +55,15 @@ export async function GET(request: NextRequest) {
 
     // Get task stats for each project
     const projectsWithStats = await Promise.all(
-      (projects || []).map(async (project: any) => {
-        const { data: tasks } = await (supabase
-          .from('tasks') as any)
+      (projects || []).map(async (project: Project) => {
+        const { data: tasks } = await supabase
+          .from('tasks')
           .select('status')
           .eq('project_id', project.id);
 
         const total_tasks = tasks?.length || 0;
-        const completed_tasks = tasks?.filter((t: any) => t.status === 'done').length || 0;
-        const in_progress_tasks = tasks?.filter((t: any) => t.status === 'in_progress').length || 0;
+        const completed_tasks = tasks?.filter((t) => t.status === 'done').length || 0;
+        const in_progress_tasks = tasks?.filter((t) => t.status === 'in_progress').length || 0;
 
         return {
           ...project,
@@ -107,7 +106,7 @@ export async function POST(request: NextRequest) {
       name,
       description,
       color,
-      icon,
+      icon: _icon,
       start_date,
       due_date,
     } = body;
@@ -120,8 +119,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -131,8 +130,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { data: project, error } = await (supabase
-      .from('projects') as any)
+    const { data: project, error } = await supabase
+      .from('projects')
       .insert({
         workspace_id,
         name,

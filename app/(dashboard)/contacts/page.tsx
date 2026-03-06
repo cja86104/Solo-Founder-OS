@@ -15,13 +15,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -34,7 +27,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -45,27 +37,16 @@ import {
   Users,
   Plus,
   Search,
-  Filter,
-  MoreHorizontal,
-  Download,
-  Upload,
   Trash2,
-  Tag,
   RefreshCw,
   UserCheck,
   UserX,
-  Mail,
-  Building2,
   TrendingUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Contact,
-  ContactStatus,
-  ContactSource,
   ContactStats,
-  getSourceLabel,
-  getStatusLabel,
 } from '@/types/contacts';
 
 export default function ContactsPage() {
@@ -115,7 +96,7 @@ export default function ContactsPage() {
       const data = await response.json();
       setContacts(data.contacts || []);
       if (data.pagination) setPagination(data.pagination);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load contacts');
     } finally {
       setIsLoading(false);
@@ -148,7 +129,7 @@ export default function ContactsPage() {
   }, [fetchStats]);
 
   // Handlers
-  const handleCreateContact = async (data: any) => {
+  const handleCreateContact = async (data: Partial<Contact>) => {
     if (!currentWorkspace) return;
 
     try {
@@ -176,7 +157,7 @@ export default function ContactsPage() {
     }
   };
 
-  const handleUpdateContact = async (data: any) => {
+  const handleUpdateContact = async (data: Partial<Contact>) => {
     if (!editingContact) return;
 
     try {
@@ -215,7 +196,7 @@ export default function ContactsPage() {
       setContactToDelete(null);
       fetchContacts();
       fetchStats();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete contact');
     }
   };
@@ -240,7 +221,7 @@ export default function ContactsPage() {
       setSelectedContacts(new Set());
       fetchContacts();
       fetchStats();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete contacts');
     }
   };

@@ -20,8 +20,8 @@ export async function GET(
     }
 
     // Get contact with workspace check
-    const { data: contact, error } = await (supabase
-      .from('contacts') as any)
+    const { data: contact, error } = await supabase
+      .from('contacts')
       .select('*')
       .eq('id', id)
       .single();
@@ -31,8 +31,8 @@ export async function GET(
     }
 
     // Check workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', contact.workspace_id)
       .eq('user_id', user.id)
@@ -45,23 +45,8 @@ export async function GET(
       );
     }
 
-    // Get notes
-    const { data: notes } = await (supabase
-      .from('contact_notes') as any)
-      .select(`
-        *,
-        profiles:user_id (
-          full_name,
-          avatar_url
-        )
-      `)
-      .eq('contact_id', id)
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false });
-
     return NextResponse.json({
       contact,
-      notes: notes || [],
     });
   } catch (error) {
     console.error('Error fetching contact:', error);
@@ -92,8 +77,8 @@ export async function PATCH(
     }
 
     // Get contact to check workspace
-    const { data: existingContact } = await (supabase
-      .from('contacts') as any)
+    const { data: existingContact } = await supabase
+      .from('contacts')
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -103,8 +88,8 @@ export async function PATCH(
     }
 
     // Check workspace membership with edit permissions
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existingContact.workspace_id)
       .eq('user_id', user.id)
@@ -131,8 +116,8 @@ export async function PATCH(
     if (body.custom_fields !== undefined) updateData.custom_fields = body.custom_fields;
 
     // Update contact
-    const { data: contact, error } = await (supabase
-      .from('contacts') as any)
+    const { data: contact, error } = await supabase
+      .from('contacts')
       .update(updateData)
       .eq('id', id)
       .select()
@@ -169,8 +154,8 @@ export async function DELETE(
     }
 
     // Get contact to check workspace
-    const { data: contact } = await (supabase
-      .from('contacts') as any)
+    const { data: contact } = await supabase
+      .from('contacts')
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -180,8 +165,8 @@ export async function DELETE(
     }
 
     // Check workspace membership - only owners and admins can delete
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', contact.workspace_id)
       .eq('user_id', user.id)
@@ -195,8 +180,8 @@ export async function DELETE(
     }
 
     // Delete contact
-    const { error } = await (supabase
-      .from('contacts') as any)
+    const { error } = await supabase
+      .from('contacts')
       .delete()
       .eq('id', id);
 

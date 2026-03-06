@@ -1,19 +1,19 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import type { Subscription, SubscriptionStatus, Customer } from '@/types/command';
 import {
   formatCurrency,
   formatMRR,
-  getSubscriptionStatusLabel,
   getDaysUntilRenewal,
+  type Subscription,
+  type SubscriptionStatus,
+  type Customer,
 } from '@/types/command';
 import { SubscriptionStatusBadge } from './customer-status-badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -51,22 +51,17 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Progress } from '@/components/ui/progress';
 import {
   Search,
   Filter,
   MoreHorizontal,
   CreditCard,
-  Calendar,
   Clock,
   AlertTriangle,
   ExternalLink,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
-  Users,
-  DollarSign,
-  TrendingUp,
 } from 'lucide-react';
 
 // =============================================================================

@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { ContentRenderer } from '@/components/content/renderers/content-renderer';
 import { Badge } from '@/components/ui/badge';
-import { getStatusColor, getStatusLabel, getContentTypeLabel } from '@/types/content';
+import { getStatusColor, getStatusLabel, getContentTypeLabel, type ContentPost } from '@/types/content';
 import { PreviewTracker } from './tracker';
 
 export default async function ContentPreviewPage({
@@ -16,17 +16,17 @@ export default async function ContentPreviewPage({
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) notFound();
 
-  const { data: post } = await (supabase
-    .from('content_posts') as any)
+  const { data: post } = await supabase
+    .from('content_posts')
     .select('*')
     .eq('id', id)
-    .single();
+    .single() as { data: ContentPost | null };
 
   if (!post) notFound();
 
   // Verify membership
-  const { data: membership } = await (supabase
-    .from('workspace_members') as any)
+  const { data: membership } = await supabase
+    .from('workspace_members')
     .select('role')
     .eq('workspace_id', post.workspace_id)
     .eq('user_id', user.id)
@@ -56,7 +56,7 @@ export default async function ContentPreviewPage({
             </span>
           </div>
           <span className="text-xs text-muted-foreground">
-            {new Date(post.updated_at || post.created_at).toLocaleDateString()}
+            {new Date(post.updated_at ?? post.created_at ?? new Date()).toLocaleDateString()}
           </span>
         </div>
       </div>
@@ -66,7 +66,7 @@ export default async function ContentPreviewPage({
         <ContentRenderer
           content={post.content || ''}
           contentType={contentType}
-          title={post.title}
+          title={post.title ?? undefined}
           mediaUrls={post.media_urls || []}
           platforms={post.platforms || []}
         />

@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -27,14 +27,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    let query = (supabase
-      .from('projects') as any)
+    let query = supabase
+      .from('projects')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
 
     const status = searchParams.get('status');
-    if (status) query = query.eq('status', status as any);
+    if (status) query = query.eq('status', status);
 
     const { data: projects, error } = await query;
     if (error) throw error;
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id and name are required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -73,8 +73,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { data: project, error } = await (supabase
-      .from('projects') as any)
+    const { data: project, error } = await supabase
+      .from('projects')
       .insert({
         workspace_id,
         user_id: user.id,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { InvoiceStatus } from '@/types/invoices';
+import type { Database } from '@/types/database';
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,8 +19,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -30,8 +31,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query
-    let query = (supabase
-      .from('invoices') as any)
+    let query = supabase
+      .from('invoices')
       .select(`
         *,
         contact:contacts(id, name, email, company),
@@ -80,8 +81,8 @@ export async function GET(request: NextRequest) {
     if (error) throw error;
 
     // Get summary stats
-    const { data: allInvoices } = await (supabase
-      .from('invoices') as any)
+    const { data: allInvoices } = await supabase
+      .from('invoices')
       .select('status, total, amount_paid')
       .eq('workspace_id', workspaceId);
 
@@ -152,8 +153,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify membership with edit permissions
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate invoice number using database function
-    const { data: invoiceNumberResult, error: numberError } = await (supabase as any)
+    const { data: invoiceNumberResult, error: numberError } = await supabase
       .rpc('generate_invoice_number', { p_workspace_id: workspace_id });
 
     if (numberError) {
@@ -193,8 +194,8 @@ export async function POST(request: NextRequest) {
     const total = subtotal + taxAmount - discountValue;
 
     // Create invoice
-    const { data: invoice, error: invoiceError } = await (supabase
-      .from('invoices') as any)
+    const { data: invoice, error: invoiceError } = await supabase
+      .from('invoices')
       .insert({
         workspace_id,
         user_id: user.id,
@@ -244,7 +245,7 @@ export async function POST(request: NextRequest) {
       }, index: number) => ({
         invoice_id: invoice.id,
         workspace_id,
-        type: item.type || 'service',
+        type: (item.type || 'service') as Database['public']['Enums']['invoice_item_type'],
         description: item.description,
         quantity: item.quantity || 1,
         unit: item.unit || 'unit',
@@ -257,9 +258,9 @@ export async function POST(request: NextRequest) {
         position: item.position ?? index,
       }));
 
-      const { error: itemsError } = await (supabase
-        .from('invoice_items') as any)
-        .insert(invoiceItems as any);
+      const { error: itemsError } = await supabase
+        .from('invoice_items')
+        .insert(invoiceItems);
 
       if (itemsError) {
         console.error('Error creating invoice items:', itemsError);
@@ -268,7 +269,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log activity
-    await (supabase.from('invoice_activities') as any).insert({
+    await supabase.from('invoice_activities').insert({
       invoice_id: invoice.id,
       workspace_id,
       user_id: user.id,
@@ -278,8 +279,8 @@ export async function POST(request: NextRequest) {
     });
 
     // Fetch complete invoice with relations
-    const { data: completeInvoice } = await (supabase
-      .from('invoices') as any)
+    const { data: completeInvoice } = await supabase
+      .from('invoices')
       .select(`
         *,
         contact:contacts(id, name, email, company),
@@ -289,8 +290,8 @@ export async function POST(request: NextRequest) {
       .single();
 
     // Fetch items
-    const { data: invoiceItemsData } = await (supabase
-      .from('invoice_items') as any)
+    const { data: invoiceItemsData } = await supabase
+      .from('invoice_items')
       .select('*')
       .eq('invoice_id', invoice.id)
       .order('position', { ascending: true });

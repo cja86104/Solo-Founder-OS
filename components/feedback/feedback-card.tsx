@@ -29,7 +29,6 @@ import {
   MoreHorizontal,
   Mail,
   Globe,
-  Clock,
   User,
   Trash2,
   CheckCircle,

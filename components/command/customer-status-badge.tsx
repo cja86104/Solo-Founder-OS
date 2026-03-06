@@ -1,13 +1,12 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import type { CustomerStatus, SubscriptionStatus } from '@/types/command';
 import {
-  getCustomerStatusColor,
   getCustomerStatusLabel,
-  getSubscriptionStatusColor,
   getSubscriptionStatusLabel,
   calculateChurnRiskLevel,
+  type CustomerStatus,
+  type SubscriptionStatus,
 } from '@/types/command';
 import { Badge } from '@/components/ui/badge';
 import {

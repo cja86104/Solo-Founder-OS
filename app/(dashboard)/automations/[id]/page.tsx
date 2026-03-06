@@ -7,14 +7,14 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type {
-  AutomationWithRelations,
-  AutomationTriggerType,
-  AutomationActionType,
-  AutomationStatus,
-  UpdateAutomationInput,
+import {
+  TRIGGER_TYPES,
+  type AutomationWithRelations,
+  type AutomationTriggerType,
+  type AutomationActionType,
+  type AutomationStatus,
+  type UpdateAutomationInput,
 } from '@/types/automations';
-import { TRIGGER_TYPES } from '@/types/automations';
 import {
   AutomationStatusBadge,
   TriggerTypeBadge,
@@ -28,14 +28,12 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -142,7 +140,7 @@ export default function AutomationDetailPage() {
   const router = useRouter();
   const params = useParams();
   const automationId = params.id as string;
-  const { currentWorkspace, isLoading: workspaceLoading } = useWorkspace();
+  const { isLoading: workspaceLoading } = useWorkspace();
   const { can } = usePermissions();
 
   const [automation, setAutomation] = useState<AutomationWithRelations | null>(null);

@@ -62,7 +62,7 @@ export interface CreateVaultCollectionInput {
   is_public?: boolean;
 }
 
-export interface UpdateVaultCollectionInput extends Partial<CreateVaultCollectionInput> {}
+export type UpdateVaultCollectionInput = Partial<CreateVaultCollectionInput>;
 
 // Filter/search params
 export interface VaultFilters {

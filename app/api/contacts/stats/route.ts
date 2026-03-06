@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)

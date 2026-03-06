@@ -2,6 +2,7 @@
 
 import { BaseSectionProps, getSectionBackground, getSectionPadding } from './index'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 interface Logo {
   name: string
@@ -83,14 +84,17 @@ function LogoItem({
   const filter = theme === 'dark' ? 'brightness-0 invert' : ''
 
   const content = logo.image ? (
-    <img
+    <Image
       src={logo.image}
       alt={logo.name}
+      width={120}
+      height={40}
       className={cn(
         'h-8 md:h-10 w-auto object-contain transition-all',
         opacity,
         filter && `filter ${filter}`
       )}
+      unoptimized
     />
   ) : (
     <span className={cn(

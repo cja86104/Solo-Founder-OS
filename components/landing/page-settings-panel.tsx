@@ -7,7 +7,10 @@ import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
 import type { LandingPage } from "@/types/landing";
+import type { Database } from "@/types/database";
 import { slugify } from "@/lib/utils";
+
+type LandingPageUpdate = Database["public"]["Tables"]["landing_pages"]["Update"];
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,18 +46,22 @@ export function PageSettingsPanel({ page, onUpdate }: PageSettingsPanelProps) {
     setIsSaving(true);
 
     try {
+      const updateData: LandingPageUpdate = {
+        title: formData.title,
+        slug: formData.slug,
+        description: formData.description || null,
+        meta_title: formData.meta_title || null,
+        meta_description: formData.meta_description || null,
+        og_image: formData.og_image || null,
+        custom_css: formData.custom_css || null,
+        password: formData.password || null,
+      };
+      // Type assertion needed due to Supabase type inference issues with __InternalSupabase
       const { error } = await (supabase
-        .from("landing_pages") as any)
-        .update({
-          title: formData.title,
-          slug: formData.slug,
-          description: formData.description || null,
-          meta_title: formData.meta_title || null,
-          meta_description: formData.meta_description || null,
-          og_image: formData.og_image || null,
-          custom_css: formData.custom_css || null,
-          password: formData.password || null,
+        .from("landing_pages") as unknown as {
+          update: (data: LandingPageUpdate) => { eq: (column: string, value: string) => Promise<{ error: Error | null }> }
         })
+        .update(updateData)
         .eq("id", page.id);
 
       if (error) throw error;

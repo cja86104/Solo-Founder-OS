@@ -14,8 +14,8 @@ export async function GET(
 
     // If public token provided, allow public access
     if (publicToken) {
-      const { data: invoice, error } = await (supabase
-        .from('invoices') as any)
+      const { data: invoice, error } = await supabase
+        .from('invoices')
         .select(`
           *,
           contact:contacts(id, name, email, company),
@@ -30,8 +30,8 @@ export async function GET(
       }
 
       // Update view tracking
-      await (supabase
-        .from('invoices') as any)
+      await supabase
+        .from('invoices')
         .update({
           view_count: (invoice.view_count || 0) + 1,
           viewed_at: invoice.viewed_at || new Date().toISOString(),
@@ -40,8 +40,8 @@ export async function GET(
         .eq('id', id);
 
       // Fetch items
-      const { data: items } = await (supabase
-        .from('invoice_items') as any)
+      const { data: items } = await supabase
+        .from('invoice_items')
         .select('*')
         .eq('invoice_id', id)
         .order('position', { ascending: true });
@@ -58,8 +58,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: invoice, error } = await (supabase
-      .from('invoices') as any)
+    const { data: invoice, error } = await supabase
+      .from('invoices')
       .select(`
         *,
         contact:contacts(id, name, email, company),
@@ -74,8 +74,8 @@ export async function GET(
     }
 
     // Verify membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', invoice.workspace_id)
       .eq('user_id', user.id)
@@ -86,15 +86,15 @@ export async function GET(
     }
 
     // Fetch items
-    const { data: items } = await (supabase
-      .from('invoice_items') as any)
+    const { data: items } = await supabase
+      .from('invoice_items')
       .select('*')
       .eq('invoice_id', id)
       .order('position', { ascending: true });
 
     // Fetch payments
-    const { data: payments } = await (supabase
-      .from('invoice_payments') as any)
+    const { data: payments } = await supabase
+      .from('invoice_payments')
       .select(`
         *,
         user:profiles(id, full_name, avatar_url)
@@ -103,8 +103,8 @@ export async function GET(
       .order('payment_date', { ascending: false });
 
     // Fetch activities
-    const { data: activities } = await (supabase
-      .from('invoice_activities') as any)
+    const { data: activities } = await supabase
+      .from('invoice_activities')
       .select(`
         *,
         user:profiles(id, full_name, avatar_url)
@@ -141,8 +141,8 @@ export async function PATCH(
     }
 
     // Get existing invoice
-    const { data: existingInvoice } = await (supabase
-      .from('invoices') as any)
+    const { data: existingInvoice } = await supabase
+      .from('invoices')
       .select('workspace_id, status, invoice_number, sent_at')
       .eq('id', id)
       .single();
@@ -152,8 +152,8 @@ export async function PATCH(
     }
 
     // Verify membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existingInvoice.workspace_id)
       .eq('user_id', user.id)
@@ -212,8 +212,8 @@ export async function PATCH(
     updateData.updated_at = new Date().toISOString();
 
     // Update invoice
-    const { data: invoice, error } = await (supabase
-      .from('invoices') as any)
+    const { data: invoice, error } = await supabase
+      .from('invoices')
       .update(updateData)
       .eq('id', id)
       .select(`
@@ -228,8 +228,8 @@ export async function PATCH(
     // Handle items update if provided
     if (body.items && Array.isArray(body.items)) {
       // Delete existing items
-      await (supabase
-        .from('invoice_items') as any)
+      await supabase
+        .from('invoice_items')
         .delete()
         .eq('invoice_id', id);
 
@@ -262,12 +262,12 @@ export async function PATCH(
           position: item.position ?? index,
         }));
 
-        await (supabase.from('invoice_items') as any).insert(invoiceItems);
+        await supabase.from('invoice_items').insert(invoiceItems);
       }
 
       // Recalculate totals
-      const { data: items } = await (supabase
-        .from('invoice_items') as any)
+      const { data: items } = await supabase
+        .from('invoice_items')
         .select('amount, is_taxable')
         .eq('invoice_id', id);
 
@@ -276,11 +276,11 @@ export async function PATCH(
         const taxableAmount = items
           .filter((item) => item.is_taxable)
           .reduce((sum: number, item) => sum + Number(item.amount), 0);
-        const taxAmount = taxableAmount * (Number((invoice as any).tax_rate) / 100);
-        const total = subtotal + taxAmount - Number((invoice as any).discount_amount);
+        const taxAmount = taxableAmount * (Number(invoice.tax_rate) / 100);
+        const total = subtotal + taxAmount - Number(invoice.discount_amount);
 
-        await (supabase
-          .from('invoices') as any)
+        await supabase
+          .from('invoices')
           .update({ subtotal, tax_amount: taxAmount, total })
           .eq('id', id);
       }
@@ -288,7 +288,7 @@ export async function PATCH(
 
     // Log activity if status changed
     if (newStatus && newStatus !== oldStatus) {
-      await (supabase.from('invoice_activities') as any).insert({
+      await supabase.from('invoice_activities').insert({
         invoice_id: id,
         workspace_id: existingInvoice.workspace_id,
         user_id: user.id,
@@ -300,8 +300,8 @@ export async function PATCH(
     }
 
     // Fetch updated invoice with items
-    const { data: updatedInvoice } = await (supabase
-      .from('invoices') as any)
+    const { data: updatedInvoice } = await supabase
+      .from('invoices')
       .select(`
         *,
         contact:contacts(id, name, email, company),
@@ -310,8 +310,8 @@ export async function PATCH(
       .eq('id', id)
       .single();
 
-    const { data: items } = await (supabase
-      .from('invoice_items') as any)
+    const { data: items } = await supabase
+      .from('invoice_items')
       .select('*')
       .eq('invoice_id', id)
       .order('position', { ascending: true });
@@ -339,8 +339,8 @@ export async function DELETE(
     }
 
     // Get invoice
-    const { data: invoice } = await (supabase
-      .from('invoices') as any)
+    const { data: invoice } = await supabase
+      .from('invoices')
       .select('workspace_id, invoice_number, status')
       .eq('id', id)
       .single();
@@ -357,8 +357,8 @@ export async function DELETE(
     }
 
     // Verify admin/owner permissions
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', invoice.workspace_id)
       .eq('user_id', user.id)
@@ -369,8 +369,8 @@ export async function DELETE(
     }
 
     // Delete invoice (cascade will handle items, payments, activities)
-    const { error } = await (supabase
-      .from('invoices') as any)
+    const { error } = await supabase
+      .from('invoices')
       .delete()
       .eq('id', id);
 
@@ -408,8 +408,8 @@ export async function PUT(
     }
 
     // Get invoice
-    const { data: invoice } = await (supabase
-      .from('invoices') as any)
+    const { data: invoice } = await supabase
+      .from('invoices')
       .select('workspace_id, invoice_number, total, amount_paid, currency')
       .eq('id', id)
       .single();
@@ -419,8 +419,8 @@ export async function PUT(
     }
 
     // Verify membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', invoice.workspace_id)
       .eq('user_id', user.id)
@@ -431,8 +431,8 @@ export async function PUT(
     }
 
     // Create payment record
-    const { data: payment, error: paymentError } = await (supabase
-      .from('invoice_payments') as any)
+    const { data: payment, error: paymentError } = await supabase
+      .from('invoice_payments')
       .insert({
         invoice_id: id,
         workspace_id: invoice.workspace_id,
@@ -450,7 +450,7 @@ export async function PUT(
     if (paymentError) throw paymentError;
 
     // Log activity
-    await (supabase.from('invoice_activities') as any).insert({
+    await supabase.from('invoice_activities').insert({
       invoice_id: id,
       workspace_id: invoice.workspace_id,
       user_id: user.id,
@@ -460,8 +460,8 @@ export async function PUT(
     });
 
     // Fetch updated invoice
-    const { data: updatedInvoice } = await (supabase
-      .from('invoices') as any)
+    const { data: updatedInvoice } = await supabase
+      .from('invoices')
       .select(`
         *,
         contact:contacts(id, name, email, company),

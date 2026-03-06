@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,8 +17,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -27,14 +28,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    let query = (supabase
-      .from('content_posts') as any)
+    let query = supabase
+      .from('content_posts')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
 
     const status = searchParams.get('status');
-    if (status) query = query.eq('status', status as any);
+    if (status) query = query.eq('status', status as Database['public']['Enums']['post_status']);
 
     const contentType = searchParams.get('content_type');
     if (contentType) query = query.eq('content_type', contentType);
@@ -74,8 +75,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id and content are required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // Build insert object — only include extended columns if they have values,
     // so the query still works even if the migration hasn't been applied yet.
-    const insertData: Record<string, unknown> = {
+    const insertData: Database['public']['Tables']['content_posts']['Insert'] = {
       workspace_id,
       user_id: user.id,
       title: title || null,
@@ -105,15 +106,15 @@ export async function POST(request: NextRequest) {
     if (meta_description) insertData.meta_description = meta_description;
     if (category) insertData.category = category;
 
-    let result = await (supabase
-      .from('content_posts') as any)
+    let result = await supabase
+      .from('content_posts')
       .insert(insertData)
       .select()
       .single();
 
     // If it fails due to unknown columns, retry with base columns only
     if (result.error?.code === 'PGRST204') {
-      const baseData: Record<string, unknown> = {
+      const baseData: Database['public']['Tables']['content_posts']['Insert'] = {
         workspace_id,
         user_id: user.id,
         title: title || null,
@@ -124,8 +125,8 @@ export async function POST(request: NextRequest) {
         tags: tags || [],
       };
 
-      result = await (supabase
-        .from('content_posts') as any)
+      result = await supabase
+        .from('content_posts')
         .insert(baseData)
         .select()
         .single();

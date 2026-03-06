@@ -365,7 +365,7 @@ function PendingInviteRow({
 
       toast.success('Invitation cancelled');
       onCancelled?.();
-    } catch (err) {
+    } catch {
       toast.error('Failed to cancel invitation');
     } finally {
       setIsCancelling(false);

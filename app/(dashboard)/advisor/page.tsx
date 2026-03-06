@@ -13,13 +13,13 @@ import { AdvisorChat } from '@/components/advisor/advisor-chat';
 
 export default function AdvisorPage() {
   const { currentWorkspace, isLoading: workspaceLoading } = useWorkspace();
-  const { can } = usePermissions();
+  const { } = usePermissions();
 
   const [conversations, setConversations] = useState<AdvisorConversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [messages, setMessages] = useState<AdvisorMessage[]>([]);
   const [topicFilter, setTopicFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
 
   const fetchConversations = useCallback(async () => {

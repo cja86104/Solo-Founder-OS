@@ -7,11 +7,15 @@ import {
   Cell,
   ResponsiveContainer,
   Tooltip,
-  Legend,
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import type { MRRMetrics, Customer, RevenueEvent } from '@/types/command';
-import { formatCurrency, formatPercentage } from '@/types/command';
+import {
+  formatCurrency,
+  formatPercentage,
+  type MRRMetrics,
+  type Customer,
+  type RevenueEvent,
+} from '@/types/command';
 import {
   Card,
   CardContent,
@@ -595,7 +599,7 @@ export function RecentRevenueEvents({
 export function MonthlyTarget({
   currentMrr,
   targetMrr,
-  previousMrr,
+  previousMrr: _previousMrr,
   isLoading = false,
   currency = 'USD',
   className,

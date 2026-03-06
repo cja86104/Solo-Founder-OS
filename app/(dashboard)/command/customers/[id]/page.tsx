@@ -5,15 +5,13 @@ import { useRouter, useParams } from 'next/navigation';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useWorkspace } from '@/lib/workspace-context';
 import { usePermissions } from '@/hooks/use-permissions';
-import type {
-  Customer,
-  Subscription,
-  RevenueEvent,
-} from '@/types/command';
 import {
   formatCurrency,
   formatMRR,
   calculateChurnRiskLevel,
+  type Customer,
+  type Subscription,
+  type RevenueEvent,
 } from '@/types/command';
 import {
   CustomerStatusBadge,
@@ -21,7 +19,6 @@ import {
   ChurnRiskBadge,
 } from '@/components/command';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -52,14 +49,11 @@ import {
   Building2,
   Calendar,
   CreditCard,
-  DollarSign,
   TrendingUp,
   TrendingDown,
-  Clock,
   ExternalLink,
   User,
   AlertTriangle,
-  CheckCircle2,
   History,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -83,7 +77,7 @@ export default function CustomerDetailPage() {
   const params = useParams();
   const customerId = params.id as string;
   const { currentWorkspace, isLoading: workspaceLoading } = useWorkspace();
-  const { can } = usePermissions();
+  usePermissions();
 
   const [data, setData] = useState<CustomerDetailData>({
     customer: null,

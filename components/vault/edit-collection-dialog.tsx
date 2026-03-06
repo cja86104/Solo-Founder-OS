@@ -10,6 +10,9 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { vaultCollectionSchema, type VaultCollectionInput } from "@/lib/validations/vault";
 import { COLLECTION_COLORS } from "@/types/vault";
+import type { Database } from "@/types/database";
+
+type VaultCollectionUpdate = Database["public"]["Tables"]["vault_collections"]["Update"];
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -72,14 +75,15 @@ export function EditCollectionDialog({
     setIsLoading(true);
 
     try {
-      const { error } = await (supabase
-        .from("vault_collections") as any)
-        .update({
-          name: data.name,
-          description: data.description || null,
-          color: data.color || COLLECTION_COLORS[0],
-          is_public: data.is_public || false,
-        })
+      const updateData: VaultCollectionUpdate = {
+        name: data.name,
+        description: data.description || null,
+        color: data.color || COLLECTION_COLORS[0],
+        is_public: data.is_public || false,
+      };
+      const { error } = await supabase
+        .from("vault_collections")
+        .update(updateData)
         .eq("id", collection.id);
 
       if (error) throw error;
@@ -105,10 +109,10 @@ export function EditCollectionDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...(form as any)}>
-          <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
-              control={form.control as any}
+              control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
@@ -126,7 +130,7 @@ export function EditCollectionDialog({
             />
 
             <FormField
-              control={form.control as any}
+              control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
@@ -145,7 +149,7 @@ export function EditCollectionDialog({
             />
 
             <FormField
-              control={form.control as any}
+              control={form.control}
               name="color"
               render={({ field }) => (
                 <FormItem>
@@ -172,7 +176,7 @@ export function EditCollectionDialog({
             />
 
             <FormField
-              control={form.control as any}
+              control={form.control}
               name="is_public"
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-3">

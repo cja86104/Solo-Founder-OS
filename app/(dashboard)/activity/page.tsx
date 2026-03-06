@@ -13,13 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -41,13 +34,10 @@ import {
   Shield,
 } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
-import { toast } from 'sonner';
+import type { DateRange } from 'react-day-picker';
 import {
   ActivityWithActor,
-  ActivityCategory,
   AuditLog,
-  getCategoryLabel,
-  getCategoryIcon,
   getSeverityColor,
 } from '@/types/activity';
 import { cn } from '@/lib/utils';
@@ -61,7 +51,7 @@ export default function ActivityPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
     to: new Date(),
   });
@@ -99,10 +89,10 @@ export default function ActivityPage() {
       });
 
       if (search) params.set('search', search);
-      if (dateRange.from) {
+      if (dateRange?.from) {
         params.set('date_from', startOfDay(dateRange.from).toISOString());
       }
-      if (dateRange.to) {
+      if (dateRange?.to) {
         params.set('date_to', endOfDay(dateRange.to).toISOString());
       }
 
@@ -323,7 +313,7 @@ export default function ActivityPage() {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="justify-start">
                       <CalendarIcon className="h-4 w-4 mr-2" />
-                      {dateRange.from ? (
+                      {dateRange?.from ? (
                         dateRange.to ? (
                           <>
                             {format(dateRange.from, 'MMM d')} -{' '}
@@ -340,8 +330,8 @@ export default function ActivityPage() {
                   <PopoverContent className="w-auto p-0" align="end">
                     <Calendar
                       mode="range"
-                      selected={dateRange as any}
-                      onSelect={(range: any) => setDateRange(range || {})}
+                      selected={dateRange}
+                      onSelect={setDateRange}
                       numberOfMonths={2}
                     />
                   </PopoverContent>

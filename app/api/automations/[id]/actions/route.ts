@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database, Json } from '@/types/database';
 import type { CreateAutomationActionInput } from '@/types/automations';
+
+type AutomationActionRow = Database['public']['Tables']['automation_actions']['Row'];
 
 // =============================================================================
 // GET /api/automations/[id]/actions - List all actions for an automation
@@ -20,8 +23,8 @@ export async function GET(
     }
 
     // Fetch automation to verify access
-    const { data: automation, error: fetchError } = await (supabase
-      .from('automations') as any)
+    const { data: automation, error: fetchError } = await supabase
+      .from('automations')
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -34,8 +37,8 @@ export async function GET(
     }
 
     // Verify workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -49,8 +52,8 @@ export async function GET(
     }
 
     // Fetch actions
-    const { data: actions, error: actionsError } = await (supabase
-      .from('automation_actions') as any)
+    const { data: actions, error: actionsError } = await supabase
+      .from('automation_actions')
       .select('*')
       .eq('automation_id', id)
       .order('position', { ascending: true });
@@ -89,13 +92,13 @@ export async function POST(
     }
 
     // Fetch automation
-    const { data: automation, error: fetchError } = await (supabase
-      .from('automations') as any)
+    const { data: automationForPost, error: fetchError } = await supabase
+      .from('automations')
       .select('workspace_id')
       .eq('id', id)
       .single();
 
-    if (fetchError || !automation) {
+    if (fetchError || !automationForPost) {
       return NextResponse.json(
         { error: 'Automation not found' },
         { status: 404 }
@@ -103,21 +106,21 @@ export async function POST(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membershipForPost } = await supabase
+      .from('workspace_members')
       .select('role')
-      .eq('workspace_id', automation.workspace_id)
+      .eq('workspace_id', automationForPost.workspace_id)
       .eq('user_id', user.id)
       .single();
 
-    if (!membership) {
+    if (!membershipForPost) {
       return NextResponse.json(
         { error: 'Not authorized to modify this automation' },
         { status: 403 }
       );
     }
 
-    if (membership.role === 'viewer') {
+    if (membershipForPost.role === 'viewer') {
       return NextResponse.json(
         { error: 'Insufficient permissions. Editor role or higher required.' },
         { status: 403 }
@@ -143,8 +146,8 @@ export async function POST(
     // Get current max position if not provided
     let finalPosition = position;
     if (finalPosition === undefined) {
-      const { data: existingActions } = await (supabase
-        .from('automation_actions') as any)
+      const { data: existingActions } = await supabase
+        .from('automation_actions')
         .select('position')
         .eq('automation_id', id)
         .order('position', { ascending: false })
@@ -156,12 +159,12 @@ export async function POST(
     }
 
     // Create the action
-    const { data: action, error: createError } = await (supabase
-      .from('automation_actions') as any)
+    const { data: action, error: createError } = await supabase
+      .from('automation_actions')
       .insert({
         automation_id: id,
-        action_type,
-        action_config: (action_config || {}) as any,
+        action_type: action_type as Database['public']['Enums']['automation_action_type'],
+        action_config: (action_config || {}) as Json,
         position: finalPosition,
         parent_action_id: parent_action_id || null,
         branch_condition: branch_condition || null,
@@ -203,13 +206,13 @@ export async function PUT(
     }
 
     // Fetch automation
-    const { data: automation, error: fetchError } = await (supabase
-      .from('automations') as any)
+    const { data: automationForPut, error: fetchError } = await supabase
+      .from('automations')
       .select('workspace_id')
       .eq('id', id)
       .single();
 
-    if (fetchError || !automation) {
+    if (fetchError || !automationForPut) {
       return NextResponse.json(
         { error: 'Automation not found' },
         { status: 404 }
@@ -217,21 +220,21 @@ export async function PUT(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membershipForPut } = await supabase
+      .from('workspace_members')
       .select('role')
-      .eq('workspace_id', automation.workspace_id)
+      .eq('workspace_id', automationForPut.workspace_id)
       .eq('user_id', user.id)
       .single();
 
-    if (!membership) {
+    if (!membershipForPut) {
       return NextResponse.json(
         { error: 'Not authorized to modify this automation' },
         { status: 403 }
       );
     }
 
-    if (membership.role === 'viewer') {
+    if (membershipForPut.role === 'viewer') {
       return NextResponse.json(
         { error: 'Insufficient permissions. Editor role or higher required.' },
         { status: 403 }
@@ -256,26 +259,26 @@ export async function PUT(
     }
 
     // Delete all existing actions
-    await (supabase
-      .from('automation_actions') as any)
+    await supabase
+      .from('automation_actions')
       .delete()
       .eq('automation_id', id);
 
     // Insert new actions
-    let createdActions: Array<Record<string, unknown>> = [];
+    let createdActions: AutomationActionRow[] = [];
     if (actions.length > 0) {
       const actionsToInsert = actions.map((action, index) => ({
         automation_id: id,
-        action_type: action.action_type,
-        action_config: (action.action_config || {}) as any,
+        action_type: action.action_type as Database['public']['Enums']['automation_action_type'],
+        action_config: (action.action_config || {}) as Json,
         position: action.position ?? index,
         parent_action_id: action.parent_action_id || null,
-        branch_condition: (action.branch_condition || null) as any,
+        branch_condition: action.branch_condition || null,
       }));
 
-      const { data: insertedActions, error: insertError } = await (supabase
-        .from('automation_actions') as any)
-        .insert(actionsToInsert as any)
+      const { data: insertedActions, error: insertError } = await supabase
+        .from('automation_actions')
+        .insert(actionsToInsert)
         .select();
 
       if (insertError) {

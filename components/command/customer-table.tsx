@@ -3,12 +3,11 @@
 import { useState, useMemo } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
-import type { Customer, CustomerStatus, SubscriptionStatus } from '@/types/command';
 import {
   formatCurrency,
   formatMRR,
-  getCustomerStatusLabel,
-  calculateChurnRiskLevel,
+  type Customer,
+  type CustomerStatus,
 } from '@/types/command';
 import {
   CustomerStatusBadge,
@@ -334,7 +333,7 @@ function CustomerRow({
 export function CustomerTable({
   customers,
   isLoading = false,
-  onSelectCustomer,
+  onSelectCustomer: _onSelectCustomer,
   onViewCustomer,
   onEmailCustomer,
   onViewInStripe,

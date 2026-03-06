@@ -78,7 +78,15 @@ export default function ContentPage() {
   const router = useRouter();
   const { currentWorkspace } = useWorkspace();
   const [posts, setPosts] = useState<ContentPostWithAuthor[]>([]);
-  const [ideas, setIdeas] = useState<any[]>([]);
+  interface ContentIdea {
+  id: string;
+  title: string;
+  content?: string;
+  tags?: string[];
+  created_at: string;
+}
+
+const [ideas, setIdeas] = useState<ContentIdea[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<ContentPostWithAuthor | null>(null);
@@ -201,7 +209,7 @@ export default function ContentPage() {
   };
 
   const handleEditPost = (post: ContentPostWithAuthor) => {
-    if ((post as any).content_type === 'article') {
+    if (post.content_type === 'article') {
       router.push(`/content/edit/${post.id}`);
       return;
     }
@@ -223,7 +231,7 @@ export default function ContentPage() {
       } else {
         toast.error('Failed to delete post');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete post');
     }
   };
@@ -231,9 +239,9 @@ export default function ContentPage() {
   // ── Part 5: Content Actions ──────────────────────────────────────────────
 
   const handleSaveLocal = (post: ContentPostWithAuthor) => {
-    const contentType = (post as any).content_type || 'post';
+    const contentType = post.content_type || 'post';
     const safeTitle = (post.title || 'untitled').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
-    const mediaUrls: string[] = (post as any).media_urls || [];
+    const mediaUrls: string[] = post.media_urls || [];
     const platforms = (post.platforms || []).join(', ');
     const tags = (post.tags || []).join(', ');
 
@@ -345,13 +353,13 @@ export default function ContentPage() {
           workspace_id: currentWorkspace.id,
           title: `Copy of ${post.title || 'Untitled'}`,
           content: post.content || '',
-          content_type: (post as any).content_type || 'post',
+          content_type: post.content_type || 'post',
           platforms: post.platforms || [],
           tags: post.tags || [],
           slug: null,
-          meta_description: (post as any).meta_description || null,
-          category: (post as any).category || null,
-          media_urls: (post as any).media_urls || [],
+          meta_description: post.meta_description || null,
+          category: post.category || null,
+          media_urls: post.media_urls || [],
         }),
       });
 
@@ -475,7 +483,7 @@ export default function ContentPage() {
     }
   };
 
-  const handlePromoteIdea = (idea: any) => {
+  const handlePromoteIdea = (idea: ContentIdea) => {
     setEditingPost(null);
     setIsDialogOpen(true);
     // Pre-fill will happen through the dialog open; we set a dummy post-like object
@@ -760,9 +768,9 @@ export default function ContentPage() {
                     )}
                   </CardHeader>
                   <CardContent className="pt-0">
-                    {(idea.tags || []).length > 0 && (
+                    {(idea.tags ?? []).length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-3">
-                        {idea.tags.map((tag: string) => (
+                        {(idea.tags ?? []).map((tag: string) => (
                           <Badge key={tag} variant="secondary" className="text-xs">
                             {tag}
                           </Badge>
@@ -813,7 +821,7 @@ export default function ContentPage() {
         onOpenChange={(open) => {
           if (!open) handleDialogClose();
         }}
-        post={editingPost as any}
+        post={editingPost}
         workspaceId={currentWorkspace.id}
         onGenerateAI={handleGenerateAI}
         onSubmit={async (data) => {

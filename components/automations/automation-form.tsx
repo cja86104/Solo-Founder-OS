@@ -1,18 +1,17 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type {
-  Automation,
-  AutomationWithActions,
-  AutomationTriggerType,
-  AutomationStatus,
-  CreateAutomationInput,
-  UpdateAutomationInput,
+import {
+  TRIGGER_TYPES,
+  type Automation,
+  type AutomationWithActions,
+  type AutomationTriggerType,
+  type AutomationStatus,
+  type CreateAutomationInput,
+  type UpdateAutomationInput,
 } from '@/types/automations';
-import { TRIGGER_TYPES } from '@/types/automations';
 import { TriggerConfigForm } from './trigger-config-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,7 +40,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import {
   Loader2,

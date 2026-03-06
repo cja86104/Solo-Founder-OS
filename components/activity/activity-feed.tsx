@@ -43,7 +43,7 @@ interface ActivityFeedProps {
 // ============================================================================
 
 export function ActivityFeed({
-  workspaceId,
+  workspaceId: _workspaceId,
   activities = [],
   isLoading = false,
   error = null,

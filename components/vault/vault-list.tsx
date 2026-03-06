@@ -16,6 +16,7 @@ interface VaultItem {
   tags: string[] | null;
   is_favorite: boolean | null;
   is_public: boolean | null;
+  use_count: number | null;
   created_at: string | null;
   collection: { id: string; name: string; color: string | null; icon: string | null } | null;
 }

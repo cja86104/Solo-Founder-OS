@@ -4,6 +4,7 @@ import { BaseSectionProps, getSectionBackground, getSectionPadding } from './ind
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Play } from 'lucide-react'
 import { useLeadCapture } from '@/components/landing/lead-capture-provider'
+import Image from 'next/image'
 
 interface HeroContent {
   headline?: string
@@ -29,7 +30,7 @@ interface HeroContent {
   showEmailCapture?: boolean
 }
 
-export function HeroSection({ content, settings, theme, pageId }: BaseSectionProps) {
+export function HeroSection({ content, settings, theme, pageId: _pageId }: BaseSectionProps) {
   const heroContent = content as HeroContent
   const { openCapture } = useLeadCapture()
   const bgClass = getSectionBackground(theme, settings)
@@ -135,11 +136,14 @@ function CenteredLayout({
       </div>
 
       {content.image && (
-        <div className="mt-12 rounded-xl overflow-hidden shadow-2xl">
-          <img
+        <div className="mt-12 rounded-xl overflow-hidden shadow-2xl relative">
+          <Image
             src={content.image.url}
             alt={content.image.alt || 'Hero image'}
+            width={1200}
+            height={675}
             className="w-full h-auto"
+            unoptimized
           />
         </div>
       )}
@@ -213,11 +217,14 @@ function SplitLayout({
 
       <div>
         {content.image && (
-          <div className="rounded-xl overflow-hidden shadow-2xl">
-            <img
+          <div className="rounded-xl overflow-hidden shadow-2xl relative">
+            <Image
               src={content.image.url}
               alt={content.image.alt || 'Hero image'}
+              width={1200}
+              height={675}
               className="w-full h-auto"
+              unoptimized
             />
           </div>
         )}

@@ -20,6 +20,9 @@ import {
 import { toast } from "sonner";
 import { formatRelativeTime, truncate } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import type { Database } from "@/types/database";
+
+type VaultItemUpdate = Database["public"]["Tables"]["vault_items"]["Update"];
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,6 +54,7 @@ interface VaultItem {
   tags: string[] | null;
   is_favorite: boolean | null;
   is_public: boolean | null;
+  use_count: number | null;
   created_at: string | null;
   collection: { id: string; name: string; color: string | null; icon: string | null } | null;
 }
@@ -87,9 +91,10 @@ export function VaultItemCard({ item }: { item: VaultItem }) {
       toast.success("Copied to clipboard!");
 
       // Update copy count
-      await (supabase
-        .from("vault_items") as any)
-        .update({ use_count: ((item as any).use_count || 0) + 1 })
+      const updateData: VaultItemUpdate = { use_count: (item.use_count || 0) + 1 };
+      await supabase
+        .from("vault_items")
+        .update(updateData)
         .eq("id", item.id);
     } catch {
       toast.error("Failed to copy");
@@ -100,9 +105,10 @@ export function VaultItemCard({ item }: { item: VaultItem }) {
     const newValue = !isFavorite;
     setIsFavorite(newValue);
 
-    const { error } = await (supabase
-      .from("vault_items") as any)
-      .update({ is_favorite: newValue })
+    const favoriteUpdate: VaultItemUpdate = { is_favorite: newValue };
+    const { error } = await supabase
+      .from("vault_items")
+      .update(favoriteUpdate)
       .eq("id", item.id);
 
     if (error) {
@@ -114,8 +120,8 @@ export function VaultItemCard({ item }: { item: VaultItem }) {
   const handleDelete = async () => {
     setIsDeleting(true);
 
-    const { error } = await (supabase
-      .from("vault_items") as any)
+    const { error } = await supabase
+      .from("vault_items")
       .delete()
       .eq("id", item.id);
 

@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     const now = new Date();
 
     // Find schedules that are due, joined with their active automations
-    const { data: dueSchedules, error: queryError } = await (supabase
-      .from('automation_schedules') as any)
+    const { data: dueSchedules, error: queryError } = await supabase
+      .from('automation_schedules')
       .select(`
         id,
         automation_id,
@@ -54,8 +54,8 @@ export async function GET(request: NextRequest) {
 
       try {
         // Create a run record
-        const { error: runError } = await (supabase
-          .from('automation_runs') as any)
+        const { error: runError } = await supabase
+          .from('automation_runs')
           .insert({
             automation_id: automation.id,
             workspace_id: automation.workspace_id,
@@ -79,8 +79,8 @@ export async function GET(request: NextRequest) {
         // A full cron parser (e.g. cron-parser npm) can be added later for accuracy.
         const nextRun = computeNextRun(schedule.cron_expression, now);
 
-        await (supabase
-          .from('automation_schedules') as any)
+        await supabase
+          .from('automation_schedules')
           .update({
             next_run_at: nextRun.toISOString(),
             last_run_at: now.toISOString(),

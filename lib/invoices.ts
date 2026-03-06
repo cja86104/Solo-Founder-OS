@@ -5,7 +5,6 @@
 
 import type {
   Invoice,
-  InvoiceItem,
   InvoiceWithRelations,
   CreateInvoiceInput,
   CreateInvoiceItemInput,

@@ -20,7 +20,17 @@ export default function ArticleEditPage({
   const { currentWorkspace } = useWorkspace();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [post, setPost] = useState<Record<string, any> | null>(null);
+interface ArticlePost {
+  id: string;
+  title: string | null;
+  content: string;
+  slug: string | null;
+  meta_description: string | null;
+  category: string | null;
+  status: string | null;
+}
+
+const [post, setPost] = useState<ArticlePost | null>(null);
 
   // Form state
   const [title, setTitle] = useState('');

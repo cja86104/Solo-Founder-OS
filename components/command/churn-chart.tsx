@@ -2,10 +2,7 @@
 
 import { useMemo } from 'react';
 import {
-  AreaChart,
   Area,
-  LineChart,
-  Line,
   BarChart,
   Bar,
   ComposedChart,
@@ -15,13 +12,17 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Cell,
   ReferenceLine,
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
-import type { MRRHistory, Customer, ChurnAnalysis } from '@/types/command';
-import { formatCurrency, calculateChurnRiskLevel } from '@/types/command';
+import {
+  formatCurrency,
+  calculateChurnRiskLevel,
+  type MRRHistory,
+  type Customer,
+  type ChurnAnalysis,
+} from '@/types/command';
 import {
   Card,
   CardContent,
@@ -452,7 +453,7 @@ export function AtRiskCustomersCard({
 export function ChurnSummaryCard({
   analysis,
   isLoading = false,
-  currency = 'USD',
+  currency: _currency = 'USD',
   className,
 }: ChurnSummaryCardProps) {
   if (isLoading) {

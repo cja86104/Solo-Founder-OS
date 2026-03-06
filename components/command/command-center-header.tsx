@@ -37,7 +37,6 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
-  Clock,
   Zap,
   CreditCard,
   Users,
@@ -131,7 +130,7 @@ function SyncStatusIndicator({ lastSync, isSyncing }: SyncStatusIndicatorProps) 
 // Sync Type Icons
 // =============================================================================
 
-const syncTypeIcons: Record<SyncType, React.ElementType> = {
+const _syncTypeIcons: Record<SyncType, React.ElementType> = {
   full: Zap,
   incremental: RefreshCw,
   customers: Users,

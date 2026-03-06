@@ -91,7 +91,7 @@ export default function BillingSettingsPage() {
       if (url) {
         window.location.href = url;
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to start checkout');
     } finally {
       setIsLoading(null);
@@ -117,7 +117,7 @@ export default function BillingSettingsPage() {
       if (url) {
         window.location.href = url;
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to access billing portal');
     } finally {
       setIsLoading(null);

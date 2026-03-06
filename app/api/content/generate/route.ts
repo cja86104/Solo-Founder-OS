@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -152,12 +152,17 @@ ${typeInstruction}${platformInstructions}
 Return the content as clean HTML (use <p>, <strong>, <em>, <ul>, <li>, <h2>, <h3> tags as appropriate). Do not include any explanation or preamble — just the content itself.`;
 }
 
+interface IdeaItem {
+  title?: string;
+  description?: string;
+}
+
 function parseIdeas(content: string): Array<{ title: string; description: string }> {
   try {
     // Try to parse as JSON directly
-    const parsed = JSON.parse(content.trim());
+    const parsed = JSON.parse(content.trim()) as unknown;
     if (Array.isArray(parsed)) {
-      return parsed.map((item: any) => ({
+      return parsed.map((item: IdeaItem) => ({
         title: item.title || 'Untitled Idea',
         description: item.description || '',
       }));
@@ -167,9 +172,9 @@ function parseIdeas(content: string): Array<{ title: string; description: string
     const jsonMatch = content.match(/\[[\s\S]*\]/);
     if (jsonMatch) {
       try {
-        const parsed = JSON.parse(jsonMatch[0]);
+        const parsed = JSON.parse(jsonMatch[0]) as unknown;
         if (Array.isArray(parsed)) {
-          return parsed.map((item: any) => ({
+          return parsed.map((item: IdeaItem) => ({
             title: item.title || 'Untitled Idea',
             description: item.description || '',
           }));

@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { formatRelativeTime, formatNumber } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import type { LandingPage } from "@/types/landing";
+import type { Json } from "@/types/database";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -76,13 +77,19 @@ export function LandingPageCard({ page }: { page: LandingPage }) {
         return;
       }
 
-      const { error } = await (supabase.from("landing_pages") as any).insert({
+      if (!page.workspace_id) {
+        toast.error("Cannot duplicate: workspace not found");
+        return;
+      }
+
+      const { error } = await supabase.from("landing_pages").insert({
+        workspace_id: page.workspace_id,
         user_id: user.id,
         title: `${page.title} (Copy)`,
         slug: `${page.slug}-copy-${Date.now()}`,
         description: page.description,
         template: page.template,
-        content: page.content,
+        content: page.content as unknown as Json,
         status: "draft",
       });
 

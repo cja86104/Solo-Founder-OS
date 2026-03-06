@@ -4,10 +4,9 @@
 // ============================================================================
 
 import {
-  WorkspaceRole,
-  ProductPermissions,
   ROLE_HIERARCHY,
-  DEFAULT_PERMISSIONS,
+  type WorkspaceRole,
+  type ProductPermissions,
 } from '@/types/workspace';
 
 // ============================================================================

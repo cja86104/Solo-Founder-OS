@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getActivities, getActivitySummary, logActivity } from '@/lib/activity';
-import { ActivityFilters } from '@/types/activity';
+import type { ActivityFilters, ActivityCategory } from '@/types/activity';
 
 // ============================================================================
 // GET /api/activity - List activities
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
     // Parse filters
     const filters: ActivityFilters = {};
     if (searchParams.get('category')) {
-      const categories = searchParams.get('category')!.split(',');
-      filters.category = categories.length === 1 ? categories[0] as any : categories as any;
+      const categories = searchParams.get('category')!.split(',') as ActivityCategory[];
+      filters.category = categories.length === 1 ? categories[0] : categories;
     }
     if (searchParams.get('resource_type')) {
       filters.resource_type = searchParams.get('resource_type')!;
@@ -143,8 +143,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)

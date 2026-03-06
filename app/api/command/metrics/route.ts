@@ -67,8 +67,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify user has access to workspace
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -90,16 +90,16 @@ export async function GET(request: NextRequest) {
     if (includeCustomers) {
       if (customerId) {
         // Fetch single customer by ID
-        const { data } = await (supabase
-          .from('customers') as any)
+        const { data } = await supabase
+          .from('customers')
           .select('*')
           .eq('workspace_id', workspaceId)
           .eq('id', customerId)
           .single();
         customer = data as Customer;
       } else {
-        const { data } = await (supabase
-          .from('customers') as any)
+        const { data } = await supabase
+          .from('customers')
           .select('*')
           .eq('workspace_id', workspaceId)
           .order('mrr', { ascending: false })
@@ -111,8 +111,8 @@ export async function GET(request: NextRequest) {
     // Optionally include subscriptions
     let subscriptions: Subscription[] | undefined;
     if (includeSubscriptions) {
-      let subQuery = (supabase
-        .from('stripe_subscriptions') as any)
+      let subQuery = supabase
+        .from('stripe_subscriptions')
         .select('*')
         .eq('workspace_id', workspaceId);
       if (customerId) {
@@ -127,8 +127,8 @@ export async function GET(request: NextRequest) {
     // Optionally include revenue events
     let events: RevenueEvent[] | undefined;
     if (includeEvents) {
-      let eventsQuery = (supabase
-        .from('revenue_events') as any)
+      let eventsQuery = supabase
+        .from('revenue_events')
         .select('*')
         .eq('workspace_id', workspaceId);
       if (customerId) {
@@ -174,8 +174,8 @@ async function getCurrentMetrics(
   workspaceId: string
 ): Promise<MRRMetrics> {
   // Get all customers
-  const { data: customers } = await (supabase
-    .from('customers') as any)
+  const { data: customers } = await supabase
+    .from('customers')
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -183,14 +183,11 @@ async function getCurrentMetrics(
     return getEmptyMetrics();
   }
 
-  type CustomerRow = { status: string; mrr: number };
-  type EventRow = { event_type: string; mrr_impact: number };
-
   // Current MRR from active customers
   const activeCustomers = customers.filter(
-    (c: CustomerRow) => c.status === 'active' || c.status === 'new' || c.status === 'at_risk'
+    (c) => c.status === 'active' || c.status === 'new' || c.status === 'at_risk'
   );
-  const currentMRR = activeCustomers.reduce((sum: number, c: CustomerRow) => sum + Number(c.mrr || 0), 0);
+  const currentMRR = activeCustomers.reduce((sum, c) => sum + Number(c.mrr || 0), 0);
   const currentARR = currentMRR * 12;
 
   // Get previous month's MRR for comparison
@@ -198,8 +195,8 @@ async function getCurrentMetrics(
   lastMonth.setMonth(lastMonth.getMonth() - 1);
   const lastMonthStr = lastMonth.toISOString().split('T')[0];
 
-  const { data: previousRecord, error: prevError } = await (supabase
-    .from('mrr_history') as any)
+  const { data: previousRecord, error: prevError } = await supabase
+    .from('mrr_history')
     .select('mrr')
     .eq('workspace_id', workspaceId)
     .eq('period_type', 'daily')
@@ -217,8 +214,8 @@ async function getCurrentMetrics(
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const { data: revenueEvents } = await (supabase
-    .from('revenue_events') as any)
+  const { data: revenueEvents } = await supabase
+    .from('revenue_events')
     .select('event_type, mrr_impact')
     .eq('workspace_id', workspaceId)
     .gte('event_date', thirtyDaysAgo.toISOString());
@@ -231,7 +228,7 @@ async function getCurrentMetrics(
     reactivation: 0,
   };
 
-  revenueEvents?.forEach((event: EventRow) => {
+  revenueEvents?.forEach((event) => {
     const type = event.event_type as keyof typeof eventTotals;
     if (type in eventTotals) {
       eventTotals[type] += Math.abs(Number(event.mrr_impact || 0));
@@ -240,9 +237,9 @@ async function getCurrentMetrics(
 
   // Customer counts
   const totalCustomers = customers.length;
-  const newCustomers = customers.filter((c: CustomerRow) => c.status === 'new').length;
-  const churnedCustomers = customers.filter((c: CustomerRow) => c.status === 'churned').length;
-  const atRiskCustomers = customers.filter((c: CustomerRow) => c.status === 'at_risk').length;
+  const newCustomers = customers.filter((c) => c.status === 'new').length;
+  const churnedCustomers = customers.filter((c) => c.status === 'churned').length;
+  const atRiskCustomers = customers.filter((c) => c.status === 'at_risk').length;
 
   // Rates
   const churnRate = totalCustomers > 0 ? (churnedCustomers / totalCustomers) * 100 : 0;
@@ -284,8 +281,8 @@ async function getMRRHistory(
   startDate?: string | null,
   endDate?: string | null
 ): Promise<MRRHistory[]> {
-  let query = (supabase
-    .from('mrr_history') as any)
+  let query = supabase
+    .from('mrr_history')
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('period_type', period)
@@ -322,8 +319,8 @@ async function getChurnAnalysis(
   workspaceId: string
 ): Promise<ChurnAnalysis> {
   // Get at-risk customers
-  const { data: atRiskCustomers } = await (supabase
-    .from('customers') as any)
+  const { data: atRiskCustomers } = await supabase
+    .from('customers')
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('status', 'at_risk')
@@ -334,8 +331,8 @@ async function getChurnAnalysis(
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const { data: recentlyChurned } = await (supabase
-    .from('customers') as any)
+  const { data: recentlyChurned } = await supabase
+    .from('customers')
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('status', 'churned')
@@ -344,13 +341,13 @@ async function getChurnAnalysis(
     .limit(10);
 
   // Calculate current churn rate
-  const { data: allCustomers } = await (supabase
-    .from('customers') as any)
+  const { data: allCustomers } = await supabase
+    .from('customers')
     .select('status')
     .eq('workspace_id', workspaceId);
 
   const total = allCustomers?.length || 0;
-  const churned = allCustomers?.filter((c: { status: string }) => c.status === 'churned').length || 0;
+  const churned = allCustomers?.filter((c) => c.status === 'churned').length || 0;
   const currentChurnRate = total > 0 ? (churned / total) * 100 : 0;
 
   // Get previous month churn rate
@@ -358,8 +355,8 @@ async function getChurnAnalysis(
   lastMonth.setMonth(lastMonth.getMonth() - 1);
   const lastMonthStr = lastMonth.toISOString().split('T')[0];
 
-  const { data: previousRecord, error: churnHistoryError } = await (supabase
-    .from('mrr_history') as any)
+  const { data: previousRecord, error: churnHistoryError } = await supabase
+    .from('mrr_history')
     .select('churn_rate')
     .eq('workspace_id', workspaceId)
     .lte('period_date', lastMonthStr)
@@ -380,8 +377,8 @@ async function getChurnAnalysis(
   }
 
   // Analyze churn reasons from revenue events
-  const { data: churnEvents } = await (supabase
-    .from('revenue_events') as any)
+  const { data: churnEvents } = await supabase
+    .from('revenue_events')
     .select('description')
     .eq('workspace_id', workspaceId)
     .eq('event_type', 'churn')

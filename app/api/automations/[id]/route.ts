@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database, Json } from '@/types/database';
 import type { UpdateAutomationInput } from '@/types/automations';
+
+type AutomationActionRow = Database['public']['Tables']['automation_actions']['Row'];
+type AutomationScheduleRow = Database['public']['Tables']['automation_schedules']['Row'];
+type AutomationWebhookRow = Database['public']['Tables']['automation_webhooks']['Row'];
 
 // =============================================================================
 // GET /api/automations/[id] - Get a single automation with full details
@@ -20,8 +25,8 @@ export async function GET(
     }
 
     // Fetch automation
-    const { data: automation, error: fetchError } = await (supabase
-      .from('automations') as any)
+    const { data: automation, error: fetchError } = await supabase
+      .from('automations')
       .select('*')
       .eq('id', id)
       .single();
@@ -34,8 +39,8 @@ export async function GET(
     }
 
     // Verify workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', automation.workspace_id)
       .eq('user_id', user.id)
@@ -49,17 +54,17 @@ export async function GET(
     }
 
     // Fetch related actions
-    const { data: actions } = await (supabase
-      .from('automation_actions') as any)
+    const { data: actions } = await supabase
+      .from('automation_actions')
       .select('*')
       .eq('automation_id', id)
       .order('position', { ascending: true });
 
     // Fetch schedule if applicable
-    let schedule = null;
+    let schedule: AutomationScheduleRow | null = null;
     if (automation.trigger_type === 'scheduled') {
-      const { data: scheduleData } = await (supabase
-        .from('automation_schedules') as any)
+      const { data: scheduleData } = await supabase
+        .from('automation_schedules')
         .select('*')
         .eq('automation_id', id)
         .single();
@@ -67,10 +72,10 @@ export async function GET(
     }
 
     // Fetch webhook if applicable
-    let webhook = null;
+    let webhook: AutomationWebhookRow | null = null;
     if (automation.trigger_type === 'webhook') {
-      const { data: webhookData } = await (supabase
-        .from('automation_webhooks') as any)
+      const { data: webhookData } = await supabase
+        .from('automation_webhooks')
         .select('*')
         .eq('automation_id', id)
         .single();
@@ -78,8 +83,8 @@ export async function GET(
     }
 
     // Fetch recent runs (last 10)
-    const { data: recentRuns } = await (supabase
-      .from('automation_runs') as any)
+    const { data: recentRuns } = await supabase
+      .from('automation_runs')
       .select('*')
       .eq('automation_id', id)
       .order('created_at', { ascending: false })
@@ -120,8 +125,8 @@ export async function PATCH(
     }
 
     // Fetch existing automation
-    const { data: existingAutomation, error: fetchError } = await (supabase
-      .from('automations') as any)
+    const { data: existingAutomation, error: fetchError } = await supabase
+      .from('automations')
       .select('*')
       .eq('id', id)
       .single();
@@ -134,8 +139,8 @@ export async function PATCH(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existingAutomation.workspace_id)
       .eq('user_id', user.id)
@@ -198,8 +203,8 @@ export async function PATCH(
     if (status !== undefined) updateData.status = status;
 
     // Update the automation
-    const { data: updatedAutomation, error: updateError } = await (supabase
-      .from('automations') as any)
+    const { data: updatedAutomation, error: updateError } = await supabase
+      .from('automations')
       .update(updateData)
       .eq('id', id)
       .select()
@@ -211,11 +216,11 @@ export async function PATCH(
     }
 
     // Handle actions update if provided (replace all)
-    let updatedActions: Array<Record<string, unknown>> = [];
+    let updatedActions: AutomationActionRow[] = [];
     if (actions !== undefined) {
       // Delete existing actions
-      await (supabase
-        .from('automation_actions') as any)
+      await supabase
+        .from('automation_actions')
         .delete()
         .eq('automation_id', id);
 
@@ -223,16 +228,16 @@ export async function PATCH(
       if (actions.length > 0) {
         const actionsToInsert = actions.map((action, index) => ({
           automation_id: id,
-          action_type: action.action_type,
-          action_config: (action.action_config || {}) as any,
+          action_type: action.action_type as Database['public']['Enums']['automation_action_type'],
+          action_config: (action.action_config || {}) as Json,
           position: action.position ?? index,
           parent_action_id: action.parent_action_id || null,
-          branch_condition: (action.branch_condition || null) as any,
+          branch_condition: action.branch_condition || null,
         }));
 
-        const { data: insertedActions, error: actionsError } = await (supabase
-          .from('automation_actions') as any)
-          .insert(actionsToInsert as any)
+        const { data: insertedActions, error: actionsError } = await supabase
+          .from('automation_actions')
+          .insert(actionsToInsert)
           .select();
 
         if (actionsError) {
@@ -243,8 +248,8 @@ export async function PATCH(
       }
     } else {
       // Fetch existing actions if not updating them
-      const { data: existingActions } = await (supabase
-        .from('automation_actions') as any)
+      const { data: existingActions } = await supabase
+        .from('automation_actions')
         .select('*')
         .eq('automation_id', id)
         .order('position', { ascending: true });
@@ -260,8 +265,8 @@ export async function PATCH(
         const scheduleConfig = newConfig as { cron_expression?: string; timezone?: string };
         if (scheduleConfig?.cron_expression) {
           // Upsert schedule
-          await (supabase
-            .from('automation_schedules') as any)
+          await supabase
+            .from('automation_schedules')
             .upsert({
               automation_id: id,
               cron_expression: scheduleConfig.cron_expression,
@@ -270,8 +275,8 @@ export async function PATCH(
         }
       } else if (existingAutomation.trigger_type === 'scheduled') {
         // Remove schedule if trigger type changed away from scheduled
-        await (supabase
-          .from('automation_schedules') as any)
+        await supabase
+          .from('automation_schedules')
           .delete()
           .eq('automation_id', id);
       }
@@ -279,8 +284,8 @@ export async function PATCH(
       // Handle webhook updates similarly
       if (newTriggerType === 'webhook') {
         const webhookConfig = newConfig as { require_signature?: boolean; allowed_ips?: string[] };
-        await (supabase
-          .from('automation_webhooks') as any)
+        await supabase
+          .from('automation_webhooks')
           .upsert({
             automation_id: id,
             workspace_id: existingAutomation.workspace_id,
@@ -288,8 +293,8 @@ export async function PATCH(
             allowed_ips: webhookConfig?.allowed_ips || null,
           }, { onConflict: 'automation_id' });
       } else if (existingAutomation.trigger_type === 'webhook') {
-        await (supabase
-          .from('automation_webhooks') as any)
+        await supabase
+          .from('automation_webhooks')
           .delete()
           .eq('automation_id', id);
       }
@@ -326,13 +331,13 @@ export async function DELETE(
     }
 
     // Fetch existing automation
-    const { data: existingAutomation, error: fetchError } = await (supabase
-      .from('automations') as any)
+    const { data: existingAutomationForDelete, error: fetchError } = await supabase
+      .from('automations')
       .select('workspace_id')
       .eq('id', id)
       .single();
 
-    if (fetchError || !existingAutomation) {
+    if (fetchError || !existingAutomationForDelete) {
       return NextResponse.json(
         { error: 'Automation not found' },
         { status: 404 }
@@ -340,21 +345,21 @@ export async function DELETE(
     }
 
     // Verify workspace membership with admin+ role
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membershipForDelete } = await supabase
+      .from('workspace_members')
       .select('role')
-      .eq('workspace_id', existingAutomation.workspace_id)
+      .eq('workspace_id', existingAutomationForDelete.workspace_id)
       .eq('user_id', user.id)
       .single();
 
-    if (!membership) {
+    if (!membershipForDelete) {
       return NextResponse.json(
         { error: 'Not authorized to delete this automation' },
         { status: 403 }
       );
     }
 
-    if (membership.role !== 'owner' && membership.role !== 'admin') {
+    if (membershipForDelete.role !== 'owner' && membershipForDelete.role !== 'admin') {
       return NextResponse.json(
         { error: 'Insufficient permissions. Admin role or higher required to delete automations.' },
         { status: 403 }
@@ -362,8 +367,8 @@ export async function DELETE(
     }
 
     // Delete the automation (cascades to actions, schedules, webhooks via FK)
-    const { error: deleteError } = await (supabase
-      .from('automations') as any)
+    const { error: deleteError } = await supabase
+      .from('automations')
       .delete()
       .eq('id', id);
 

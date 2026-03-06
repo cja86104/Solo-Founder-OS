@@ -11,6 +11,11 @@ import { createClient } from "@/lib/supabase/client";
 import { useWorkspace } from "@/lib/workspace-context";
 import { vaultItemSchema, type VaultItemInput } from "@/lib/validations/vault";
 import { LANGUAGES, ITEM_TYPES, COLLECTION_COLORS } from "@/types/vault";
+import type { Database } from "@/types/database";
+
+type VaultCollectionInsert = Database["public"]["Tables"]["vault_collections"]["Insert"];
+type VaultItemInsert = Database["public"]["Tables"]["vault_items"]["Insert"];
+type VaultItemUpdate = Database["public"]["Tables"]["vault_items"]["Update"];
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -120,14 +125,15 @@ export function VaultItemForm({ collections: initialCollections, initialData }: 
         return;
       }
 
-      const { data, error } = await (supabase.from("vault_collections") as any)
-        .insert({
-          workspace_id: currentWorkspace.id,
-          user_id: user.id,
-          name: newCollectionName.trim(),
-          color: newCollectionColor,
-          is_public: false,
-        })
+      const collectionInsert: VaultCollectionInsert = {
+        workspace_id: currentWorkspace.id,
+        user_id: user.id,
+        name: newCollectionName.trim(),
+        color: newCollectionColor,
+        is_public: false,
+      };
+      const { data, error } = await supabase.from("vault_collections")
+        .insert(collectionInsert)
         .select("id, name, color, icon")
         .single();
 
@@ -167,7 +173,7 @@ export function VaultItemForm({ collections: initialCollections, initialData }: 
         return;
       }
 
-      const itemData = {
+      const itemData: VaultItemInsert = {
         workspace_id: currentWorkspace.id,
         user_id: user.id,
         title: data.title,
@@ -181,9 +187,10 @@ export function VaultItemForm({ collections: initialCollections, initialData }: 
       };
 
       if (isEditing) {
-        const { error } = await (supabase
-          .from("vault_items") as any)
-          .update(itemData)
+        const updateData: VaultItemUpdate = itemData;
+        const { error } = await supabase
+          .from("vault_items")
+          .update(updateData)
           .eq("id", initialData.id);
 
         if (error) {
@@ -193,7 +200,7 @@ export function VaultItemForm({ collections: initialCollections, initialData }: 
         }
         toast.success("Item updated successfully");
       } else {
-        const { error } = await (supabase.from("vault_items") as any).insert(itemData);
+        const { error } = await supabase.from("vault_items").insert(itemData);
 
         if (error) {
           console.error("Vault insert error:", error.message, error.code, error.details, error.hint);
@@ -205,8 +212,8 @@ export function VaultItemForm({ collections: initialCollections, initialData }: 
 
       router.push("/vault");
       router.refresh();
-    } catch (error: any) {
-      const msg = error?.message || "Unknown error";
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Unknown error";
       toast.error(isEditing ? `Failed to update: ${msg}` : `Failed to create: ${msg}`);
       console.error("Vault submit error:", error);
     } finally {

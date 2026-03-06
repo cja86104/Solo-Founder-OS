@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import type { AutomationActionType } from '@/types/automations';
-import { ACTION_TYPES } from '@/types/automations';
+import { ACTION_TYPES, type AutomationActionType } from '@/types/automations';
 import { ActionConfigForm } from './action-config-form';
 import { Button } from '@/components/ui/button';
 import {

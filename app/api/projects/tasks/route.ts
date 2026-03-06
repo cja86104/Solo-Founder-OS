@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    let query = (supabase
-      .from('tasks') as any)
+    let query = supabase
+      .from('tasks')
       .select(`*, project:projects(id, name, color)`)
       .eq('workspace_id', workspaceId)
       .order('position', { ascending: true });
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     if (projectId) query = query.eq('project_id', projectId);
 
     const status = searchParams.get('status');
-    if (status) query = query.eq('status', status as any);
+    if (status) query = query.eq('status', status);
 
     const assigneeId = searchParams.get('assignee_id');
     if (assigneeId) query = query.eq('assignee_id', assigneeId);
@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id and title are required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { data: task, error } = await (supabase
-      .from('tasks') as any)
+    const { data: task, error } = await supabase
+      .from('tasks')
       .insert({
         workspace_id,
         project_id: project_id || null,
@@ -122,8 +122,8 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'task_id is required' }, { status: 400 });
     }
 
-    const { data: task } = await (supabase
-      .from('tasks') as any)
+    const { data: task } = await supabase
+      .from('tasks')
       .select('workspace_id')
       .eq('id', task_id)
       .single();
@@ -132,8 +132,8 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', task.workspace_id)
       .eq('user_id', user.id)
@@ -155,8 +155,8 @@ export async function PATCH(request: NextRequest) {
       filtered.completed_at = new Date().toISOString();
     }
 
-    const { data: updated, error } = await (supabase
-      .from('tasks') as any)
+    const { data: updated, error } = await supabase
+      .from('tasks')
       .update(filtered)
       .eq('id', task_id)
       .select(`*, project:projects(id, name, color)`)
@@ -186,8 +186,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'task_id is required' }, { status: 400 });
     }
 
-    const { data: task } = await (supabase
-      .from('tasks') as any)
+    const { data: task } = await supabase
+      .from('tasks')
       .select('workspace_id')
       .eq('id', taskId)
       .single();
@@ -196,8 +196,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', task.workspace_id)
       .eq('user_id', user.id)
@@ -207,7 +207,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { error } = await (supabase.from('tasks') as any).delete().eq('id', taskId);
+    const { error } = await supabase.from('tasks').delete().eq('id', taskId);
     if (error) throw error;
 
     return NextResponse.json({ success: true });

@@ -8,9 +8,6 @@ import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Table,
@@ -35,7 +32,6 @@ import {
   Search,
   DollarSign,
   Clock,
-  CheckCircle2,
   AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';

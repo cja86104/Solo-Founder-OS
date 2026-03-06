@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type { TopPage, TopReferrer, TopCampaign } from '@/types/analytics';
-import { formatNumber, formatDuration, formatPercentage } from '@/types/analytics';
+import {
+  formatNumber,
+  formatDuration,
+  formatPercentage,
+  type TopPage,
+  type TopReferrer,
+  type TopCampaign,
+} from '@/types/analytics';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -31,9 +37,7 @@ import {
 } from '@/components/ui/tooltip';
 import {
   FileText,
-  ExternalLink,
   Globe,
-  TrendingUp,
   Users,
   Clock,
   ChevronRight,

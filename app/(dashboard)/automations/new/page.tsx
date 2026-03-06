@@ -7,12 +7,12 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import type {
-  AutomationTriggerType,
-  AutomationActionType,
-  CreateAutomationInput,
+import {
+  TRIGGER_TYPES,
+  type AutomationTriggerType,
+  type AutomationActionType,
+  type CreateAutomationInput,
 } from '@/types/automations';
-import { TRIGGER_TYPES } from '@/types/automations';
 import { TriggerConfigForm } from '@/components/automations/trigger-config-form';
 import { ActionBuilder } from '@/components/automations/action-builder';
 import { Button } from '@/components/ui/button';
@@ -148,7 +148,7 @@ export default function NewAutomationPage() {
 
     setIsSubmitting(true);
     try {
-      const payload: CreateAutomationInput & { workspace_id: string; actions?: any[] } = {
+      const payload: CreateAutomationInput & { workspace_id: string; actions?: Array<{ action_type: AutomationActionType; action_config: Record<string, unknown>; position: number }> } = {
         workspace_id: currentWorkspace.id,
         name: values.name,
         description: values.description || undefined,

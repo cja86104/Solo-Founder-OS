@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import {
   ContentPostWithAuthor,
   getContentTypeIcon,
@@ -91,7 +92,7 @@ export function PostCard({
     previewText = stripHtml(rawContent).slice(0, 150);
   }
   const contentPreview = previewText + (previewText.length >= 150 ? '...' : '');
-  const postMediaUrls = ((post as any).media_urls as string[]) || [];
+  const postMediaUrls = post.media_urls || [];
 
   if (variant === 'compact') {
     return (
@@ -152,10 +153,13 @@ export function PostCard({
         {/* Thumbnail or Type Icon */}
         <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center shrink-0 overflow-hidden">
           {post.thumbnail_url ? (
-            <img
+            <Image
               src={post.thumbnail_url}
               alt=""
+              width={64}
+              height={64}
               className="h-full w-full object-cover"
+              unoptimized
             />
           ) : (
             <span className="text-2xl">{getContentTypeIcon(post.content_type)}</span>
@@ -270,11 +274,13 @@ export function PostCard({
     >
       {/* Thumbnail */}
       {post.thumbnail_url && (
-        <div className="aspect-video overflow-hidden rounded-t-lg">
-          <img
+        <div className="aspect-video overflow-hidden rounded-t-lg relative">
+          <Image
             src={post.thumbnail_url}
             alt=""
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
+            unoptimized
           />
         </div>
       )}
@@ -338,11 +344,13 @@ export function PostCard({
       <CardContent className="pb-3">
         {/* Media thumbnail */}
         {postMediaUrls.length > 0 && (
-          <div className="mb-2 rounded-md overflow-hidden">
-            <img
+          <div className="mb-2 rounded-md overflow-hidden relative h-32">
+            <Image
               src={postMediaUrls[0]}
               alt=""
-              className="w-full h-32 object-cover"
+              fill
+              className="object-cover"
+              unoptimized
             />
             {postMediaUrls.length > 1 && (
               <p className="text-xs text-muted-foreground mt-1">

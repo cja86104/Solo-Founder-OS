@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { getPlatformIcon, getPlatformLabel, getContentTypeIcon } from '@/types/content';
 import { Badge } from '@/components/ui/badge';
@@ -100,15 +101,21 @@ function PostRenderer({
             )}
           >
             {mediaUrls.map((url, i) => (
-              <img
+              <div
                 key={i}
-                src={url}
-                alt=""
                 className={cn(
-                  'w-full object-cover',
-                  mediaUrls.length === 1 ? 'max-h-80' : 'h-40'
+                  'relative w-full',
+                  mediaUrls.length === 1 ? 'h-80' : 'h-40'
                 )}
-              />
+              >
+                <Image
+                  src={url}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
             ))}
           </div>
         )}
@@ -193,11 +200,15 @@ function ThreadRenderer({
               dangerouslySetInnerHTML={{ __html: segment.text }}
             />
             {segment.media_url && (
-              <img
-                src={segment.media_url}
-                alt=""
-                className="w-full rounded-lg max-h-60 object-cover"
-              />
+              <div className="relative w-full h-60">
+                <Image
+                  src={segment.media_url}
+                  alt=""
+                  fill
+                  className="rounded-lg object-cover"
+                  unoptimized
+                />
+              </div>
             )}
           </div>
         </div>

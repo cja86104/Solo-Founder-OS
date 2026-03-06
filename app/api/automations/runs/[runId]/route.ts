@@ -20,8 +20,8 @@ export async function GET(
     }
 
     // Fetch run
-    const { data: run, error: fetchError } = await (supabase
-      .from('automation_runs') as any)
+    const { data: run, error: fetchError } = await supabase
+      .from('automation_runs')
       .select('*')
       .eq('id', runId)
       .single();
@@ -34,8 +34,8 @@ export async function GET(
     }
 
     // Verify workspace membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', run.workspace_id)
       .eq('user_id', user.id)
@@ -49,15 +49,15 @@ export async function GET(
     }
 
     // Fetch associated automation info
-    const { data: automation } = await (supabase
-      .from('automations') as any)
+    const { data: automation } = await supabase
+      .from('automations')
       .select('id, name, trigger_type, status')
       .eq('id', run.automation_id)
       .single();
 
     // Fetch all logs for this run
-    const { data: logs } = await (supabase
-      .from('automation_run_logs') as any)
+    const { data: logs } = await supabase
+      .from('automation_run_logs')
       .select('*')
       .eq('run_id', runId)
       .order('created_at', { ascending: true });
@@ -71,8 +71,8 @@ export async function GET(
 
     let actionsMap: Record<string, { action_type: string; position: number }> = {};
     if (actionIds.length > 0) {
-      const { data: actions } = await (supabase
-        .from('automation_actions') as any)
+      const { data: actions } = await supabase
+        .from('automation_actions')
         .select('id, action_type, position')
         .in('id', actionIds.filter((id): id is string => id !== null));
 
@@ -123,13 +123,13 @@ export async function PATCH(
     }
 
     // Fetch run
-    const { data: run, error: fetchError } = await (supabase
-      .from('automation_runs') as any)
+    const { data: runForPatch, error: fetchError } = await supabase
+      .from('automation_runs')
       .select('*')
       .eq('id', runId)
       .single();
 
-    if (fetchError || !run) {
+    if (fetchError || !runForPatch) {
       return NextResponse.json(
         { error: 'Run not found' },
         { status: 404 }
@@ -137,21 +137,21 @@ export async function PATCH(
     }
 
     // Verify workspace membership with editor+ role
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membershipForPatch } = await supabase
+      .from('workspace_members')
       .select('role')
-      .eq('workspace_id', run.workspace_id)
+      .eq('workspace_id', runForPatch.workspace_id)
       .eq('user_id', user.id)
       .single();
 
-    if (!membership) {
+    if (!membershipForPatch) {
       return NextResponse.json(
         { error: 'Not authorized to modify this run' },
         { status: 403 }
       );
     }
 
-    if (membership.role === 'viewer') {
+    if (membershipForPatch.role === 'viewer') {
       return NextResponse.json(
         { error: 'Insufficient permissions. Editor role or higher required.' },
         { status: 403 }
@@ -162,22 +162,22 @@ export async function PATCH(
 
     if (action === 'cancel') {
       // Can only cancel pending or running automations
-      if (run.status !== 'pending' && run.status !== 'running') {
+      if (runForPatch.status !== 'pending' && runForPatch.status !== 'running') {
         return NextResponse.json(
-          { error: `Cannot cancel a run with status: ${run.status}` },
+          { error: `Cannot cancel a run with status: ${runForPatch.status}` },
           { status: 400 }
         );
       }
 
       // Update status to cancelled
-      const { data: updatedRun, error: updateError } = await (supabase
-        .from('automation_runs') as any)
+      const { data: updatedRun, error: updateError } = await supabase
+        .from('automation_runs')
         .update({
           status: 'cancelled' as AutomationRunStatus,
           completed_at: new Date().toISOString(),
           error_message: 'Cancelled by user',
-          duration_ms: run.started_at
-            ? new Date().getTime() - new Date(run.started_at).getTime()
+          duration_ms: runForPatch.started_at
+            ? new Date().getTime() - new Date(runForPatch.started_at).getTime()
             : null,
         })
         .eq('id', runId)
@@ -190,7 +190,7 @@ export async function PATCH(
       }
 
       // Log the cancellation
-      await (supabase.from('automation_run_logs') as any).insert({
+      await supabase.from('automation_run_logs').insert({
         run_id: runId,
         level: 'warning',
         message: 'Automation run cancelled by user',

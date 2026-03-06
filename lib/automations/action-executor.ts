@@ -104,13 +104,13 @@ async function executeCreateTask(
     dueDate = d.toISOString();
   }
 
-  const { error } = await (supabase.from('tasks') as any).insert({
+  const { error } = await supabase.from('tasks').insert({
     workspace_id: workspaceId,
     user_id: config.assignee_id || '',
     project_id: config.project_id || null,
     title: config.title,
     description: config.description || null,
-    priority: config.priority as any,
+    priority: config.priority,
     due_date: dueDate,
     assignee_id: config.assignee_id || null,
     status: 'todo',
@@ -130,8 +130,8 @@ async function executeUpdateContact(
   const contactId = triggerData.contact_id as string;
   if (!contactId) throw new Error('No contact_id in trigger data');
 
-  const { error } = await (supabase
-    .from('contacts') as any)
+  const { error } = await supabase
+    .from('contacts')
     .update(config.fields)
     .eq('id', contactId);
 
@@ -149,8 +149,8 @@ async function executeAddTag(
   const contactId = triggerData.contact_id as string;
   if (!contactId) throw new Error('No contact_id in trigger data');
 
-  const { data: contact, error: fetchError } = await (supabase
-    .from('contacts') as any)
+  const { data: contact, error: fetchError } = await supabase
+    .from('contacts')
     .select('tags')
     .eq('id', contactId)
     .single();
@@ -160,8 +160,8 @@ async function executeAddTag(
   const current = (contact?.tags || []) as string[];
   const merged = [...new Set([...current, ...config.tags])];
 
-  const { error } = await (supabase
-    .from('contacts') as any)
+  const { error } = await supabase
+    .from('contacts')
     .update({ tags: merged })
     .eq('id', contactId);
 
@@ -176,8 +176,8 @@ async function executeRemoveTag(
   const contactId = triggerData.contact_id as string;
   if (!contactId) throw new Error('No contact_id in trigger data');
 
-  const { data: contact, error: fetchError } = await (supabase
-    .from('contacts') as any)
+  const { data: contact, error: fetchError } = await supabase
+    .from('contacts')
     .select('tags')
     .eq('id', contactId)
     .single();
@@ -187,8 +187,8 @@ async function executeRemoveTag(
   const current = (contact?.tags || []) as string[];
   const filtered = current.filter((t) => !config.tags.includes(t));
 
-  const { error } = await (supabase
-    .from('contacts') as any)
+  const { error } = await supabase
+    .from('contacts')
     .update({ tags: filtered })
     .eq('id', contactId);
 
@@ -206,8 +206,8 @@ async function executeMoveDeal(
   const dealId = triggerData.deal_id as string;
   if (!dealId) throw new Error('No deal_id in trigger data');
 
-  const { error } = await (supabase
-    .from('deals') as any)
+  const { error } = await supabase
+    .from('deals')
     .update({ stage_id: config.stage_id })
     .eq('id', dealId);
 
@@ -226,7 +226,7 @@ async function executeCreateDeal(
     ? (triggerData[config.contact_field] as string)
     : (triggerData.contact_id as string | undefined);
 
-  const { error } = await (supabase.from('deals') as any).insert({
+  const { error } = await supabase.from('deals').insert({
     workspace_id: workspaceId,
     name: config.name,
     pipeline_id: config.pipeline_id,
@@ -246,8 +246,8 @@ async function executeUpdateDeal(
   const dealId = triggerData.deal_id as string;
   if (!dealId) throw new Error('No deal_id in trigger data');
 
-  const { error } = await (supabase
-    .from('deals') as any)
+  const { error } = await supabase
+    .from('deals')
     .update(config.fields)
     .eq('id', dealId);
 

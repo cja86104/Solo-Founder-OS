@@ -19,8 +19,8 @@ export async function DELETE(
     }
 
     // Get submission to check workspace
-    const { data: submission } = await (supabase
-      .from('feedback_submissions') as any)
+    const { data: submission } = await supabase
+      .from('feedback_submissions')
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -30,8 +30,8 @@ export async function DELETE(
     }
 
     // Check membership - only admins/owners can delete
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', submission.workspace_id)
       .eq('user_id', user.id)
@@ -41,8 +41,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { error } = await (supabase
-      .from('feedback_submissions') as any)
+    const { error } = await supabase
+      .from('feedback_submissions')
       .delete()
       .eq('id', id);
 

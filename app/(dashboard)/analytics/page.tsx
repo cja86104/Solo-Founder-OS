@@ -4,16 +4,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useWorkspace } from '@/lib/workspace-context';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDistanceToNow, format, parseISO, isValid } from 'date-fns';
-import type { AnalyticsPeriod } from '@/types/analytics';
-import { getPeriodLabel, formatNumber, formatPercentage } from '@/types/analytics';
-import type {
-  InsightsResponse,
-  OverviewInsights,
-  RevenueInsights,
-  GrowthInsights,
-  ProductivityInsights,
-  ActivityInsights,
-} from '@/types/insights';
+import {
+  getPeriodLabel,
+  formatNumber,
+  formatPercentage,
+  type AnalyticsPeriod,
+} from '@/types/analytics';
+// Consolidated import for analytics
+import type { InsightsResponse } from '@/types/insights';
 import { AnalyticsMetricCard } from '@/components/analytics';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,9 +51,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 import {
   LineChart,
@@ -81,16 +76,6 @@ import { toast } from 'sonner';
 // Constants
 // =============================================================================
 
-const PIE_COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(210, 70%, 60%)',
-  'hsl(30, 70%, 60%)',
-];
-
 const PRIORITY_COLORS: Record<string, string> = {
   urgent: 'text-red-600 bg-red-100',
   high: 'text-orange-600 bg-orange-100',
@@ -102,14 +87,21 @@ const PRIORITY_COLORS: Record<string, string> = {
 // Custom Tooltip
 // =============================================================================
 
-function ChartTooltip({ active, payload, label, prefix = '' }: any) {
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: Array<{ color: string; name: string; value: number }>;
+  label?: string;
+  prefix?: string;
+}
+
+function ChartTooltip({ active, payload, label, prefix = '' }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-popover border rounded-lg shadow-lg p-3 min-w-[140px]">
       <p className="text-sm font-medium mb-1">
         {label && isValid(parseISO(label)) ? format(parseISO(label), 'MMM d, yyyy') : label}
       </p>
-      {payload.map((entry: any, i: number) => (
+      {payload.map((entry, i: number) => (
         <div key={i} className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />

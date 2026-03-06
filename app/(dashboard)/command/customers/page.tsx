@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/lib/workspace-context';
 import { usePermissions } from '@/hooks/use-permissions';
 import type { Customer } from '@/types/command';
@@ -14,9 +14,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -32,7 +29,6 @@ import { toast } from 'sonner';
 
 export default function CustomersPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { currentWorkspace, isLoading: workspaceLoading } = useWorkspace();
   const { can } = usePermissions();
 

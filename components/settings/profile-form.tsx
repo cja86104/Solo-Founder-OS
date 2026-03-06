@@ -10,7 +10,9 @@ import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
-import type { Profile } from "@/types/database";
+import type { Profile, Database } from "@/types/database";
+
+type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
 import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,12 +71,16 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
 
     try {
       // Update profile in database
+      const profileData: ProfileUpdate = {
+        full_name: data.fullName,
+        updated_at: new Date().toISOString(),
+      };
+      // Type assertion needed due to Supabase type inference issues with __InternalSupabase
       const { error: profileError } = await (supabase
-        .from("profiles") as any)
-        .update({
-          full_name: data.fullName,
-          updated_at: new Date().toISOString(),
+        .from("profiles") as unknown as {
+          update: (data: ProfileUpdate) => { eq: (column: string, value: string) => Promise<{ error: Error | null }> }
         })
+        .update(profileData)
         .eq("id", user.id);
 
       if (profileError) throw profileError;
@@ -136,12 +142,16 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
         .getPublicUrl(filePath);
 
       // Update profile with new avatar URL
+      const avatarUpdateData: ProfileUpdate = {
+        avatar_url: urlData.publicUrl,
+        updated_at: new Date().toISOString(),
+      };
+      // Type assertion needed due to Supabase type inference issues with __InternalSupabase
       const { error: updateError } = await (supabase
-        .from("profiles") as any)
-        .update({
-          avatar_url: urlData.publicUrl,
-          updated_at: new Date().toISOString(),
+        .from("profiles") as unknown as {
+          update: (data: ProfileUpdate) => { eq: (column: string, value: string) => Promise<{ error: Error | null }> }
         })
+        .update(avatarUpdateData)
         .eq("id", user.id);
 
       if (updateError) throw updateError;

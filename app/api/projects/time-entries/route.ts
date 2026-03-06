@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    let query = (supabase
-      .from('time_entries') as any)
+    let query = supabase
+      .from('time_entries')
       .select(`*, project:projects(id, name, color), task:tasks(id, title)`)
       .eq('workspace_id', workspaceId)
       .order('started_at', { ascending: false });
@@ -65,8 +65,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -76,8 +76,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { data: entry, error } = await (supabase
-      .from('time_entries') as any)
+    const { data: entry, error } = await supabase
+      .from('time_entries')
       .insert({
         workspace_id,
         user_id: user.id,
@@ -118,8 +118,8 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'entry_id is required' }, { status: 400 });
     }
 
-    const { data: entry } = await (supabase
-      .from('time_entries') as any)
+    const { data: entry } = await supabase
+      .from('time_entries')
       .select('workspace_id, user_id, started_at')
       .eq('id', entry_id)
       .single();
@@ -129,8 +129,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Only owner can edit their own entries, or admins can edit any
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', entry.workspace_id)
       .eq('user_id', user.id)
@@ -160,8 +160,8 @@ export async function PATCH(request: NextRequest) {
       filtered.is_running = false;
     }
 
-    const { data: updated, error } = await (supabase
-      .from('time_entries') as any)
+    const { data: updated, error } = await supabase
+      .from('time_entries')
       .update(filtered)
       .eq('id', entry_id)
       .select(`*, project:projects(id, name, color), task:tasks(id, title)`)
@@ -191,8 +191,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'entry_id is required' }, { status: 400 });
     }
 
-    const { data: entry } = await (supabase
-      .from('time_entries') as any)
+    const { data: entry } = await supabase
+      .from('time_entries')
       .select('workspace_id, user_id')
       .eq('id', entryId)
       .single();
@@ -201,8 +201,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Entry not found' }, { status: 404 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', entry.workspace_id)
       .eq('user_id', user.id)
@@ -216,7 +216,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Can only delete your own entries' }, { status: 403 });
     }
 
-    const { error } = await (supabase.from('time_entries') as any).delete().eq('id', entryId);
+    const { error } = await supabase.from('time_entries').delete().eq('id', entryId);
     if (error) throw error;
 
     return NextResponse.json({ success: true });

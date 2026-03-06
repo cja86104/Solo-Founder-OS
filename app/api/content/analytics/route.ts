@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all posts for analytics
-    const { data: posts, error } = await (supabase
-      .from('content_posts') as any)
+    const { data: posts, error } = await supabase
+      .from('content_posts')
       .select('id, title, content_type, status, platforms, tags, created_at, published_at, scheduled_at, updated_at')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -45,22 +45,22 @@ export async function GET(request: NextRequest) {
 
     // Compute analytics
     const totalPosts = allPosts.length;
-    const published = allPosts.filter((p: any) => p.status === 'published');
-    const scheduled = allPosts.filter((p: any) => p.status === 'scheduled');
-    const drafts = allPosts.filter((p: any) => p.status === 'draft');
-    const archived = allPosts.filter((p: any) => p.status === 'archived');
+    const published = allPosts.filter((p) => p.status === 'published');
+    const scheduled = allPosts.filter((p) => p.status === 'scheduled');
+    const drafts = allPosts.filter((p) => p.status === 'draft');
+    const archived = allPosts.filter((p) => p.status === 'archived');
 
     // Content type breakdown
     const byType: Record<string, number> = {};
     for (const p of allPosts) {
-      const ct = (p as any).content_type || 'post';
+      const ct = p.content_type || 'post';
       byType[ct] = (byType[ct] || 0) + 1;
     }
 
     // Platform breakdown
     const byPlatform: Record<string, number> = {};
     for (const p of allPosts) {
-      const platforms = (p as any).platforms || [];
+      const platforms = p.platforms || [];
       for (const pl of platforms) {
         byPlatform[pl] = (byPlatform[pl] || 0) + 1;
       }
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     // Tag breakdown (top 10)
     const tagCounts: Record<string, number> = {};
     for (const p of allPosts) {
-      const tags = (p as any).tags || [];
+      const tags = p.tags || [];
       for (const t of tags) {
         tagCounts[t] = (tagCounts[t] || 0) + 1;
       }
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const recentlyPublished = published.filter(
-      (p: any) => p.published_at && new Date(p.published_at) >= thirtyDaysAgo
+      (p) => p.published_at && new Date(p.published_at) >= thirtyDaysAgo
     );
 
     // Weekly publishing breakdown
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       weekEnd.setDate(weekEnd.getDate() - i * 7);
       const label = `Week ${4 - i}`;
       const count = published.filter(
-        (p: any) =>
+        (p) =>
           p.published_at &&
           new Date(p.published_at) >= weekStart &&
           new Date(p.published_at) < weekEnd
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     // Top performing posts (most recently published, as engagement tracking is basic)
     const topPosts = published
       .slice(0, 5)
-      .map((p: any) => ({
+      .map((p) => ({
         id: p.id,
         title: p.title,
         content_type: p.content_type,
@@ -115,13 +115,13 @@ export async function GET(request: NextRequest) {
       }));
 
     // Fetch engagement data if table exists
-    let engagement = { total_views: 0, total_likes: 0, total_shares: 0, total_comments: 0 };
-    let postEngagement: any[] = [];
+    const engagement = { total_views: 0, total_likes: 0, total_shares: 0, total_comments: 0 };
+    let postEngagement: { post_id: string; views: number | null; likes: number | null; shares: number | null; comments: number | null }[] = [];
     try {
-      const { data: engData } = await (supabase
-        .from('content_engagement') as any)
+      const { data: engData } = await supabase
+        .from('content_engagement')
         .select('post_id, views, likes, shares, comments')
-        .in('post_id', allPosts.map((p: any) => p.id));
+        .in('post_id', allPosts.map((p) => p.id));
 
       if (engData && engData.length > 0) {
         postEngagement = engData;
@@ -198,8 +198,8 @@ export async function POST(request: NextRequest) {
     // The user-scoped client enforces RLS — if the post is in a workspace the user
     // doesn't belong to, this query returns null and we exit with 404.
     // This establishes a DB-verified trust chain before the admin client is used.
-    const { data: post, error: postError } = await (supabase
-      .from('content_posts') as any)
+    const { data: post, error: postError } = await supabase
+      .from('content_posts')
       .select('id, workspace_id')
       .eq('id', post_id)
       .single();
@@ -208,26 +208,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    const column = event_type === 'view' ? 'views' : `${event_type}s`;
+    type EngagementColumn = 'views' | 'likes' | 'shares' | 'comments';
+    const column: EngagementColumn = event_type === 'view' ? 'views' : `${event_type}s` as EngagementColumn;
 
     // Safe to use admin client now — workspace ownership confirmed above via RLS
     try {
       const admin = createAdminClient();
 
-      const { data: existing } = await ((admin as any)
-        .from('content_engagement'))
-        .select('id, ' + column)
+      const { data: existing } = await admin
+        .from('content_engagement')
+        .select('id, views, likes, shares, comments')
         .eq('post_id', post_id)
         .single();
 
       if (existing) {
-        await ((admin as any)
-          .from('content_engagement'))
+        await admin
+          .from('content_engagement')
           .update({ [column]: (existing[column] || 0) + 1 })
           .eq('id', existing.id);
       } else {
-        await ((admin as any)
-          .from('content_engagement'))
+        await admin
+          .from('content_engagement')
           .insert({
             post_id,
             [column]: 1,

@@ -16,6 +16,7 @@ import {
   Clock,
   AlertCircle,
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface InvoiceItem {
   id: string;
@@ -168,10 +169,13 @@ export function PublicInvoiceView({ invoice, items, workspace }: PublicInvoiceVi
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-10">
             <div>
               {logoUrl ? (
-                <img
+                <Image
                   src={logoUrl}
                   alt="Company Logo"
+                  width={220}
+                  height={56}
                   className="h-14 max-w-[220px] object-contain mb-4"
+                  unoptimized
                 />
               ) : (
                 <h1

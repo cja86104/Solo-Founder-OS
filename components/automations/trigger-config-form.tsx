@@ -3,9 +3,7 @@
 import { useFormContext } from 'react-hook-form';
 import type { AutomationTriggerType } from '@/types/automations';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -22,8 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { X, Plus, Info } from 'lucide-react';
+import { X, Info } from 'lucide-react';
 import { useState } from 'react';
 
 // =============================================================================

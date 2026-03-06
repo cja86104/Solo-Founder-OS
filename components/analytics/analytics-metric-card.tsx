@@ -2,12 +2,13 @@
 
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type { TrendDirection, MetricType, AnalyticsMetrics } from '@/types/analytics';
 import {
   formatNumber,
   formatPercentage,
   formatDuration,
   getTrendDirection,
+  type MetricType,
+  type AnalyticsMetrics,
 } from '@/types/analytics';
 import {
   Card,
@@ -24,8 +25,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import {
-  TrendingUp,
-  TrendingDown,
   Minus,
   Users,
   Eye,
@@ -246,7 +245,7 @@ export function AnalyticsMetricCard({
 export function AnalyticsStatsGrid({
   metrics,
   isLoading = false,
-  currency = 'USD',
+  currency: _currency = 'USD',
   className,
 }: AnalyticsStatsGridProps) {
   if (isLoading) {

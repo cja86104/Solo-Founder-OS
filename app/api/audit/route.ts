@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getAuditLogs } from '@/lib/activity';
-import { AuditLogFilters } from '@/types/activity';
+import type { AuditLogFilters, AuditEventCategory, AuditSeverity } from '@/types/activity';
 
 // ============================================================================
 // GET /api/audit - List audit logs (owners/admins only)
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check workspace membership - only owners and admins can view audit logs
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
     // Parse filters
     const filters: AuditLogFilters = {};
     if (searchParams.get('event_category')) {
-      const categories = searchParams.get('event_category')!.split(',');
-      filters.event_category = categories.length === 1 ? categories[0] as any : categories as any;
+      const categories = searchParams.get('event_category')!.split(',') as AuditEventCategory[];
+      filters.event_category = categories.length === 1 ? categories[0] : categories;
     }
     if (searchParams.get('event_type')) {
       filters.event_type = searchParams.get('event_type')!;
@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
       filters.user_id = searchParams.get('user_id')!;
     }
     if (searchParams.get('severity')) {
-      const severities = searchParams.get('severity')!.split(',');
-      filters.severity = severities.length === 1 ? severities[0] as any : severities as any;
+      const severities = searchParams.get('severity')!.split(',') as AuditSeverity[];
+      filters.severity = severities.length === 1 ? severities[0] : severities;
     }
     if (searchParams.get('date_from')) {
       filters.dateFrom = searchParams.get('date_from')!;

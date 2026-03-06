@@ -1,15 +1,14 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import type {
-  Automation,
-  AutomationWithActions,
-  AutomationAction,
-  AutomationTriggerType,
-  AutomationActionType,
+import {
+  TRIGGER_TYPES,
+  ACTION_TYPES,
+  type Automation,
+  type AutomationWithActions,
+  type AutomationAction,
 } from '@/types/automations';
-import { TRIGGER_TYPES, ACTION_TYPES } from '@/types/automations';
-import { AutomationStatusBadge, TriggerTypeBadge } from './automation-status-badge';
+import { AutomationStatusBadge } from './automation-status-badge';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,

@@ -18,6 +18,9 @@ import { toast } from "sonner";
 import { formatDate, formatRelativeTime } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { LANGUAGES, ITEM_TYPES } from "@/types/vault";
+import type { Database } from "@/types/database";
+
+type VaultItemUpdate = Database["public"]["Tables"]["vault_items"]["Update"];
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -70,9 +73,10 @@ export function VaultItemView({ item, isOwner }: VaultItemViewProps) {
       toast.success("Copied to clipboard!");
 
       // Update copy count
-      await (supabase
-        .from("vault_items") as any)
-        .update({ use_count: ((item as any).use_count || 0) + 1 })
+      const updateData: VaultItemUpdate = { use_count: (item.use_count || 0) + 1 };
+      await supabase
+        .from("vault_items")
+        .update(updateData)
         .eq("id", item.id);
     } catch {
       toast.error("Failed to copy");
@@ -85,9 +89,10 @@ export function VaultItemView({ item, isOwner }: VaultItemViewProps) {
     const newValue = !isFavorite;
     setIsFavorite(newValue);
 
-    const { error } = await (supabase
-      .from("vault_items") as any)
-      .update({ is_favorite: newValue })
+    const favoriteUpdate: VaultItemUpdate = { is_favorite: newValue };
+    const { error } = await supabase
+      .from("vault_items")
+      .update(favoriteUpdate)
       .eq("id", item.id);
 
     if (error) {
@@ -99,8 +104,8 @@ export function VaultItemView({ item, isOwner }: VaultItemViewProps) {
   const handleDelete = async () => {
     setIsDeleting(true);
 
-    const { error } = await (supabase
-      .from("vault_items") as any)
+    const { error } = await supabase
+      .from("vault_items")
       .delete()
       .eq("id", item.id);
 

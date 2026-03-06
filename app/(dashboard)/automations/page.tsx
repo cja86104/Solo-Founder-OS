@@ -6,8 +6,6 @@ import { useWorkspace } from '@/lib/workspace-context';
 import { usePermissions } from '@/hooks/use-permissions';
 import {
   AutomationList,
-  AutomationCard,
-  AutomationStatusBadge,
 } from '@/components/automations';
 import type {
   Automation,
@@ -18,9 +16,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   AlertDialog,

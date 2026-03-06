@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
 
         if (session.mode === "payment") {
           // Lifetime purchase
-          await (supabase
-            .from("subscriptions") as any)
+          await supabase
+            .from("subscriptions")
             .update({
               plan: "lifetime",
               status: "active",
@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
         } else if (session.mode === "subscription") {
           // Subscription purchase -- save stripe_customer_id so the
           // customer.subscription.created webhook can find this user.
-          await (supabase
-            .from("subscriptions") as any)
+          await supabase
+            .from("subscriptions")
             .update({
               stripe_customer_id: session.customer as string,
             })
@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
         const customerId = subscription.customer as string;
 
         // Find user by customer ID
-        const { data: existingSub } = await (supabase
-          .from("subscriptions") as any)
+        const { data: existingSub } = await supabase
+          .from("subscriptions")
           .select("user_id")
           .eq("stripe_customer_id", customerId)
           .single();
@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
           paused: "paused",
         };
 
-        await (supabase
-          .from("subscriptions") as any)
+        await supabase
+          .from("subscriptions")
           .update({
             plan: "pro",
             status: statusMap[subscription.status] || subscription.status,
@@ -118,8 +118,8 @@ export async function POST(request: NextRequest) {
         const customerId = subscription.customer as string;
 
         // Find user by customer ID
-        const { data: existingSub } = await (supabase
-          .from("subscriptions") as any)
+        const { data: existingSub } = await supabase
+          .from("subscriptions")
           .select("user_id, plan")
           .eq("stripe_customer_id", customerId)
           .single();
@@ -135,8 +135,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Downgrade to expired (read-only)
-        await (supabase
-          .from("subscriptions") as any)
+        await supabase
+          .from("subscriptions")
           .update({
             plan: "expired",
             status: "expired",
@@ -161,15 +161,15 @@ export async function POST(request: NextRequest) {
         const customerId = invoice.customer as string;
 
         // Find user and mark subscription as past_due
-        const { data: existingSub } = await (supabase
-          .from("subscriptions") as any)
+        const { data: existingSub } = await supabase
+          .from("subscriptions")
           .select("user_id")
           .eq("stripe_customer_id", customerId)
           .single();
 
         if (existingSub) {
-          await (supabase
-            .from("subscriptions") as any)
+          await supabase
+            .from("subscriptions")
             .update({ status: "past_due" })
             .eq("user_id", existingSub.user_id);
         }
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (stripeCustomerId) {
-          const { data: cmdCustomer } = await (supabase as any)
+          const { data: cmdCustomer } = await supabase
             .from('customers')
             .select('workspace_id')
             .eq('stripe_customer_id', stripeCustomerId)

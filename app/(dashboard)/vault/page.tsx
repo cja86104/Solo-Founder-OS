@@ -48,7 +48,7 @@ export default async function VaultPage({ searchParams }: VaultPageProps) {
 
   // Apply filters
   if (params.type) {
-    query = query.eq("type", params.type as any);
+    query = query.eq("type", params.type);
   }
   if (params.language) {
     query = query.eq("language", params.language);
@@ -81,6 +81,7 @@ export default async function VaultPage({ searchParams }: VaultPageProps) {
       tags: string[];
       is_favorite: boolean;
       is_public: boolean;
+      use_count: number | null;
       created_at: string;
       collection: { id: string; name: string; color: string; icon: string } | null;
     }>>();

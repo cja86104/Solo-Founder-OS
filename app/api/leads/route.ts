@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import type { TablesInsert } from '@/types/database'
 
 const leadSchema = z.object({
   pageId: z.string().uuid(),
@@ -21,8 +22,8 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
     
     // Verify the page exists and is published, and get workspace_id
-    const { data: page, error: pageError } = await (supabase
-      .from('landing_pages') as any)
+    const { data: page, error: pageError } = await supabase
+      .from('landing_pages')
       .select('id, workspace_id, user_id')
       .eq('id', validatedData.pageId)
       .eq('status', 'published')
@@ -37,8 +38,8 @@ export async function POST(request: NextRequest) {
 
     // Check for duplicate submission (same email within last hour)
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-    const { data: existingLead } = await (supabase
-      .from('landing_page_leads') as any)
+    const { data: existingLead } = await supabase
+      .from('landing_page_leads')
       .select('id')
       .eq('page_id', validatedData.pageId)
       .eq('email', validatedData.email)
@@ -53,11 +54,12 @@ export async function POST(request: NextRequest) {
     }
     
     // Build data object with optional fields
-    const leadData: Record<string, unknown> = {
+    const leadData: TablesInsert<'landing_page_leads'> = {
       page_id: validatedData.pageId,
       workspace_id: page.workspace_id,
       email: validatedData.email,
       source: validatedData.source || 'website',
+      name: validatedData.name,
       data: {
         company: validatedData.company,
         phone: validatedData.phone,
@@ -67,16 +69,11 @@ export async function POST(request: NextRequest) {
         referrer: request.headers.get('referer'),
       },
     }
-
-    // Add name if provided
-    if (validatedData.name) {
-      leadData.name = validatedData.name
-    }
     
     // Insert the lead
-    const { data: lead, error: insertError } = await (supabase
-      .from('landing_page_leads') as any)
-      .insert(leadData as any)
+    const { data: lead, error: insertError } = await supabase
+      .from('landing_page_leads')
+      .insert(leadData)
       .select()
       .single()
 
@@ -89,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Track conversion event
-    await (supabase.from('landing_page_analytics') as any).insert({
+    await supabase.from('landing_page_analytics').insert({
       page_id: validatedData.pageId,
       event_type: 'conversion',
       event_data: {
@@ -143,8 +140,8 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const { data: page } = await (supabase
-      .from('landing_pages') as any)
+    const { data: page } = await supabase
+      .from('landing_pages')
       .select('id, user_id')
       .eq('id', pageId)
       .eq('user_id', user.id)
@@ -158,8 +155,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch leads
-    const { data: leads, error } = await (supabase
-      .from('landing_page_leads') as any)
+    const { data: leads, error } = await supabase
+      .from('landing_page_leads')
       .select('*')
       .eq('page_id', pageId)
       .order('created_at', { ascending: false })

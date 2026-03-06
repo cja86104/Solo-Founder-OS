@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -160,10 +161,13 @@ export function MediaUploadDialog({
                   className="relative group rounded-lg border overflow-hidden"
                 >
                   {file.type.startsWith('image/') && previews[index] ? (
-                    <img
+                    <Image
                       src={previews[index]}
                       alt={file.name}
+                      width={200}
+                      height={96}
                       className="w-full h-24 object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-24 bg-muted flex items-center justify-center">

@@ -14,8 +14,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: deal, error } = await (supabase
-      .from('deals') as any)
+    const { data: deal, error } = await supabase
+      .from('deals')
       .select(`
         *,
         stage:pipeline_stages(*),
@@ -28,8 +28,8 @@ export async function GET(
       return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', deal.workspace_id)
       .eq('user_id', user.id)
@@ -39,8 +39,8 @@ export async function GET(
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    const { data: activities } = await (supabase
-      .from('deal_activities') as any)
+    const { data: activities } = await supabase
+      .from('deal_activities')
       .select('*')
       .eq('deal_id', id)
       .order('created_at', { ascending: false });
@@ -66,8 +66,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: existingDeal } = await (supabase
-      .from('deals') as any)
+    const { data: existingDeal } = await supabase
+      .from('deals')
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -76,8 +76,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', existingDeal.workspace_id)
       .eq('user_id', user.id)
@@ -106,8 +106,8 @@ export async function PATCH(
       }
     }
 
-    const { data: deal, error } = await (supabase
-      .from('deals') as any)
+    const { data: deal, error } = await supabase
+      .from('deals')
       .update(updateData)
       .eq('id', id)
       .select(`*, stage:pipeline_stages(*), contact:contacts(id, email, name)`)
@@ -135,8 +135,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: deal } = await (supabase
-      .from('deals') as any)
+    const { data: deal } = await supabase
+      .from('deals')
       .select('workspace_id')
       .eq('id', id)
       .single();
@@ -145,8 +145,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
     }
 
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', deal.workspace_id)
       .eq('user_id', user.id)
@@ -156,7 +156,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { error } = await (supabase.from('deals') as any).delete().eq('id', id);
+    const { error } = await supabase.from('deals').delete().eq('id', id);
     if (error) throw error;
 
     return NextResponse.json({ success: true });

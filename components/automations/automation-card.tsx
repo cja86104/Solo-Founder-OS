@@ -49,7 +49,6 @@ import {
   Activity,
   GitBranch,
   Settings2,
-  ExternalLink,
 } from 'lucide-react';
 
 // =============================================================================
@@ -79,7 +78,7 @@ function getActionCount(automation: Automation | AutomationWithActions | Automat
   return 0;
 }
 
-function hasRecentRuns(automation: Automation | AutomationWithRelations): boolean {
+function _hasRecentRuns(automation: Automation | AutomationWithRelations): boolean {
   if ('recent_runs' in automation && automation.recent_runs) {
     return automation.recent_runs.length > 0;
   }

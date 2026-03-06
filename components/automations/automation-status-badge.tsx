@@ -5,8 +5,6 @@ import { cn } from '@/lib/utils';
 import type {
   AutomationStatus,
   AutomationRunStatus,
-  AUTOMATION_STATUS_LABELS,
-  RUN_STATUS_LABELS,
 } from '@/types/automations';
 import {
   Circle,

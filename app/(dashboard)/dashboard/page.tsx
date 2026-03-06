@@ -109,12 +109,12 @@ export default async function DashboardPage() {
   if (!user) return null;
 
   // Get user's workspace
-  const { data: membership } = await (supabase
-    .from("workspace_members") as any)
+  const { data: membership } = await supabase
+    .from("workspace_members")
     .select("workspace_id")
     .eq("user_id", user.id)
     .limit(1)
-    .single();
+    .single() as { data: { workspace_id: string } | null };
 
   const workspaceId = membership?.workspace_id;
 
@@ -122,38 +122,38 @@ export default async function DashboardPage() {
   const [mrrResult, dealsResult, projectsResult, snippetsResult, landingResult, contactsResult] = await Promise.all([
     // Total MRR from Command Center customers
     workspaceId
-      ? (supabase.from("customers") as any)
+      ? supabase.from("customers")
           .select("mrr")
           .eq("workspace_id", workspaceId)
           .in("status", ["active", "new", "at_risk"])
       : Promise.resolve({ data: null }),
     // Open deals count
     workspaceId
-      ? (supabase.from("deals") as any)
+      ? supabase.from("deals")
           .select("*", { count: "exact", head: true })
           .eq("workspace_id", workspaceId)
           .eq("status", "open")
       : Promise.resolve({ count: null }),
     // Active projects count
     workspaceId
-      ? (supabase.from("projects") as any)
+      ? supabase.from("projects")
           .select("*", { count: "exact", head: true })
           .eq("workspace_id", workspaceId)
           .eq("status", "active")
       : Promise.resolve({ count: null }),
     // Vault snippets count (for getting started)
-    (supabase.from("vault_items") as any)
+    supabase.from("vault_items")
       .select("*", { count: "exact", head: true })
       .eq("user_id", user.id),
     // Landing pages count (for getting started)
     workspaceId
-      ? (supabase.from("landing_pages") as any)
+      ? supabase.from("landing_pages")
           .select("*", { count: "exact", head: true })
           .eq("workspace_id", workspaceId)
       : Promise.resolve({ count: null }),
     // Contacts count (for getting started)
     workspaceId
-      ? (supabase.from("contacts") as any)
+      ? supabase.from("contacts")
           .select("*", { count: "exact", head: true })
           .eq("workspace_id", workspaceId)
       : Promise.resolve({ count: null }),
@@ -161,7 +161,7 @@ export default async function DashboardPage() {
 
   // Calculate total MRR
   const totalMRR = mrrResult.data
-    ? mrrResult.data.reduce((sum: number, c: { mrr: number }) => sum + Number(c.mrr || 0), 0)
+    ? mrrResult.data.reduce((sum: number, c: { mrr: number | null }) => sum + Number(c.mrr || 0), 0)
     : 0;
 
   const openDeals = dealsResult.count || 0;

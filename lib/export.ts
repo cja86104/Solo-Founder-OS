@@ -1,6 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
+type Contact = Database['public']['Tables']['contacts']['Row'];
+type LandingPage = Database['public']['Tables']['landing_pages']['Row'];
+type VaultItem = Database['public']['Tables']['vault_items']['Row'];
+type Activity = Database['public']['Tables']['activities']['Row'];
 
 export type ExportFormat = 'json' | 'csv';
 export type ExportableResource = 'contacts' | 'landing_pages' | 'vault' | 'vault_items' | 'activities' | 'all';
@@ -44,8 +49,8 @@ export async function exportContacts(
   format: ExportFormat,
   options?: ExportOptions
 ): Promise<ExportResult> {
-  let query = (supabase
-    .from('contacts') as any)
+  let query = supabase
+    .from('contacts')
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -59,7 +64,7 @@ export async function exportContacts(
   const { data, error } = await query;
   if (error) throw error;
 
-  const exportData = (data || []).map((c) => ({
+  const exportData = (data || []).map((c: Contact) => ({
     id: c.id,
     email: c.email,
     name: c.name,
@@ -68,7 +73,7 @@ export async function exportContacts(
     job_title: c.job_title,
     source: c.source,
     status: c.status,
-    tags: c.tags?.join(', ') || '',
+    tags: (c.tags as string[] | null)?.join(', ') || '',
     created_at: c.created_at,
     ...(options?.includeMetadata ? { metadata: JSON.stringify(c.metadata) } : {}),
   }));
@@ -100,14 +105,14 @@ export async function exportLandingPages(
   workspaceId: string,
   format: ExportFormat
 ): Promise<ExportResult> {
-  const { data, error } = await (supabase
-    .from('landing_pages') as any)
+  const { data, error } = await supabase
+    .from('landing_pages')
     .select('*')
     .eq('workspace_id', workspaceId);
 
   if (error) throw error;
 
-  const exportData = (data || []).map((p) => ({
+  const exportData = (data || []).map((p: LandingPage) => ({
     id: p.id,
     title: p.title,
     slug: p.slug,
@@ -145,20 +150,20 @@ export async function exportVaultItems(
   workspaceId: string,
   format: ExportFormat
 ): Promise<ExportResult> {
-  const { data, error } = await (supabase
-    .from('vault_items') as any)
+  const { data, error } = await supabase
+    .from('vault_items')
     .select('*')
     .eq('workspace_id', workspaceId);
 
   if (error) throw error;
 
-  const exportData = (data || []).map((v) => ({
+  const exportData = (data || []).map((v: VaultItem) => ({
     id: v.id,
     title: v.title,
     description: v.description,
     type: v.type,
     language: v.language,
-    tags: v.tags?.join(', ') || '',
+    tags: (v.tags as string[] | null)?.join(', ') || '',
     is_public: v.is_public,
     content: v.content,
     created_at: v.created_at,
@@ -192,8 +197,8 @@ export async function exportActivities(
   format: ExportFormat,
   options?: ExportOptions
 ): Promise<ExportResult> {
-  let query = (supabase
-    .from('activities') as any)
+  let query = supabase
+    .from('activities')
     .select('*')
     .eq('workspace_id', workspaceId);
 
@@ -207,7 +212,7 @@ export async function exportActivities(
   const { data, error } = await query.order('created_at', { ascending: false });
   if (error) throw error;
 
-  const exportData = (data || []).map((a) => ({
+  const exportData = (data || []).map((a: Activity) => ({
     id: a.id,
     action: a.action,
     entity_type: a.entity_type,
@@ -244,13 +249,10 @@ export async function exportAllData(
   workspaceId: string
 ): Promise<ExportResult> {
   const [contacts, pages, vault, activities] = await Promise.all([
-    (supabase.from('contacts') as any).select('*').eq('workspace_id', workspaceId),
-    (supabase.from('landing_pages') as any).select('*').eq('workspace_id', workspaceId),
-    (supabase
-      .from('vault_items') as any)
-      .select('*')
-      .eq('workspace_id', workspaceId),
-    (supabase.from('activities') as any).select('*').eq('workspace_id', workspaceId),
+    supabase.from('contacts').select('*').eq('workspace_id', workspaceId),
+    supabase.from('landing_pages').select('*').eq('workspace_id', workspaceId),
+    supabase.from('vault_items').select('*').eq('workspace_id', workspaceId),
+    supabase.from('activities').select('*').eq('workspace_id', workspaceId),
   ]);
 
   const exportData = {
@@ -263,10 +265,10 @@ export async function exportAllData(
   };
 
   const timestamp = new Date().toISOString().split('T')[0];
-  const recordCount = 
-    (contacts.data?.length || 0) + 
-    (pages.data?.length || 0) + 
-    (vault.data?.length || 0) + 
+  const recordCount =
+    (contacts.data?.length || 0) +
+    (pages.data?.length || 0) +
+    (vault.data?.length || 0) +
     (activities.data?.length || 0);
 
   return {

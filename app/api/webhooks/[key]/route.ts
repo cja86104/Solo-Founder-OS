@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createHmac, timingSafeEqual } from 'crypto';
+import type { Json } from '@/types/database';
 
 // =============================================================================
 // POST /api/webhooks/[key] — Receive external webhook and trigger automation
@@ -15,8 +16,8 @@ export async function POST(
     const supabase = await createClient();
 
     // Look up webhook config
-    const { data: webhook, error: whError } = await (supabase
-      .from('automation_webhooks') as any)
+    const { data: webhook, error: whError } = await supabase
+      .from('automation_webhooks')
       .select(`
         id,
         automation_id,
@@ -33,8 +34,8 @@ export async function POST(
     }
 
     // Verify the automation is active
-    const { data: automation } = await (supabase
-      .from('automations') as any)
+    const { data: automation } = await supabase
+      .from('automations')
       .select('id, workspace_id, name, status')
       .eq('id', webhook.automation_id)
       .single();
@@ -101,14 +102,14 @@ export async function POST(
     });
 
     // Create automation run
-    const { data: run, error: runError } = await (supabase
-      .from('automation_runs') as any)
+    const { data: run, error: runError } = await supabase
+      .from('automation_runs')
       .insert({
         automation_id: automation.id,
         workspace_id: automation.workspace_id,
         status: 'pending',
         trigger_type: 'webhook',
-        trigger_data: { headers, body: parsedBody, query } as any,
+        trigger_data: { headers, body: parsedBody, query } as Json,
         started_at: new Date().toISOString(),
       })
       .select()
@@ -123,7 +124,7 @@ export async function POST(
     }
 
     // Log the trigger
-    await (supabase.from('automation_run_logs') as any).insert({
+    await supabase.from('automation_run_logs').insert({
       run_id: run.id,
       level: 'info',
       message: 'Webhook received — automation run queued',
@@ -159,8 +160,8 @@ export async function GET(
   const { key } = await params;
   const supabase = await createClient();
 
-  const { data: webhook, error } = await (supabase
-    .from('automation_webhooks') as any)
+  const { data: webhook, error } = await supabase
+    .from('automation_webhooks')
     .select('automation_id')
     .eq('webhook_key', key)
     .single();
@@ -169,8 +170,8 @@ export async function GET(
     return NextResponse.json({ error: 'Webhook not found' }, { status: 404 });
   }
 
-  const { data: automation } = await (supabase
-    .from('automations') as any)
+  const { data: automation } = await supabase
+    .from('automations')
     .select('name, status')
     .eq('id', webhook.automation_id)
     .single();

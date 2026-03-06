@@ -1,4 +1,4 @@
-import type { Database, Json } from './database';
+import type { Database } from './database';
 
 export type ContentPost = Database['public']['Tables']['content_posts']['Row'];
 

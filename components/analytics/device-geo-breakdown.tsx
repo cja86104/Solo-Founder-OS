@@ -1,9 +1,14 @@
 'use client';
 
 import { useMemo } from 'react';
-import { cn } from '@/lib/utils';
-import type { DeviceBreakdown, GeoBreakdown, BrowserBreakdown } from '@/types/analytics';
-import { formatNumber, formatPercentage, formatDuration } from '@/types/analytics';
+import {
+  formatNumber,
+  formatPercentage,
+  formatDuration,
+  type DeviceBreakdown,
+  type GeoBreakdown,
+  type BrowserBreakdown,
+} from '@/types/analytics';
 import {
   Card,
   CardContent,
@@ -13,12 +18,6 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
   PieChart,
   Pie,
@@ -34,7 +33,6 @@ import {
   Globe,
   Chrome,
   Activity,
-  MapPin,
   Clock,
 } from 'lucide-react';
 
@@ -314,7 +312,7 @@ export function DeviceBreakdownList({
                   value={device.percentage}
                   className="h-2"
                   style={{
-                    // @ts-ignore
+                    // @ts-expect-error Custom CSS property
                     '--progress-background': color,
                   }}
                 />
@@ -421,7 +419,7 @@ export function GeoBreakdownChart({
                 value={(country.visitors / maxVisitors) * 100}
                 className="h-1.5"
                 style={{
-                  // @ts-ignore
+                  // @ts-expect-error Custom CSS property
                   '--progress-background': GEO_COLORS[index % GEO_COLORS.length],
                 }}
               />

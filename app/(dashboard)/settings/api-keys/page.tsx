@@ -10,7 +10,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -95,6 +94,7 @@ export default function ApiKeysPage() {
 
   useEffect(() => {
     fetchApiKeys();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentWorkspace]);
 
   const handleCreateKey = async () => {
@@ -117,7 +117,7 @@ export default function ApiKeysPage() {
       setNewKeyValue(data.key);
       setShowNewKey(true);
       fetchApiKeys();
-    } catch (error) {
+    } catch {
       toast.error('Failed to create API key');
     } finally {
       setIsCreating(false);
@@ -137,7 +137,7 @@ export default function ApiKeysPage() {
       toast.success('API key deleted');
       setDeleteKey(null);
       fetchApiKeys();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete API key');
     }
   };

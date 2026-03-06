@@ -103,7 +103,7 @@ export function TimeTracker({
       setStartTime(null);
       setElapsed(0);
       setDescription('');
-    } catch (error) {
+    } catch {
       toast.error('Failed to save time entry');
     } finally {
       setIsSaving(false);

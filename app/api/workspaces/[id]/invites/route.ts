@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       error: `Unknown billing action: ${action}`,
     }, { status: 400 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -32,8 +32,8 @@ export async function GET() {
     }
 
     // Fetch the user's subscription
-    const { data: subscription } = await (supabase
-      .from('subscriptions') as any)
+    const { data: subscription } = await supabase
+      .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
       .single();
@@ -44,7 +44,7 @@ export async function GET() {
         status: 'expired',
       },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

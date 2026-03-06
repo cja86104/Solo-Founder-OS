@@ -87,7 +87,7 @@ export function LeadCaptureProvider({ children, pageId }: LeadCaptureProviderPro
       }
 
       setStatus('success')
-    } catch (error) {
+    } catch {
       setStatus('error')
       setErrorMessage('Something went wrong. Please try again.')
     }
@@ -112,9 +112,9 @@ export function LeadCaptureProvider({ children, pageId }: LeadCaptureProviderPro
               <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-green-500" />
               </div>
-              <DialogTitle className="text-2xl mb-2">You're all set!</DialogTitle>
+              <DialogTitle className="text-2xl mb-2">You&apos;re all set!</DialogTitle>
               <DialogDescription className="mb-6">
-                Thanks for your interest. We'll be in touch soon.
+                Thanks for your interest. We&apos;ll be in touch soon.
               </DialogDescription>
               <Button onClick={closeCapture}>
                 Close
@@ -128,7 +128,7 @@ export function LeadCaptureProvider({ children, pageId }: LeadCaptureProviderPro
                 </div>
                 <DialogTitle>Get Started</DialogTitle>
                 <DialogDescription>
-                  Enter your details and we'll get back to you shortly.
+                  Enter your details and we&apos;ll get back to you shortly.
                 </DialogDescription>
               </DialogHeader>
 

@@ -56,7 +56,6 @@ export default function AccountSettingsPage() {
   const [fullName, setFullName] = useState('');
 
   // Password change
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -77,7 +76,7 @@ export default function AccountSettingsPage() {
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single() as any;
+          .single() as { data: Profile | null };
 
         if (profile) {
           setProfile(profile);
@@ -96,17 +95,18 @@ export default function AccountSettingsPage() {
 
     setIsSaving(true);
     try {
-      const { error } = await (supabase
-        .from('profiles') as any)
+      const { error } = await supabase
+        .from('profiles')
         .upsert({
           id: user.id,
+          email: user.email,
           full_name: fullName.trim() || null,
           updated_at: new Date().toISOString(),
         });
 
       if (error) throw error;
       toast.success('Profile updated successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update profile');
     } finally {
       setIsSaving(false);
@@ -133,10 +133,9 @@ export default function AccountSettingsPage() {
       if (error) throw error;
 
       toast.success('Password changed successfully');
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error) {
+    } catch {
       toast.error('Failed to change password');
     } finally {
       setIsChangingPassword(false);

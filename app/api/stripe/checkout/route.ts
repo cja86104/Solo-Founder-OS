@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe, PRICE_IDS } from "@/lib/stripe/config";
+import Stripe from "stripe";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,8 +37,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create Stripe customer
-    const { data: subscription } = await (supabase
-      .from("subscriptions") as any)
+    const { data: subscription } = await supabase
+      .from("subscriptions")
       .select("stripe_customer_id")
       .eq("user_id", user.id)
       .single();
@@ -55,8 +56,8 @@ export async function POST(request: NextRequest) {
       customerId = customer.id;
 
       // Save customer ID — use upsert to handle missing subscription row
-      const { error: saveError } = await (supabase
-        .from("subscriptions") as any)
+      const { error: saveError } = await supabase
+        .from("subscriptions")
         .upsert({
           user_id: user.id,
           stripe_customer_id: customerId,
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create checkout session
-    const sessionParams: any = {
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       mode: priceType === "lifetime" ? "payment" : "subscription",
       payment_method_types: ["card"],

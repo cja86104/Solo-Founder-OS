@@ -1,16 +1,26 @@
 import Stripe from 'stripe';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { stripe } from './config';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
 import type {
-  Customer,
-  Subscription,
   SubscriptionStatus,
   SyncResult,
-  SyncCustomerInput,
-  SyncSubscriptionInput,
   RecordRevenueEventInput,
   RevenueEventType,
 } from '@/types/command';
+
+type DbClient = SupabaseClient<Database>;
+
+// Database table types
+type StripeSyncLogInsert = Database["public"]["Tables"]["stripe_sync_log"]["Insert"];
+type StripeSyncLogUpdate = Database["public"]["Tables"]["stripe_sync_log"]["Update"];
+type CustomerInsert = Database["public"]["Tables"]["customers"]["Insert"];
+type CustomerUpdate = Database["public"]["Tables"]["customers"]["Update"];
+type StripeSubscriptionInsert = Database["public"]["Tables"]["stripe_subscriptions"]["Insert"];
+type StripeSubscriptionUpdate = Database["public"]["Tables"]["stripe_subscriptions"]["Update"];
+type RevenueEventInsert = Database["public"]["Tables"]["revenue_events"]["Insert"];
+type MrrHistoryInsert = Database["public"]["Tables"]["mrr_history"]["Insert"];
 
 // ============================================================================
 // STRIPE SYNC SERVICE
@@ -49,14 +59,15 @@ export async function syncStripeCustomers(options: SyncOptions): Promise<SyncRes
   };
 
   // Create sync log entry
-  const { data: syncLog, error: logError } = await (supabase
-    .from('stripe_sync_log') as any)
-    .insert({
-      workspace_id: workspaceId,
-      sync_type: 'customers',
-      status: 'started',
-      triggered_by: userId,
-    })
+  const syncLogInsert: StripeSyncLogInsert = {
+    workspace_id: workspaceId,
+    sync_type: 'customers',
+    status: 'started',
+    triggered_by: userId,
+  };
+  const { data: syncLog, error: logError } = await supabase
+    .from('stripe_sync_log')
+    .insert(syncLogInsert)
     .select()
     .single();
 
@@ -120,18 +131,19 @@ export async function syncStripeCustomers(options: SyncOptions): Promise<SyncRes
     result.duration_ms = Date.now() - startTime;
 
     // Update sync log
-    await (supabase
-      .from('stripe_sync_log') as any)
-      .update({
-        status: 'completed',
-        records_synced: result.records_synced,
-        records_created: result.records_created,
-        records_updated: result.records_updated,
-        records_failed: result.records_failed,
-        completed_at: new Date().toISOString(),
-        duration_ms: result.duration_ms,
-        error_message: result.errors.length > 0 ? result.errors.join('; ') : null,
-      })
+    const completedUpdate: StripeSyncLogUpdate = {
+      status: 'completed',
+      records_synced: result.records_synced,
+      records_created: result.records_created,
+      records_updated: result.records_updated,
+      records_failed: result.records_failed,
+      completed_at: new Date().toISOString(),
+      duration_ms: result.duration_ms,
+      error_message: result.errors.length > 0 ? result.errors.join('; ') : null,
+    };
+    await supabase
+      .from('stripe_sync_log')
+      .update(completedUpdate)
       .eq('id', syncLog.id);
 
   } catch (err) {
@@ -139,14 +151,15 @@ export async function syncStripeCustomers(options: SyncOptions): Promise<SyncRes
     result.errors.push(`Sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     result.duration_ms = Date.now() - startTime;
 
-    await (supabase
-      .from('stripe_sync_log') as any)
-      .update({
-        status: 'failed',
-        error_message: result.errors.join('; '),
-        completed_at: new Date().toISOString(),
-        duration_ms: result.duration_ms,
-      })
+    const failedUpdate: StripeSyncLogUpdate = {
+      status: 'failed',
+      error_message: result.errors.join('; '),
+      completed_at: new Date().toISOString(),
+      duration_ms: result.duration_ms,
+    };
+    await supabase
+      .from('stripe_sync_log')
+      .update(failedUpdate)
       .eq('id', syncLog.id);
   }
 
@@ -173,14 +186,15 @@ export async function syncStripeSubscriptions(options: SyncOptions): Promise<Syn
   };
 
   // Create sync log entry
-  const { data: syncLog, error: logError } = await (supabase
-    .from('stripe_sync_log') as any)
-    .insert({
-      workspace_id: workspaceId,
-      sync_type: 'subscriptions',
-      status: 'started',
-      triggered_by: userId,
-    })
+  const subsSyncLogInsert: StripeSyncLogInsert = {
+    workspace_id: workspaceId,
+    sync_type: 'subscriptions',
+    status: 'started',
+    triggered_by: userId,
+  };
+  const { data: syncLog, error: logError } = await supabase
+    .from('stripe_sync_log')
+    .insert(subsSyncLogInsert)
     .select()
     .single();
 
@@ -240,18 +254,19 @@ export async function syncStripeSubscriptions(options: SyncOptions): Promise<Syn
     result.duration_ms = Date.now() - startTime;
 
     // Update sync log
-    await (supabase
-      .from('stripe_sync_log') as any)
-      .update({
-        status: 'completed',
-        records_synced: result.records_synced,
-        records_created: result.records_created,
-        records_updated: result.records_updated,
-        records_failed: result.records_failed,
-        completed_at: new Date().toISOString(),
-        duration_ms: result.duration_ms,
-        error_message: result.errors.length > 0 ? result.errors.join('; ') : null,
-      })
+    const subsCompletedUpdate: StripeSyncLogUpdate = {
+      status: 'completed',
+      records_synced: result.records_synced,
+      records_created: result.records_created,
+      records_updated: result.records_updated,
+      records_failed: result.records_failed,
+      completed_at: new Date().toISOString(),
+      duration_ms: result.duration_ms,
+      error_message: result.errors.length > 0 ? result.errors.join('; ') : null,
+    };
+    await supabase
+      .from('stripe_sync_log')
+      .update(subsCompletedUpdate)
       .eq('id', syncLog.id);
 
   } catch (err) {
@@ -259,14 +274,15 @@ export async function syncStripeSubscriptions(options: SyncOptions): Promise<Syn
     result.errors.push(`Sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     result.duration_ms = Date.now() - startTime;
 
-    await (supabase
-      .from('stripe_sync_log') as any)
-      .update({
-        status: 'failed',
-        error_message: result.errors.join('; '),
-        completed_at: new Date().toISOString(),
-        duration_ms: result.duration_ms,
-      })
+    const subsFailedUpdate: StripeSyncLogUpdate = {
+      status: 'failed',
+      error_message: result.errors.join('; '),
+      completed_at: new Date().toISOString(),
+      duration_ms: result.duration_ms,
+    };
+    await supabase
+      .from('stripe_sync_log')
+      .update(subsFailedUpdate)
       .eq('id', syncLog.id);
   }
 
@@ -293,14 +309,15 @@ export async function syncStripeData(options: SyncOptions): Promise<SyncResult> 
   };
 
   // Create sync log entry
-  const { data: syncLog, error: logError } = await (supabase
-    .from('stripe_sync_log') as any)
-    .insert({
-      workspace_id: workspaceId,
-      sync_type: 'full',
-      status: 'started',
-      triggered_by: userId,
-    })
+  const fullSyncLogInsert: StripeSyncLogInsert = {
+    workspace_id: workspaceId,
+    sync_type: 'full',
+    status: 'started',
+    triggered_by: userId,
+  };
+  const { data: syncLog, error: logError } = await supabase
+    .from('stripe_sync_log')
+    .insert(fullSyncLogInsert)
     .select()
     .single();
 
@@ -336,18 +353,19 @@ export async function syncStripeData(options: SyncOptions): Promise<SyncResult> 
     result.success = result.records_failed === 0;
 
     // Update sync log
-    await (supabase
-      .from('stripe_sync_log') as any)
-      .update({
-        status: result.success ? 'completed' : 'failed',
-        records_synced: result.records_synced,
-        records_created: result.records_created,
-        records_updated: result.records_updated,
-        records_failed: result.records_failed,
-        completed_at: new Date().toISOString(),
-        duration_ms: result.duration_ms,
-        error_message: result.errors.length > 0 ? result.errors.slice(0, 10).join('; ') : null,
-      })
+    const fullCompletedUpdate: StripeSyncLogUpdate = {
+      status: result.success ? 'completed' : 'failed',
+      records_synced: result.records_synced,
+      records_created: result.records_created,
+      records_updated: result.records_updated,
+      records_failed: result.records_failed,
+      completed_at: new Date().toISOString(),
+      duration_ms: result.duration_ms,
+      error_message: result.errors.length > 0 ? result.errors.slice(0, 10).join('; ') : null,
+    };
+    await supabase
+      .from('stripe_sync_log')
+      .update(fullCompletedUpdate)
       .eq('id', syncLog.id);
 
   } catch (err) {
@@ -355,14 +373,15 @@ export async function syncStripeData(options: SyncOptions): Promise<SyncResult> 
     result.errors.push(`Full sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     result.duration_ms = Date.now() - startTime;
 
-    await (supabase
-      .from('stripe_sync_log') as any)
-      .update({
-        status: 'failed',
-        error_message: result.errors.join('; '),
-        completed_at: new Date().toISOString(),
-        duration_ms: result.duration_ms,
-      })
+    const fullFailedUpdate: StripeSyncLogUpdate = {
+      status: 'failed',
+      error_message: result.errors.join('; '),
+      completed_at: new Date().toISOString(),
+      duration_ms: result.duration_ms,
+    };
+    await supabase
+      .from('stripe_sync_log')
+      .update(fullFailedUpdate)
       .eq('id', syncLog.id);
   }
 
@@ -389,13 +408,13 @@ interface SubscriptionUpsertResult {
 export async function upsertCustomer(
   workspaceId: string,
   stripeCustomer: Stripe.Customer,
-  dbClient?: any
+  dbClient?: DbClient
 ): Promise<UpsertResult> {
   const supabase = dbClient || await createClient();
 
   // Check if customer exists
-  const { data: existing } = await (supabase
-    .from('customers') as any)
+  const { data: existing } = await supabase
+    .from('customers')
     .select('id')
     .eq('stripe_customer_id', stripeCustomer.id)
     .single();
@@ -408,7 +427,7 @@ export async function upsertCustomer(
     ? calculateMRRFromSubscription(activeSubscription)
     : 0;
 
-  const customerData = {
+  const customerData: CustomerInsert = {
     workspace_id: workspaceId,
     stripe_customer_id: stripeCustomer.id,
     stripe_subscription_id: activeSubscription?.id || null,
@@ -440,17 +459,18 @@ export async function upsertCustomer(
   };
 
   if (existing) {
-    const { error } = await (supabase
-      .from('customers') as any)
-      .update(customerData)
+    const updateData: CustomerUpdate = customerData;
+    const { error } = await supabase
+      .from('customers')
+      .update(updateData)
       .eq('id', existing.id);
 
     if (error) throw new Error(`Failed to update customer: ${error.message}`);
 
     return { customerId: existing.id, created: false };
   } else {
-    const { data, error } = await (supabase
-      .from('customers') as any)
+    const { data, error } = await supabase
+      .from('customers')
       .insert(customerData)
       .select('id')
       .single();
@@ -468,13 +488,13 @@ export async function upsertSubscription(
   workspaceId: string,
   customerId: string,
   stripeSubscription: Stripe.Subscription,
-  dbClient?: any
+  dbClient?: DbClient
 ): Promise<SubscriptionUpsertResult> {
   const supabase = dbClient || await createClient();
 
   // Check if subscription exists
-  const { data: existing } = await (supabase
-    .from('stripe_subscriptions') as any)
+  const { data: existing } = await supabase
+    .from('stripe_subscriptions')
     .select('id')
     .eq('stripe_subscription_id', stripeSubscription.id)
     .single();
@@ -485,7 +505,7 @@ export async function upsertSubscription(
   const intervalCount = price?.recurring?.interval_count || 1;
   const mrr = calculateMRRFromAmount(amount, interval, intervalCount);
 
-  const subscriptionData = {
+  const subscriptionData: StripeSubscriptionInsert = {
     workspace_id: workspaceId,
     customer_id: customerId,
     stripe_subscription_id: stripeSubscription.id,
@@ -522,18 +542,19 @@ export async function upsertSubscription(
   };
 
   if (existing) {
-    const { error } = await (supabase
-      .from('stripe_subscriptions') as any)
-      .update(subscriptionData)
+    const updateData: StripeSubscriptionUpdate = subscriptionData;
+    const { error } = await supabase
+      .from('stripe_subscriptions')
+      .update(updateData)
       .eq('id', existing.id);
 
     if (error) throw new Error(`Failed to update subscription: ${error.message}`);
 
     return { subscriptionId: existing.id, created: false };
   } else {
-    const { data, error } = await (supabase
-      .from('stripe_subscriptions') as any)
-      .insert(subscriptionData as any)
+    const { data, error } = await supabase
+      .from('stripe_subscriptions')
+      .insert(subscriptionData)
       .select('id')
       .single();
 
@@ -553,30 +574,31 @@ export async function upsertSubscription(
 export async function recordRevenueEvent(
   workspaceId: string,
   input: RecordRevenueEventInput,
-  dbClient?: any
+  dbClient?: DbClient
 ): Promise<string> {
   const supabase = dbClient || await createClient();
 
-  const { data, error } = await (supabase
-    .from('revenue_events') as any)
-    .insert({
-      workspace_id: workspaceId,
-      customer_id: input.customer_id,
-      subscription_id: input.subscription_id,
-      stripe_event_id: input.stripe_event_id,
-      stripe_invoice_id: input.stripe_invoice_id,
-      stripe_charge_id: input.stripe_charge_id,
-      event_type: input.event_type,
-      amount: input.amount,
-      currency: input.currency || 'USD',
-      mrr_impact: input.mrr_impact || 0,
-      description: input.description,
-      plan_from: input.plan_from,
-      plan_to: input.plan_to,
-      status: input.status,
-      failure_reason: input.failure_reason,
-      event_date: input.event_date || new Date().toISOString(),
-    })
+  const revenueEventInsert: RevenueEventInsert = {
+    workspace_id: workspaceId,
+    customer_id: input.customer_id,
+    subscription_id: input.subscription_id,
+    stripe_event_id: input.stripe_event_id,
+    stripe_invoice_id: input.stripe_invoice_id,
+    stripe_charge_id: input.stripe_charge_id,
+    event_type: input.event_type,
+    amount: input.amount,
+    currency: input.currency || 'USD',
+    mrr_impact: input.mrr_impact || 0,
+    description: input.description,
+    plan_from: input.plan_from,
+    plan_to: input.plan_to,
+    status: input.status,
+    failure_reason: input.failure_reason,
+    event_date: input.event_date || new Date().toISOString(),
+  };
+  const { data, error } = await supabase
+    .from('revenue_events')
+    .insert(revenueEventInsert)
     .select('id')
     .single();
 
@@ -592,68 +614,64 @@ export async function recordRevenueEvent(
 /**
  * Update MRR history for a workspace
  */
-export async function updateMRRHistory(workspaceId: string, dbClient?: any): Promise<void> {
+export async function updateMRRHistory(workspaceId: string, dbClient?: DbClient): Promise<void> {
   const supabase = dbClient || await createClient();
   const today = new Date().toISOString().split('T')[0];
 
   // Get current totals
-  const { data: customers } = await (supabase
-    .from('customers') as any)
+  const { data: customers } = await supabase
+    .from('customers')
     .select('mrr, status')
     .eq('workspace_id', workspaceId);
 
   if (!customers) return;
 
-  type CustomerRow = { mrr: number; status: string };
-
   const totalMRR = customers
-    .filter((c: CustomerRow) => c.status === 'active' || c.status === 'new' || c.status === 'at_risk')
-    .reduce((sum: number, c: CustomerRow) => sum + Number(c.mrr), 0);
+    .filter((c) => c.status === 'active' || c.status === 'new' || c.status === 'at_risk')
+    .reduce((sum, c) => sum + Number(c.mrr || 0), 0);
 
   const totalCustomers = customers.length;
-  const activeCustomers = customers.filter(
-    (c: CustomerRow) => c.status === 'active' || c.status === 'new' || c.status === 'at_risk'
+  const _activeCustomers = customers.filter(
+    (c) => c.status === 'active' || c.status === 'new' || c.status === 'at_risk'
   ).length;
-  const churnedCustomers = customers.filter((c: CustomerRow) => c.status === 'churned').length;
+  const churnedCustomers = customers.filter((c) => c.status === 'churned').length;
 
   // Get previous day's record for comparison
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-  const { data: previousRecord } = await (supabase
-    .from('mrr_history') as any)
+  const { data: previousRecord } = await supabase
+    .from('mrr_history')
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('period_date', yesterdayStr)
     .eq('period_type', 'daily')
     .single();
 
-  const previousMRR = previousRecord?.mrr || 0;
+  const previousMRR = Number(previousRecord?.mrr || 0);
   const netMRRChange = totalMRR - previousMRR;
   const growthRate = previousMRR > 0 ? (netMRRChange / previousMRR) * 100 : 0;
   const churnRate = totalCustomers > 0 ? (churnedCustomers / totalCustomers) * 100 : 0;
 
   // Upsert today's record
-  const { error } = await (supabase
-    .from('mrr_history') as any)
-    .upsert(
-      {
-        workspace_id: workspaceId,
-        period_date: today,
-        period_type: 'daily',
-        mrr: totalMRR,
-        net_mrr_change: netMRRChange,
-        total_customers: totalCustomers,
-        new_customers: customers.filter((c: CustomerRow) => c.status === 'new').length,
-        churned_customers: churnedCustomers,
-        churn_rate: churnRate,
-        growth_rate: growthRate,
-      },
-      {
-        onConflict: 'workspace_id,period_date,period_type',
-      }
-    );
+  const mrrHistoryInsert: MrrHistoryInsert = {
+    workspace_id: workspaceId,
+    period_date: today,
+    period_type: 'daily',
+    mrr: totalMRR,
+    net_mrr_change: netMRRChange,
+    total_customers: totalCustomers,
+    new_customers: customers.filter((c) => c.status === 'new').length,
+    churned_customers: churnedCustomers,
+    churn_rate: churnRate,
+    growth_rate: growthRate,
+  };
+  const { error } = await supabase
+    .from('mrr_history')
+    .upsert(mrrHistoryInsert, {
+      onConflict: 'workspace_id,period_date,period_type',
+    });
 
   if (error) {
     console.error('Failed to update MRR history:', error);
@@ -670,7 +688,7 @@ export async function updateMRRHistory(workspaceId: string, dbClient?: any): Pro
 export async function handleStripeWebhook(
   workspaceId: string,
   event: Stripe.Event,
-  dbClient?: any
+  dbClient?: DbClient
 ): Promise<void> {
   switch (event.type) {
     case 'customer.created':
@@ -701,7 +719,7 @@ export async function handleStripeWebhook(
   await updateMRRHistory(workspaceId, dbClient);
 }
 
-async function handleCustomerEvent(workspaceId: string, customer: Stripe.Customer, dbClient?: any): Promise<void> {
+async function handleCustomerEvent(workspaceId: string, customer: Stripe.Customer, dbClient?: DbClient): Promise<void> {
   // Fetch full customer with subscriptions
   const fullCustomer = await stripe.customers.retrieve(customer.id, {
     expand: ['subscriptions'],
@@ -716,13 +734,13 @@ async function handleSubscriptionEvent(
   workspaceId: string,
   subscription: Stripe.Subscription,
   eventType: string,
-  dbClient?: any
+  dbClient?: DbClient
 ): Promise<void> {
   const supabase = dbClient || await createClient();
 
   // Get or create customer
-  const { data: customer } = await (supabase
-    .from('customers') as any)
+  const { data: customer } = await supabase
+    .from('customers')
     .select('id')
     .eq('stripe_customer_id', subscription.customer as string)
     .single();
@@ -754,21 +772,23 @@ async function handleSubscriptionEvent(
     eventType_ = 'expansion'; // Could be contraction too, need to compare
   }
 
-  await recordRevenueEvent(workspaceId, {
-    customer_id: customer.id,
-    event_type: eventType_,
-    amount,
-    mrr_impact: eventType_ === 'churn' ? -mrr : mrr,
-    plan_to: price?.nickname || undefined,
-    status: 'succeeded',
-  }, dbClient);
+  if (customerId) {
+    await recordRevenueEvent(workspaceId, {
+      customer_id: customerId,
+      event_type: eventType_,
+      amount,
+      mrr_impact: eventType_ === 'churn' ? -mrr : mrr,
+      plan_to: price?.nickname || undefined,
+      status: 'succeeded',
+    }, dbClient);
+  }
 }
 
-async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice, dbClient?: any): Promise<void> {
+async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice, dbClient?: DbClient): Promise<void> {
   const supabase = dbClient || await createClient();
 
-  const { data: customer } = await (supabase
-    .from('customers') as any)
+  const { data: customer } = await supabase
+    .from('customers')
     .select('id, payment_count')
     .eq('stripe_customer_id', invoice.customer as string)
     .single();
@@ -776,13 +796,14 @@ async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice, d
   if (!customer) return;
 
   // Update customer payment info
-  await (supabase
-    .from('customers') as any)
-    .update({
-      last_payment_date: new Date().toISOString(),
-      last_invoice_date: new Date().toISOString(),
-      payment_count: (customer.payment_count || 0) + 1,
-    } as any)
+  const paymentUpdate: CustomerUpdate = {
+    last_payment_date: new Date().toISOString(),
+    last_invoice_date: new Date().toISOString(),
+    payment_count: (customer.payment_count || 0) + 1,
+  };
+  await supabase
+    .from('customers')
+    .update(paymentUpdate)
     .eq('id', customer.id);
 
   // Record payment event
@@ -795,11 +816,11 @@ async function handleInvoicePaid(workspaceId: string, invoice: Stripe.Invoice, d
   }, dbClient);
 }
 
-async function handlePaymentFailed(workspaceId: string, invoice: Stripe.Invoice, dbClient?: any): Promise<void> {
+async function handlePaymentFailed(workspaceId: string, invoice: Stripe.Invoice, dbClient?: DbClient): Promise<void> {
   const supabase = dbClient || await createClient();
 
-  const { data: customer } = await (supabase
-    .from('customers') as any)
+  const { data: customer } = await supabase
+    .from('customers')
     .select('id, failed_payment_count')
     .eq('stripe_customer_id', invoice.customer as string)
     .single();
@@ -807,11 +828,12 @@ async function handlePaymentFailed(workspaceId: string, invoice: Stripe.Invoice,
   if (!customer) return;
 
   // Update customer failed payment count
-  await (supabase
-    .from('customers') as any)
-    .update({
-      failed_payment_count: (customer.failed_payment_count || 0) + 1,
-    })
+  const failedPaymentUpdate: CustomerUpdate = {
+    failed_payment_count: (customer.failed_payment_count || 0) + 1,
+  };
+  await supabase
+    .from('customers')
+    .update(failedPaymentUpdate)
     .eq('id', customer.id);
 
   // Record failed payment event

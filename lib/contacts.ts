@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
-type Contact = { [key: string]: unknown };
 
 export interface ContactFilters {
   status?: string;
@@ -31,17 +30,17 @@ export function buildContactQuery(
   filters?: ContactFilters,
   sort?: ContactSort
 ) {
-  let query = (supabase
-    .from('contacts') as any)
+  let query = supabase
+    .from('contacts')
     .select('*', { count: 'exact' })
     .eq('workspace_id', workspaceId);
 
   if (filters?.status) {
-    query = query.eq('status', filters.status as any);
+    query = query.eq('status', filters.status);
   }
 
   if (filters?.source) {
-    query = query.eq('source', filters.source as any);
+    query = query.eq('source', filters.source);
   }
 
   if (filters?.tags && filters.tags.length > 0) {
@@ -68,16 +67,16 @@ export async function getContactStats(
   workspaceId: string
 ): Promise<ContactStats> {
   // Get all contacts for this workspace
-  const { data: contacts } = await (supabase
-    .from('contacts') as any)
-    .select('status, source, tags, created_at')
+  const { data: contacts } = await supabase
+    .from('contacts')
+    .select('status, source, tags, created_at, last_contacted_at')
     .eq('workspace_id', workspaceId);
 
   const total = contacts?.length || 0;
 
   // Count by status
   const byStatus: Record<string, number> = {};
-  contacts?.forEach((c: any) => {
+  contacts?.forEach((c) => {
     const status = c.status || 'unknown';
     byStatus[status] = (byStatus[status] || 0) + 1;
   });
@@ -87,7 +86,7 @@ export async function getContactStats(
 
   // Count by source
   const bySource: Record<string, number> = {};
-  contacts?.forEach((c: any) => {
+  contacts?.forEach((c) => {
     if (c.source) {
       bySource[c.source] = (bySource[c.source] || 0) + 1;
     }
@@ -96,20 +95,21 @@ export async function getContactStats(
   // Count recently added (last 7 days)
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const recentlyAdded =
-    contacts?.filter((c: any) => c.created_at && c.created_at > weekAgo).length || 0;
+    contacts?.filter((c) => c.created_at && c.created_at > weekAgo).length || 0;
 
   // Count recently active (last 30 days) - use last_contacted_at or created_at
   const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const recentlyActive =
-    contacts?.filter((c: any) => {
+    contacts?.filter((c) => {
       const lastActivity = c.last_contacted_at || c.created_at;
       return lastActivity && lastActivity > monthAgo;
     }).length || 0;
 
   // Count tags
   const tagCounts: Record<string, number> = {};
-  contacts?.forEach((c: any) => {
-    c.tags?.forEach((tag: any) => {
+  contacts?.forEach((c) => {
+    const tags = c.tags as string[] | null;
+    tags?.forEach((tag: string) => {
       tagCounts[tag] = (tagCounts[tag] || 0) + 1;
     });
   });

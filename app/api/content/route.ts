@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
 
 // ============================================================================
 // GET /api/content/posts - List posts
@@ -24,8 +25,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspaceId)
       .eq('user_id', user.id)
@@ -36,8 +37,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query - use user_id which is the actual FK column
-    let query = (supabase
-      .from('content_posts') as any)
+    let query = supabase
+      .from('content_posts')
       .select(`
         *,
         author:profiles(id, full_name, avatar_url)
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
     // Apply filters
     const status = searchParams.get('status');
     if (status) {
-      query = query.eq('status', status as any);
+      query = query.eq('status', status as Database['public']['Enums']['post_status']);
     }
 
     const search = searchParams.get('search');
@@ -126,8 +127,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check membership
-    const { data: membership } = await (supabase
-      .from('workspace_members') as any)
+    const { data: membership } = await supabase
+      .from('workspace_members')
       .select('role')
       .eq('workspace_id', workspace_id)
       .eq('user_id', user.id)
@@ -138,8 +139,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Use user_id which is the actual column in the schema
-    const { data: post, error } = await (supabase
-      .from('content_posts') as any)
+    const { data: post, error } = await supabase
+      .from('content_posts')
       .insert({
         workspace_id,
         user_id: user.id,

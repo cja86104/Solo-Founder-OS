@@ -25,9 +25,13 @@ import {
   canDeleteWorkspace,
   canEditContent,
 } from '@/types/workspace';
-import type { Subscription } from '@/types/database';
+import type { Database, Subscription, Json } from '@/types/database';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+
+type WorkspaceInsert = Database["public"]["Tables"]["workspaces"]["Insert"];
+type WorkspaceMemberInsert = Database["public"]["Tables"]["workspace_members"]["Insert"];
+type WorkspaceUpdate = Database["public"]["Tables"]["workspaces"]["Update"];
 
 // ============================================================================
 // Context Types
@@ -113,8 +117,8 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
       // instead of the user_workspaces view, because the view depends on RLS
       // resolving correctly on workspace_members — which can fail if the RLS
       // policy is self-referencing. The explicit .eq() filter works regardless.
-      const { data: memberData, error: fetchError } = await (supabase
-        .from('workspace_members') as any)
+      const { data: memberData, error: fetchError } = await supabase
+        .from('workspace_members')
         .select('role, permissions, joined_at, workspaces(*)')
         .eq('user_id', user.id)
         .order('joined_at', { ascending: false });
@@ -128,17 +132,33 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
 
       // Flatten the nested join result into the WorkspaceWithRole shape
       // (workspace columns at top level + role/permissions/joined_at).
-      const workspaceList = ((memberData || []) as any[])
+      interface MemberDataRow {
+        role: string;
+        permissions: ProductPermissions | null;
+        joined_at: string | null;
+        workspaces: {
+          id: string;
+          name: string;
+          slug: string;
+          owner_id: string;
+          logo_url: string | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        } | null;
+      }
+      const workspaceList = ((memberData || []) as unknown as MemberDataRow[])
         .filter((m) => m.workspaces) // guard against orphaned memberships
         .map((m) => ({
-          ...m.workspaces,
-          role: m.role,
-          permissions: m.permissions,
+          ...m.workspaces!,
+          role: m.role as WorkspaceRole,
+          permissions: m.permissions as ProductPermissions,
           joined_at: m.joined_at,
           plan,
           plan_limits: planLimits,
-          stripe_customer_id: m.workspaces.stripe_customer_id ?? subscription?.stripe_customer_id ?? null,
-          stripe_subscription_id: m.workspaces.stripe_subscription_id ?? subscription?.stripe_subscription_id ?? null,
+          stripe_customer_id: m.workspaces!.stripe_customer_id ?? subscription?.stripe_customer_id ?? null,
+          stripe_subscription_id: m.workspaces!.stripe_subscription_id ?? subscription?.stripe_subscription_id ?? null,
         })) as WorkspaceWithRole[];
       // Auto-create a workspace if the user has none (handles the case where
       // the handle_new_user trigger failed or was skipped).
@@ -153,18 +173,19 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
           '-' +
           user.id.substring(0, 8);
 
-        const { data: newWs, error: wsError } = await (supabase
-          .from('workspaces') as any)
-          .insert({
-            name: `${displayName}'s Workspace`,
-            slug,
-            owner_id: user.id,
-          })
+        const newWorkspaceInsert: WorkspaceInsert = {
+          name: `${displayName}'s Workspace`,
+          slug,
+          owner_id: user.id,
+        };
+        const { data: newWs, error: wsError } = await supabase
+          .from('workspaces')
+          .insert(newWorkspaceInsert)
           .select()
           .single();
 
         if (newWs && !wsError) {
-          await (supabase.from('workspace_members') as any).insert({
+          const memberInsert: WorkspaceMemberInsert = {
             workspace_id: newWs.id,
             user_id: user.id,
             role: 'owner',
@@ -178,8 +199,10 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
               command: true,
               advisor: true,
               analytics: true,
+              automations: true,
             },
-          });
+          };
+          await supabase.from('workspace_members').insert(memberInsert);
 
           workspaceList.push({
             ...newWs,
@@ -194,13 +217,14 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
               command: true,
               advisor: true,
               analytics: true,
+              automations: true,
             },
             joined_at: new Date().toISOString(),
             plan,
             plan_limits: planLimits,
             stripe_customer_id: subscription?.stripe_customer_id ?? null,
             stripe_subscription_id: subscription?.stripe_subscription_id ?? null,
-          } as WorkspaceWithRole);
+          } as unknown as WorkspaceWithRole);
         }
       }
 
@@ -258,36 +282,55 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
         return null;
       }
 
-      // Use the helper function to create workspace with owner
-      const { data: workspaceId, error: createError } = await supabase
-        .rpc('create_workspace_with_owner', {
-          p_name: input.name,
-          p_slug: slug,
-          p_owner_id: user.id,
-        } as any);
+      // Create workspace
+      const { data: newWorkspace, error: createError } = await supabase
+        .from('workspaces')
+        .insert({
+          name: input.name,
+          slug,
+          owner_id: user.id,
+        })
+        .select()
+        .single();
 
       if (createError) throw createError;
 
-      // Fetch the created workspace
-      const { data: workspace, error: fetchError } = await supabase
-        .from('workspaces')
-        .select('*')
-        .eq('id', workspaceId)
-        .single();
+      // Create owner membership
+      const { error: memberError } = await supabase
+        .from('workspace_members')
+        .insert({
+          workspace_id: newWorkspace.id,
+          user_id: user.id,
+          role: 'owner',
+          permissions: {
+            landing_pages: true,
+            code_vault: true,
+            crm: true,
+            content: true,
+            feedback: true,
+            projects: true,
+            command: true,
+            advisor: true,
+            analytics: true,
+            automations: true,
+          },
+        });
 
-      if (fetchError) throw fetchError;
+      if (memberError) {
+        console.error('Error creating workspace membership:', memberError);
+      }
 
       toast.success('Workspace created successfully');
       await fetchWorkspaces();
 
       // Switch to the new workspace
-      const newWorkspace = workspaces.find(w => w.id === workspaceId);
-      if (newWorkspace) {
-        setCurrentWorkspace(newWorkspace);
-        setStoredWorkspaceId(workspaceId);
+      const workspace = workspaces.find(w => w.id === newWorkspace.id);
+      if (workspace) {
+        setCurrentWorkspace(workspace);
+        setStoredWorkspaceId(newWorkspace.id);
       }
 
-      return workspace;
+      return newWorkspace as unknown as Workspace;
     } catch (err) {
       console.error('Error creating workspace:', err);
       toast.error(err instanceof Error ? err.message : 'Failed to create workspace');
@@ -316,12 +359,16 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
         }
       }
 
-      const { error: updateError } = await (supabase
-        .from('workspaces') as any)
-        .update({
-          ...input,
-          updated_at: new Date().toISOString(),
-        })
+      const updateData: WorkspaceUpdate = {
+        name: input.name,
+        slug: input.slug,
+        logo_url: input.logo_url,
+        settings: input.settings ? (input.settings as unknown as Json) : undefined,
+        updated_at: new Date().toISOString(),
+      };
+      const { error: updateError } = await supabase
+        .from('workspaces')
+        .update(updateData)
         .eq('id', id);
 
       if (updateError) throw updateError;

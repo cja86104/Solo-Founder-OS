@@ -2,8 +2,13 @@
 
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type { MRRMetrics, MRRSummary, Customer } from '@/types/command';
-import { formatCurrency, formatPercentage, calculateLTV } from '@/types/command';
+import {
+  formatCurrency,
+  formatPercentage,
+  type MRRMetrics,
+  type MRRSummary,
+  type Customer,
+} from '@/types/command';
 import { MetricCard, MetricGrid, type MetricTrend } from './metric-card';
 import {
   Card,
@@ -24,7 +29,6 @@ import {
   AlertTriangle,
   Target,
   Repeat,
-  Clock,
   Wallet,
 } from 'lucide-react';
 
@@ -97,7 +101,7 @@ export function QuickStats({
   }
 
   const mrrTrend = determineTrend(metrics.mrr_change);
-  const growthTrend = determineTrend(metrics.growth_rate);
+  const _growthTrend = determineTrend(metrics.growth_rate);
   const churnTrend = determineTrend(-metrics.churn_rate); // Invert for churn (lower is better)
 
   return (

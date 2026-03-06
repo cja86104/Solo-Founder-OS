@@ -104,7 +104,7 @@ const PLATFORMS: ContentPlatform[] = [
 ];
 
 interface PostFormProps {
-  post?: (ContentPost & Record<string, unknown>) | null;
+  post?: ContentPost | null;
   onSubmit: (data: CreatePostInput & { media_urls?: string[] }) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -127,10 +127,10 @@ export function PostForm({
   const [showSchedule, setShowSchedule] = useState(!!post?.scheduled_at);
   const [scheduleTime, setScheduleTime] = useState('09:00');
   const [mediaUrls, setMediaUrls] = useState<string[]>(
-    ((post as Record<string, unknown>)?.media_urls as string[]) || []
+    post?.media_urls || []
   );
   const [threadSegments, setThreadSegments] = useState<ThreadSegment[]>(() => {
-    if ((post as Record<string, unknown>)?.content_type === 'thread' && post?.content) {
+    if (post?.content_type === 'thread' && post?.content) {
       try {
         const parsed = JSON.parse(post.content);
         if (parsed.segments) return parsed.segments;
@@ -146,14 +146,14 @@ export function PostForm({
     defaultValues: {
       title: post?.title || '',
       content: post?.content || '',
-      content_type: ((post as Record<string, unknown>)?.content_type as PostFormValues['content_type']) || 'post',
+      content_type: (post?.content_type as PostFormValues['content_type']) || 'post',
       platforms: (post?.platforms as string[]) || [],
       tags: (post?.tags as string[]) || [],
-      category: (post as Record<string, unknown>)?.category as string || '',
-      slug: (post as Record<string, unknown>)?.slug as string || '',
-      meta_description: (post as Record<string, unknown>)?.meta_description as string || '',
+      category: post?.category || '',
+      slug: post?.slug || '',
+      meta_description: post?.meta_description || '',
       scheduled_at: post?.scheduled_at ? new Date(post.scheduled_at) : undefined,
-      media_urls: ((post as Record<string, unknown>)?.media_urls as string[]) || [],
+      media_urls: post?.media_urls || [],
     },
   });
 
@@ -599,7 +599,7 @@ export function PostForm({
 interface PostFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  post?: (ContentPost & Record<string, unknown>) | null;
+  post?: ContentPost | null;
   onSubmit: (data: CreatePostInput & { media_urls?: string[] }) => Promise<void>;
   onGenerateAI?: (prompt: string) => Promise<string>;
   workspaceId: string;

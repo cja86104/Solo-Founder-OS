@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { X, ImageIcon, Film } from 'lucide-react';
+import { X, Film } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MediaGridProps {
@@ -23,7 +24,7 @@ export function MediaGrid({
 }: MediaGridProps) {
   if (mediaUrls.length === 0) return null;
 
-  const hasVideo = mediaUrls.some(isVideo);
+  const _hasVideo = mediaUrls.some(isVideo);
 
   return (
     <div
@@ -56,10 +57,12 @@ export function MediaGrid({
               )}
             </div>
           ) : (
-            <img
+            <Image
               src={url}
               alt=""
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              unoptimized
             />
           )}
 

@@ -2,9 +2,13 @@
 
 import { useMemo } from 'react';
 import { format, parseISO, isValid } from 'date-fns';
-import { cn } from '@/lib/utils';
-import type { TimeSeriesDataPoint, AnalyticsPeriod } from '@/types/analytics';
-import { formatNumber, formatDuration, formatPercentage } from '@/types/analytics';
+import {
+  formatNumber,
+  formatDuration,
+  formatPercentage,
+  type TimeSeriesDataPoint,
+  type AnalyticsPeriod,
+} from '@/types/analytics';
 import {
   Card,
   CardContent,
@@ -178,7 +182,7 @@ export function VisitorChart({
   }
 
   const ChartComponent = chartType === 'bar' ? BarChart : chartType === 'line' ? LineChart : AreaChart;
-  const DataComponent = chartType === 'bar' ? Bar : chartType === 'line' ? Line : Area;
+  const _DataComponent = chartType === 'bar' ? Bar : chartType === 'line' ? Line : Area;
 
   return (
     <Card className={className}>

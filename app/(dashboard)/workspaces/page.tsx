@@ -48,7 +48,6 @@ import {
   Calendar,
   DollarSign,
   AlertTriangle,
-  Check,
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -87,7 +86,7 @@ export default function WorkspaceSettingsPage() {
   const router = useRouter();
   const params = useParams();
   const workspaceId = params.id as string;
-  const supabase = createClient();
+  createClient();
 
   const {
     workspaces,

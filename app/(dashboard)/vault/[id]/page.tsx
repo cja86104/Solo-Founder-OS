@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { VaultItemForm } from "@/components/vault/vault-item-form";
 import { VaultItemView } from "@/components/vault/vault-item-view";
 import type { VaultItemWithCollection, VaultCollection } from "@/types/vault";
+import type { Database } from "@/types/database";
 
 interface VaultItemPageProps {
   params: Promise<{ id: string }>;
@@ -20,7 +21,7 @@ export async function generateMetadata({
     .from("vault_items")
     .select("title")
     .eq("id", id)
-    .single() as { data: { title: string } | null };
+    .single<{ title: string }>();
 
   return {
     title: item?.title || "Item Not Found",
@@ -45,7 +46,7 @@ export default async function VaultItemPage({
     .from("vault_items")
     .select("*, collection:vault_collections(id, name, color, icon)")
     .eq("id", id)
-    .single() as { data: VaultItemWithCollection | null; error: unknown };
+    .single<VaultItemWithCollection>();
 
   if (error || !item) {
     notFound();
@@ -60,9 +61,13 @@ export default async function VaultItemPage({
 
   // Increment view count
   if (isOwner) {
-    await (supabase
-      .from("vault_items") as any)
-      .update({ use_count: ((item as any).use_count || 0) + 1 })
+    // Note: Using type assertion due to Supabase client type inference limitations
+    const updateData: Database["public"]["Tables"]["vault_items"]["Update"] = {
+      use_count: (item.use_count || 0) + 1,
+    };
+    await supabase
+      .from("vault_items")
+      .update(updateData as unknown as never)
       .eq("id", id);
   }
 
@@ -71,7 +76,8 @@ export default async function VaultItemPage({
     .from("vault_collections")
     .select("id, name, color, icon")
     .eq("user_id", user!.id)
-    .order("name") as { data: Pick<VaultCollection, 'id' | 'name' | 'color' | 'icon'>[] | null };
+    .order("name")
+    .returns<Pick<VaultCollection, 'id' | 'name' | 'color' | 'icon'>[]>();
 
   const isEditMode = edit === "true" && isOwner;
 

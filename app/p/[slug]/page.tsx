@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SectionRenderer } from '@/components/landing/sections'
 import { LeadCaptureProvider } from '@/components/landing/lead-capture-provider'
+import type { Database } from '@/types/database'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -26,25 +27,29 @@ interface LandingPageRow {
 async function getLandingPage(slug: string): Promise<LandingPageRow | null> {
   const supabase = await createClient()
 
-  const { data: page, error } = await (supabase
-    .from('landing_pages') as any)
+  const { data: page, error } = await supabase
+    .from('landing_pages')
     .select('*')
     .eq('slug', slug)
     .eq('status', 'published')
-    .single() as { data: LandingPageRow | null; error: unknown }
+    .single<LandingPageRow>()
 
   if (error || !page) {
     return null
   }
 
   // Track page view
-  await (supabase.from('landing_page_analytics') as any).insert({
+  // Note: Using type assertion due to Supabase client type inference limitations
+  const analyticsData: Database["public"]["Tables"]["landing_page_analytics"]["Insert"] = {
     page_id: page.id,
     event_type: 'page_view',
     event_data: {
       timestamp: new Date().toISOString(),
     },
-  } as never)
+  }
+  await supabase
+    .from('landing_page_analytics')
+    .insert(analyticsData as unknown as never)
 
   return page
 }

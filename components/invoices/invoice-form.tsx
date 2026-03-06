@@ -53,7 +53,6 @@ import {
   Plus,
   Trash2,
   ChevronDown,
-  GripVertical,
   User,
   Building2,
   Mail,
@@ -96,7 +95,7 @@ const invoiceFormSchema = z.object({
 type InvoiceFormValues = z.infer<typeof invoiceFormSchema>;
 
 interface InvoiceFormProps {
-  invoice?: Invoice | null;
+  invoice?: Partial<Invoice> | null;
   existingItems?: InvoiceItem[];
   contacts?: Contact[];
   projects?: Project[];

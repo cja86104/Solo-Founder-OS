@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { StripeSyncLog, SyncType, SyncStatus as SyncStatusType } from '@/types/command';
@@ -13,14 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -37,7 +29,6 @@ import {
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   RefreshCw,
   CheckCircle2,
@@ -50,7 +41,6 @@ import {
   FileText,
   Zap,
   History,
-  Info,
   ChevronRight,
 } from 'lucide-react';
 
@@ -404,7 +394,7 @@ export function SyncHistory({
 
 export function SyncLogDetail({ log, className }: SyncLogDetailProps) {
   const typeConfig = syncTypeConfig[log.sync_type];
-  const statusConfig = syncStatusConfig[log.status];
+  const _statusConfig = syncStatusConfig[log.status];
   const TypeIcon = typeConfig.icon;
 
   return (

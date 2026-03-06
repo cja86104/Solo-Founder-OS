@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LandingPageEditor } from "@/components/landing/landing-page-editor";
+import type { LandingPage } from "@/types/landing";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -29,5 +30,5 @@ export default async function EditLandingPage({ params }: PageProps) {
     notFound();
   }
 
-  return <LandingPageEditor page={page as any} />;
+  return <LandingPageEditor page={page as LandingPage} />;
 }
