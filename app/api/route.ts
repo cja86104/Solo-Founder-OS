@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       .from('projects') as any)
       .select(`
         *,
-        owner:profiles!projects_owner_id_fkey(id, full_name, avatar_url)
+        owner:profiles!projects_user_id_fkey(id, full_name, avatar_url)
       `)
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
       })
       .select(`
         *,
-        owner:profiles!projects_owner_id_fkey(id, full_name, avatar_url)
+        owner:profiles!projects_user_id_fkey(id, full_name, avatar_url)
       `)
       .single();
 

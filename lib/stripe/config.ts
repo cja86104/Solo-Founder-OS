@@ -1,7 +1,19 @@
 import Stripe from 'stripe';
 
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing STRIPE_SECRET_KEY environment variable');
+  throw new Error('Missing required environment variable: STRIPE_SECRET_KEY');
+}
+
+if (!process.env.STRIPE_PRO_MONTHLY_PRICE_ID) {
+  throw new Error('Missing required environment variable: STRIPE_PRO_MONTHLY_PRICE_ID');
+}
+
+if (!process.env.STRIPE_PRO_YEARLY_PRICE_ID) {
+  throw new Error('Missing required environment variable: STRIPE_PRO_YEARLY_PRICE_ID');
+}
+
+if (!process.env.STRIPE_LIFETIME_PRICE_ID) {
+  throw new Error('Missing required environment variable: STRIPE_LIFETIME_PRICE_ID');
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -9,11 +21,10 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   typescript: true,
 });
 
-// Price IDs - update these with your actual Stripe price IDs
 export const PRICE_IDS = {
-  PRO_MONTHLY: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || '',
-  PRO_YEARLY: process.env.STRIPE_PRO_YEARLY_PRICE_ID || '',
-  LIFETIME: process.env.STRIPE_LIFETIME_PRICE_ID || '',
+  PRO_MONTHLY: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+  PRO_YEARLY: process.env.STRIPE_PRO_YEARLY_PRICE_ID,
+  LIFETIME: process.env.STRIPE_LIFETIME_PRICE_ID,
 } as const;
 
 // Product configuration
