@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { name: "Features", href: "#features" },
-  { name: "Products", href: "#products" },
+  { name: "Platform", href: "#platform" },
+  { name: "Compare", href: "#compare" },
   { name: "Pricing", href: "#pricing" },
-  { name: "How It Works", href: "#how-it-works" },
+  { name: "FAQ", href: "#faq" },
 ];
 
 export function MarketingNav() {
