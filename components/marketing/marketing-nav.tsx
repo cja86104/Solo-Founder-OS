@@ -4,14 +4,11 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { FoundersHelmIcon } from "@/components/founders-helm-icon";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { name: "Platform", href: "#platform" },
-  { name: "Compare", href: "#compare" },
   { name: "Pricing", href: "#pricing" },
-  { name: "FAQ", href: "#faq" },
+  { name: "FAQ",     href: "#faq"     },
 ];
 
 export function MarketingNav() {
@@ -31,22 +28,22 @@ export function MarketingNav() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-[#FAF6F1]/80 backdrop-blur-xl border-b border-stone-200"
+          ? "bg-[#1A0E06]/90 backdrop-blur-xl border-b border-[rgba(196,168,130,0.12)]"
           : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
+
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/25 group-hover:shadow-orange-500/40 transition-shadow">
+              <div className="h-10 w-10 rounded-xl bg-[#C75B1A] flex items-center justify-center shadow-lg shadow-orange-900/30 group-hover:shadow-orange-900/50 transition-shadow">
                 <FoundersHelmIcon className="h-5 w-5 text-white" />
               </div>
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
             </div>
-            <span className="text-xl font-bold text-stone-900">
-              Founders <span className="text-orange-600">Helm</span>
+            <span className="text-xl font-bold text-[#F2EAD8]">
+              Founders <span className="text-[#C75B1A]">Helm</span>
             </span>
           </Link>
 
@@ -56,7 +53,7 @@ export function MarketingNav() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="px-4 py-2 text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors rounded-lg hover:bg-stone-900/5"
+                className="px-4 py-2 text-sm font-medium text-[#A89070] hover:text-[#F2EAD8] transition-colors rounded-lg hover:bg-white/5"
               >
                 {item.name}
               </Link>
@@ -65,25 +62,25 @@ export function MarketingNav() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button
-              variant="ghost"
-              className="text-stone-700 hover:text-stone-900 hover:bg-stone-900/5"
-              asChild
+            <Link
+              href="/login"
+              className="px-4 py-2 text-sm font-medium text-[#A89070] hover:text-[#F2EAD8] transition-colors rounded-lg hover:bg-white/5"
             >
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button
-              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all"
-              asChild
+              Sign In
+            </Link>
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#C75B1A] text-[#F2EAD8] text-sm font-semibold hover:bg-[#B34E16] transition-colors shadow-lg shadow-orange-900/30"
             >
-              <Link href="/signup">Get Started</Link>
-            </Button>
+              Get Started
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 text-stone-700 hover:text-stone-900"
+            className="lg:hidden p-2 text-[#A89070] hover:text-[#F2EAD8] transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -96,32 +93,33 @@ export function MarketingNav() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#FAF6F1]/95 backdrop-blur-xl border-b border-stone-200">
+        <div className="lg:hidden bg-[#1A0E06]/95 backdrop-blur-xl border-b border-[rgba(196,168,130,0.12)]">
           <div className="px-4 py-4 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="block px-4 py-3 text-base font-medium text-stone-700 hover:text-stone-900 hover:bg-stone-900/5 rounded-lg transition-colors"
+                className="block px-4 py-3 text-base font-medium text-[#A89070] hover:text-[#F2EAD8] hover:bg-white/5 rounded-lg transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
-            <div className="pt-4 space-y-2 border-t border-stone-200">
-              <Button
-                variant="ghost"
-                className="w-full justify-center text-stone-700 hover:text-stone-900 hover:bg-stone-900/5"
-                asChild
+            <div className="pt-4 space-y-2 border-t border-[rgba(196,168,130,0.12)]">
+              <Link
+                href="/login"
+                className="block w-full text-center px-4 py-3 text-base font-medium text-[#A89070] hover:text-[#F2EAD8] hover:bg-white/5 rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button
-                className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
-                asChild
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className="block w-full text-center px-4 py-3 rounded-lg bg-[#C75B1A] text-[#F2EAD8] font-semibold hover:bg-[#B34E16] transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <Link href="/signup">Get Started</Link>
-              </Button>
+                Get Started
+              </Link>
             </div>
           </div>
         </div>
