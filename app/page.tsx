@@ -156,21 +156,36 @@ export default function HomePage() {
         overflowX: "hidden",
       }}
     >
+      <style>{`
+        /* ── Responsive grid helpers ─────────────────────────────────── */
+        .rsp-hero-section  { padding: 100px 20px 64px; }
+        .rsp-hero-grid     { display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
+        .rsp-hero-float    { display: none !important; }
+        .rsp-pillars-grid  { display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .rsp-pricing-grid  { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 880px; margin: 0 auto; }
+        .rsp-faq-grid      { display: grid; grid-template-columns: 1fr; gap: 48px; align-items: start; }
+        .rsp-footer-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 48px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        @media (min-width: 768px) {
+          .rsp-hero-section  { padding: 160px 32px 100px; }
+          .rsp-hero-grid     { grid-template-columns: 1fr 1fr; gap: 80px; }
+          .rsp-hero-float    { display: flex !important; }
+          .rsp-pillars-grid  { grid-template-columns: repeat(3, 1fr); gap: 48px; }
+          .rsp-pricing-grid  { grid-template-columns: 1fr 1fr; }
+          .rsp-faq-grid      { grid-template-columns: 320px 1fr; gap: 80px; }
+          .rsp-footer-grid   { grid-template-columns: 1fr auto auto auto; gap: 56px; }
+        }
+      `}</style>
       <MarketingNav />
 
       {/* ════════════════════════════════════════════
           HERO
       ════════════════════════════════════════════ */}
       <section
-        style={{ maxWidth: 1200, margin: "0 auto", padding: "160px 32px 100px" }}
+        className="rsp-hero-section"
+        style={{ maxWidth: 1200, margin: "0 auto" }}
       >
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 80,
-            alignItems: "center",
-          }}
+          className="rsp-hero-grid"
         >
           {/* Left copy */}
           <div>
@@ -304,6 +319,7 @@ export default function HomePage() {
           <div style={{ position: "relative" }}>
             {/* Top float */}
             <div
+              className="rsp-hero-float"
               style={{
                 position: "absolute",
                 top: -20,
@@ -314,7 +330,6 @@ export default function HomePage() {
                 borderRadius: 12,
                 padding: "12px 16px",
                 boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-                display: "flex",
                 alignItems: "center",
                 gap: 10,
               }}
@@ -594,6 +609,7 @@ export default function HomePage() {
 
             {/* Bottom float */}
             <div
+              className="rsp-hero-float"
               style={{
                 position: "absolute",
                 bottom: -16,
@@ -604,7 +620,6 @@ export default function HomePage() {
                 borderRadius: 12,
                 padding: "12px 16px",
                 boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-                display: "flex",
                 alignItems: "center",
                 gap: 10,
               }}
@@ -643,13 +658,7 @@ export default function HomePage() {
         }}
       >
         <div
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
-            gap: 48,
-          }}
+          className="rsp-pillars-grid"
         >
           {pillars.map((p) => (
             <div
@@ -729,13 +738,7 @@ export default function HomePage() {
           </div>
 
           <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 24,
-              maxWidth: 880,
-              margin: "0 auto",
-            }}
+            className="rsp-pricing-grid"
           >
             {/* Pro */}
             <div
@@ -957,12 +960,7 @@ export default function HomePage() {
       <section id="faq" style={{ background: C.bgAlt, padding: "120px 32px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "320px 1fr",
-              gap: 80,
-              alignItems: "start",
-            }}
+            className="rsp-faq-grid"
           >
             <div>
               <Kicker>FAQ</Kicker>
@@ -1199,14 +1197,7 @@ export default function HomePage() {
         }}
       >
         <div
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "1fr auto auto auto",
-            gap: 56,
-            marginBottom: 48,
-          }}
+          className="rsp-footer-grid"
         >
           <div>
             <div
