@@ -165,6 +165,20 @@ export default function HomePage() {
         .rsp-pricing-grid  { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 880px; margin: 0 auto; }
         .rsp-faq-grid      { display: grid; grid-template-columns: 1fr; gap: 48px; align-items: start; }
         .rsp-footer-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 48px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+
+        /* ── Section padding classes (replaces hard-coded inline values) ─ */
+        .rsp-pillars-section { padding: 80px 32px; }
+        .rsp-section-pad     { padding: 120px 32px; }
+        .rsp-footer-outer    { padding: 56px 32px 32px; }
+
+        /* ── Dashboard KPI grid ─────────────────────────────────────── */
+        .rsp-kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+
         @media (min-width: 768px) {
           .rsp-hero-section  { padding: 160px 32px 100px; }
           .rsp-hero-grid     { grid-template-columns: 1fr 1fr; gap: 80px; }
@@ -173,6 +187,23 @@ export default function HomePage() {
           .rsp-pricing-grid  { grid-template-columns: 1fr 1fr; }
           .rsp-faq-grid      { grid-template-columns: 320px 1fr; gap: 80px; }
           .rsp-footer-grid   { grid-template-columns: 1fr auto auto auto; gap: 56px; }
+        }
+
+        /* ── Mobile overrides ───────────────────────────────────────── */
+        @media (max-width: 767px) {
+          /* Reduce section vertical padding on mobile */
+          .rsp-section-pad     { padding: 64px 20px; }
+          .rsp-pillars-section { padding: 64px 20px; }
+          .rsp-footer-outer    { padding: 40px 20px 24px; }
+
+          /* KPI grid: 2-column on mobile so values aren't clipped */
+          .rsp-kpi-grid { grid-template-columns: 1fr 1fr; }
+
+          /* Footer: single column so link groups don't crowd */
+          .rsp-footer-grid { grid-template-columns: 1fr; gap: 24px; }
+
+          /* Hero section: slightly tighter top clearance */
+          .rsp-hero-section { padding: 88px 20px 56px; }
         }
       `}</style>
       <MarketingNav />
@@ -434,9 +465,8 @@ export default function HomePage() {
 
                 {/* KPIs */}
                 <div
+                  className="rsp-kpi-grid"
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3,1fr)",
                     gap: 12,
                     marginBottom: 20,
                   }}
@@ -650,11 +680,11 @@ export default function HomePage() {
           THREE PILLARS
       ════════════════════════════════════════════ */}
       <section
+        className="rsp-pillars-section"
         style={{
           background: C.bgAlt,
           borderTop: `1px solid ${C.border}`,
           borderBottom: `1px solid ${C.border}`,
-          padding: "80px 32px",
         }}
       >
         <div
@@ -703,7 +733,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════
           PRICING
       ════════════════════════════════════════════ */}
-      <section id="pricing" style={{ background: C.bg, padding: "120px 32px" }}>
+      <section id="pricing" className="rsp-section-pad" style={{ background: C.bg }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 72 }}>
             <Kicker>Pricing</Kicker>
@@ -957,7 +987,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════
           FAQ
       ════════════════════════════════════════════ */}
-      <section id="faq" style={{ background: C.bgAlt, padding: "120px 32px" }}>
+      <section id="faq" className="rsp-section-pad" style={{ background: C.bgAlt }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div
             className="rsp-faq-grid"
@@ -1048,9 +1078,9 @@ export default function HomePage() {
           CTA
       ════════════════════════════════════════════ */}
       <section
+        className="rsp-section-pad"
         style={{
           background: C.bgCard,
-          padding: "120px 32px",
           position: "relative",
           overflow: "hidden",
           borderTop: `1px solid ${C.border}`,
@@ -1190,10 +1220,10 @@ export default function HomePage() {
           FOOTER
       ════════════════════════════════════════════ */}
       <footer
+        className="rsp-footer-outer"
         style={{
           background: "#0A0602",
           borderTop: `1px solid ${C.border}`,
-          padding: "56px 32px 32px",
         }}
       >
         <div
