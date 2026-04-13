@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { Database, Json } from '@/types/database';
 import type {
-import { requireActiveSubscription } from '@/lib/supabase/subscription';
   CreateAutomationInput,
   AutomationStatus,
   AutomationTriggerType,
 } from '@/types/automations';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 type AutomationRow = Database['public']['Tables']['automations']['Row'];
 type AutomationActionRow = Database['public']['Tables']['automation_actions']['Row'];

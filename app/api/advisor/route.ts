@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import {
-import { requireActiveSubscription } from '@/lib/supabase/subscription';
   ADVISOR_SYSTEM_PROMPT,
   buildContextPrompt,
   type AdvisorMessage,
@@ -11,6 +10,7 @@ import { requireActiveSubscription } from '@/lib/supabase/subscription';
   type ChatResponse,
   type AdvisorContext,
 } from '@/types/advisor';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 // OpenRouter API configuration
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
