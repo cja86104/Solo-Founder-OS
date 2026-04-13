@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 export async function GET(request: NextRequest) {
   try {
@@ -79,6 +80,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
+
     const { data: task, error } = await supabase
       .from('tasks')
       .insert({
@@ -143,6 +148,10 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
+
     const allowedFields = ['title', 'description', 'status', 'priority', 'due_date', 'assignee_id', 'estimated_hours', 'position', 'tags', 'completed_at'];
     const filtered: Record<string, unknown> = {};
     for (const field of allowedFields) {
@@ -206,6 +215,10 @@ export async function DELETE(request: NextRequest) {
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     const { error } = await supabase.from('tasks').delete().eq('id', taskId);
     if (error) throw error;

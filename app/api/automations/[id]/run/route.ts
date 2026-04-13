@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import type { Database, Json } from '@/types/database';
 import type { AutomationRunStatus } from '@/types/automations';
 import { executeAction as executeActionImpl } from '@/lib/automations/action-executor';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 type AutomationActionRow = Database['public']['Tables']['automation_actions']['Row'];
 
@@ -67,6 +68,10 @@ export async function POST(
         { status: 403 }
       );
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     // Check if automation can be run
     if (automation.status === 'archived') {

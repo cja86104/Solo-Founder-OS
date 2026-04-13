@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 export async function GET(
   request: NextRequest,
@@ -77,6 +78,10 @@ export async function PATCH(
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     const updateData: Database['public']['Tables']['content_posts']['Update'] = {};
     // Base columns that always exist

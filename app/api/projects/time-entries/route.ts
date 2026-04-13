@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 export async function GET(request: NextRequest) {
   try {
@@ -75,6 +76,10 @@ export async function POST(request: NextRequest) {
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     const { data: entry, error } = await supabase
       .from('time_entries')

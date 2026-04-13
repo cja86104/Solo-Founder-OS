@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 // ============================================================================
 // GET /api/content/ideas - List content ideas
@@ -95,6 +96,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
+
     // Create as a draft content post (idea)
     const { data: idea, error } = await supabase
       .from('content_posts')
@@ -134,6 +139,10 @@ export async function DELETE(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Subscription gate
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     const ideaId = searchParams.get('id');
     if (!ideaId) {

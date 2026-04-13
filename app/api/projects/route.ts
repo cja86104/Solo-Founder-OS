@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 type ProjectRow = Database['public']['Tables']['projects']['Row'];
 
@@ -106,6 +107,10 @@ export async function POST(request: NextRequest) {
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     const { data: project, error } = await supabase
       .from('projects')

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 // ============================================================================
 // GET /api/feedback/widgets - List widgets
@@ -111,6 +112,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
+
     const { data: widget, error } = await supabase
       .from('feedback_widgets')
       .insert({
@@ -192,6 +197,10 @@ export async function PATCH(request: NextRequest) {
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     // Build update from all allowed fields
     const updateData: Record<string, unknown> = {};

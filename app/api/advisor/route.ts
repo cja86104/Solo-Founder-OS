@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import {
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
   ADVISOR_SYSTEM_PROMPT,
   buildContextPrompt,
   type AdvisorMessage,
@@ -157,6 +158,10 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     // Get or create conversation
     let convId = conversation_id;

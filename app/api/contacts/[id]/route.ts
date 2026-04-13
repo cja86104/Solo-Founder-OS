@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 // ============================================================================
 // GET /api/contacts/[id] - Get single contact
@@ -101,6 +102,10 @@ export async function PATCH(
         { status: 403 }
       );
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     // Build update object
     const updateData: Record<string, unknown> = {};

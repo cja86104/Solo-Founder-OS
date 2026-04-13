@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { buildContactQuery, ContactFilters } from '@/lib/contacts';
 import { ContactSortOptions, ContactStatus, ContactSource } from '@/types/contacts';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 // ============================================================================
 // GET /api/contacts - List contacts
@@ -135,6 +136,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
+
     // Create contact
     const { data: contact, error } = await supabase
       .from('contacts')
@@ -210,6 +215,10 @@ export async function PATCH(request: NextRequest) {
         { status: 403 }
       );
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     let result;
 

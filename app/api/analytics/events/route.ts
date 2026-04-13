@@ -132,9 +132,18 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Note: Event tracking can be anonymous (from frontend SDK)
-    // We'll use a different auth approach for this endpoint
-    
+    // Auth required — even for anonymous-style tracking the caller must be
+    // an authenticated workspace member. Public tracking pixels should use
+    // a dedicated public endpoint, not this one.
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const {
       workspace_id,
@@ -155,17 +164,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify workspace exists and has analytics enabled
-    const { data: workspace } = await supabase
-      .from('workspaces')
-      .select('id, settings')
-      .eq('id', workspace_id)
+    // Verify workspace membership — prevents arbitrary users from writing
+    // events into workspaces they don't belong to
+    const { data: membership } = await supabase
+      .from('workspace_members')
+      .select('role')
+      .eq('workspace_id', workspace_id)
+      .eq('user_id', user.id)
       .single();
 
-    if (!workspace) {
+    if (!membership) {
       return NextResponse.json(
-        { error: 'Invalid workspace' },
-        { status: 400 }
+        { error: 'Access denied to workspace' },
+        { status: 403 }
       );
     }
 

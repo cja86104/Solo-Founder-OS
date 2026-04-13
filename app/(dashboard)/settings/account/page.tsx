@@ -143,7 +143,23 @@ export default function AccountSettingsPage() {
   };
 
   const handleDeleteAccount = async () => {
-    toast.error('Account deletion requires contacting support');
+    try {
+      const response = await fetch('/api/account/delete', { method: 'DELETE' });
+
+      if (!response.ok) {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to delete account. Please try again.');
+        return;
+      }
+
+      // Sign out locally and redirect to login — the account no longer exists
+      await supabase.auth.signOut();
+      toast.success('Your account has been deleted.');
+      window.location.href = '/login';
+    } catch (err) {
+      console.error('Delete account error:', err);
+      toast.error('An unexpected error occurred. Please try again.');
+    }
   };
 
   const getInitials = () => {

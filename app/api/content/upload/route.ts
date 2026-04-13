@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 // =============================================================================
 // POST /api/content/upload — Upload media files for content posts
@@ -44,6 +45,10 @@ export async function POST(request: NextRequest) {
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     // Validate file type and size
     const isImage = IMAGE_TYPES.includes(file.type);

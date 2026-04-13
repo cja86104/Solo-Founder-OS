@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { InvoiceStatus, PaymentMethod } from '@/types/invoices';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 export async function GET(
   request: NextRequest,
@@ -162,6 +163,10 @@ export async function PATCH(
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     // Build update data
     const updateData: Record<string, unknown> = {};
@@ -429,6 +434,10 @@ export async function PUT(
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     // Create payment record
     const { data: payment, error: paymentError } = await supabase

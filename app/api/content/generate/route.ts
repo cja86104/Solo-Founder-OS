@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek/deepseek-chat';
@@ -38,6 +39,10 @@ export async function POST(request: NextRequest) {
     if (!membership) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
+
+    // Subscription gate — block expired/non-paying users from write operations
+    const subscriptionBlocked = await requireActiveSubscription(supabase, user.id);
+    if (subscriptionBlocked) return subscriptionBlocked;
 
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
