@@ -47,7 +47,7 @@ export async function requireActiveSubscription(
   }
 
   // Active pro subscription — allow past_due too (Stripe is still retrying)
-  if (plan === 'pro' && ['active', 'past_due', 'trialing'].includes(status)) {
+  if (plan === 'pro' && ['active', 'past_due', 'trialing'].includes(status ?? '')) {
     return null;
   }
 
