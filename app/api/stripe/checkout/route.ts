@@ -16,17 +16,21 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { priceType, interval } = body as {
+    const { priceType } = body as {
       priceType: "pro" | "lifetime";
-      interval?: "monthly" | "yearly";
     };
 
-    // Determine price ID early so we can validate before creating a customer
+    // Determine price ID early so we can validate before creating a customer.
+    // Pro is monthly-only — the previous `interval` parameter for yearly
+    // billing was removed on 2026-05-31 along with the yearly price ID. Any
+    // older client still sending `interval` in the body has the field silently
+    // ignored and is routed to monthly, which is the safe fallback (the user
+    // is charged a known live price rather than crashing checkout).
     let priceId: string;
     if (priceType === "lifetime") {
       priceId = PRICE_IDS.LIFETIME;
     } else {
-      priceId = interval === "yearly" ? PRICE_IDS.PRO_YEARLY : PRICE_IDS.PRO_MONTHLY;
+      priceId = PRICE_IDS.PRO_MONTHLY;
     }
 
     if (!priceId) {

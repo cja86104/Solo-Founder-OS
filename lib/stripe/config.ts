@@ -1,3 +1,21 @@
+// lib/stripe/config.ts
+//
+// Founder's Helm sells two products via Stripe:
+//   1. Pro Monthly  — recurring subscription
+//   2. Lifetime     — one-time payment
+//
+// A Pro Yearly tier was previously scaffolded but is not part of the live
+// product offering and was removed on 2026-05-31. If you intend to re-add
+// yearly billing, restore:
+//   - the STRIPE_PRO_YEARLY_PRICE_ID env check below
+//   - PRICE_IDS.PRO_YEARLY
+//   - the PRO_YEARLY clause inside isSubscriptionPrice()
+//   - the `interval` parameter handling in app/api/stripe/checkout/route.ts
+//   - any UI affordance for yearly billing in components/settings/billing/*
+// Do NOT re-add the env check without all of the above in place — a stale
+// hard-required env that no code path uses will break production builds
+// (exactly the bug that motivated this cleanup).
+
 import Stripe from 'stripe';
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -6,10 +24,6 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 if (!process.env.STRIPE_PRO_MONTHLY_PRICE_ID) {
   throw new Error('Missing required environment variable: STRIPE_PRO_MONTHLY_PRICE_ID');
-}
-
-if (!process.env.STRIPE_PRO_YEARLY_PRICE_ID) {
-  throw new Error('Missing required environment variable: STRIPE_PRO_YEARLY_PRICE_ID');
 }
 
 if (!process.env.STRIPE_LIFETIME_PRICE_ID) {
@@ -23,7 +37,6 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export const PRICE_IDS = {
   PRO_MONTHLY: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
-  PRO_YEARLY: process.env.STRIPE_PRO_YEARLY_PRICE_ID,
   LIFETIME: process.env.STRIPE_LIFETIME_PRICE_ID,
 } as const;
 
@@ -68,9 +81,10 @@ export const SUBSCRIPTION_STATUS_MAP: Record<string, string> = {
   paused: 'paused',
 };
 
-// Helper to check if a price is for a subscription
+// Helper to check if a price is for a subscription.
+// With yearly removed, the only subscription price is monthly.
 export function isSubscriptionPrice(priceId: string): boolean {
-  return priceId === PRICE_IDS.PRO_MONTHLY || priceId === PRICE_IDS.PRO_YEARLY;
+  return priceId === PRICE_IDS.PRO_MONTHLY;
 }
 
 // Helper to check if a price is for lifetime
