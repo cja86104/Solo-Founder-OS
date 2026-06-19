@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
@@ -218,7 +219,7 @@ export async function PATCH(request: NextRequest) {
 
     const { data: widget, error } = await supabase
       .from('feedback_widgets')
-      .update(updateData)
+      .update(updateData as TablesUpdate<'feedback_widgets'>)
       .eq('id', widget_id)
       .select()
       .single();

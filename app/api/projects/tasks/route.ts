@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
+import { Constants } from '@/types/database';
+import { parseEnum } from '@/lib/validation/parse-enum';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 export async function GET(request: NextRequest) {
@@ -37,7 +40,9 @@ export async function GET(request: NextRequest) {
     const projectId = searchParams.get('project_id');
     if (projectId) query = query.eq('project_id', projectId);
 
-    const status = searchParams.get('status');
+    // Validate enum-typed querystring against the DB enum so an invalid
+    // ?status=foo is silently dropped rather than crashing Postgres.
+    const status = parseEnum(searchParams.get('status'), Constants.public.Enums.task_status);
     if (status) query = query.eq('status', status);
 
     const assigneeId = searchParams.get('assignee_id');
@@ -166,7 +171,7 @@ export async function PATCH(request: NextRequest) {
 
     const { data: updated, error } = await supabase
       .from('tasks')
-      .update(filtered)
+      .update(filtered as TablesUpdate<'tasks'>)
       .eq('id', task_id)
       .select(`*, project:projects(id, name, color)`)
       .single();

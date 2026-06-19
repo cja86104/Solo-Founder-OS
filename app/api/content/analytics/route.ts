@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesInsert, TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -224,7 +225,7 @@ export async function POST(request: NextRequest) {
       if (existing) {
         await admin
           .from('content_engagement')
-          .update({ [column]: (existing[column] || 0) + 1 })
+          .update({ [column]: (existing[column] || 0) + 1 } as TablesUpdate<'content_engagement'>)
           .eq('id', existing.id);
       } else {
         await admin
@@ -232,7 +233,7 @@ export async function POST(request: NextRequest) {
           .insert({
             post_id,
             [column]: 1,
-          });
+          } as TablesInsert<'content_engagement'>);
       }
     } catch {
       // Table may not exist — silently fail for tracking

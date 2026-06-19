@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
@@ -167,7 +168,7 @@ export async function PATCH(request: NextRequest) {
 
     const { data: updated, error } = await supabase
       .from('time_entries')
-      .update(filtered)
+      .update(filtered as TablesUpdate<'time_entries'>)
       .eq('id', entry_id)
       .select(`*, project:projects(id, name, color), task:tasks(id, title)`)
       .single();

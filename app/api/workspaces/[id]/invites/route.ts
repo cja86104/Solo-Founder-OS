@@ -61,19 +61,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Check if the user is already a member
-    const { data: existingMember } = await supabase
-      .from('workspace_members')
-      .select('id')
-      .eq('workspace_id', workspaceId)
-      .eq('user_id', supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .limit(1)
-      );
-
-    // Simpler check: look up profile by email
+    // Check if the user is already a member of this workspace.
+    // First look up the invitee's profile by email, then check for an
+    // existing workspace membership for that user.
     const { data: inviteeProfile } = await supabase
       .from('profiles')
       .select('id')

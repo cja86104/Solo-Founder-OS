@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { Constants } from "@/types/database";
+import { parseEnum } from "@/lib/validation/parse-enum";
 import { VaultHeader } from "@/components/vault/vault-header";
 import { VaultList } from "@/components/vault/vault-list";
 import { VaultFilters } from "@/components/vault/vault-filters";
@@ -46,9 +48,11 @@ export default async function VaultPage({ searchParams }: VaultPageProps) {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  // Apply filters
-  if (params.type) {
-    query = query.eq("type", params.type);
+  // Apply filters — validate enum-typed querystrings against the DB enum so
+  // an invalid `?type=foo` is silently dropped rather than crashing Postgres.
+  const typeFilter = parseEnum(params.type, Constants.public.Enums.vault_item_type);
+  if (typeFilter) {
+    query = query.eq("type", typeFilter);
   }
   if (params.language) {
     query = query.eq("language", params.language);

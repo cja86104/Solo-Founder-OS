@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -165,7 +166,7 @@ export async function PATCH(
 
     const { error: updateError } = await supabase
       .from('workspace_members')
-      .update(updateData)
+      .update(updateData as TablesUpdate<'workspace_members'>)
       .eq('workspace_id', workspaceId)
       .eq('user_id', targetUserId);
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 
 // ============================================================================
@@ -244,7 +245,7 @@ export async function PATCH(request: NextRequest) {
 
     const { data: submission, error } = await supabase
       .from('feedback_submissions')
-      .update(updateData)
+      .update(updateData as TablesUpdate<'feedback_submissions'>)
       .eq('id', submission_id)
       .select()
       .single();

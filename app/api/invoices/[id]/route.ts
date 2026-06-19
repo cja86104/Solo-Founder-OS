@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 import type { InvoiceStatus, PaymentMethod } from '@/types/invoices';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
@@ -219,7 +220,7 @@ export async function PATCH(
     // Update invoice
     const { data: invoice, error } = await supabase
       .from('invoices')
-      .update(updateData)
+      .update(updateData as TablesUpdate<'invoices'>)
       .eq('id', id)
       .select(`
         *,

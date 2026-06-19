@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 import type { Database, Json } from '@/types/database';
 import type { UpdateAutomationInput } from '@/types/automations';
@@ -210,7 +211,7 @@ export async function PATCH(
     // Update the automation
     const { data: updatedAutomation, error: updateError } = await supabase
       .from('automations')
-      .update(updateData)
+      .update(updateData as TablesUpdate<'automations'>)
       .eq('id', id)
       .select()
       .single();

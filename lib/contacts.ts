@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
+import { Constants } from '@/types/database';
+import { parseEnum } from '@/lib/validation/parse-enum';
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -35,12 +37,17 @@ export function buildContactQuery(
     .select('*', { count: 'exact' })
     .eq('workspace_id', workspaceId);
 
-  if (filters?.status) {
-    query = query.eq('status', filters.status);
+  // Validate enum-typed filters against the DB enum at this boundary so
+  // callers can pass raw querystring values without unsafe casting. Invalid
+  // values are treated as "no filter" (matches behaviour of an absent param).
+  const status = parseEnum(filters?.status, Constants.public.Enums.contact_status);
+  if (status) {
+    query = query.eq('status', status);
   }
 
-  if (filters?.source) {
-    query = query.eq('source', filters.source);
+  const source = parseEnum(filters?.source, Constants.public.Enums.contact_source);
+  if (source) {
+    query = query.eq('source', source);
   }
 
   if (filters?.tags && filters.tags.length > 0) {

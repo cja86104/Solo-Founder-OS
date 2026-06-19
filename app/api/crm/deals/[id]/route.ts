@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
@@ -113,7 +114,7 @@ export async function PATCH(
 
     const { data: deal, error } = await supabase
       .from('deals')
-      .update(updateData)
+      .update(updateData as TablesUpdate<'deals'>)
       .eq('id', id)
       .select(`*, stage:pipeline_stages(*), contact:contacts(id, email, name)`)
       .single();

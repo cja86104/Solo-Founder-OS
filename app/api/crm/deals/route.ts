@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { createClient } from '@/lib/supabase/server';
+import { Constants } from '@/types/database';
+import { parseEnum } from '@/lib/validation/parse-enum';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 export async function GET(request: NextRequest) {
@@ -37,7 +40,9 @@ export async function GET(request: NextRequest) {
     const stageId = searchParams.get('stage_id');
     if (stageId) query = query.eq('stage_id', stageId);
 
-    const status = searchParams.get('status');
+    // Validate enum-typed querystring against the DB enum so an invalid
+    // ?status=foo is silently dropped rather than crashing Postgres.
+    const status = parseEnum(searchParams.get('status'), Constants.public.Enums.deal_status);
     if (status) query = query.eq('status', status);
 
     const { data: deals, error } = await query;
@@ -187,7 +192,7 @@ export async function PATCH(request: NextRequest) {
 
     const { data: deal, error } = await supabase
       .from('deals')
-      .update(updateData)
+      .update(updateData as TablesUpdate<'deals'>)
       .eq('id', deal_id)
       .select(`*, stage:pipeline_stages(*), contact:contacts(id, email, name)`)
       .single();

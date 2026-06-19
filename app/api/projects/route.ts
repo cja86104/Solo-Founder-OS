@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
+import { Constants } from '@/types/database';
+import { parseEnum } from '@/lib/validation/parse-enum';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
 
 type ProjectRow = Database['public']['Tables']['projects']['Row'];
@@ -40,7 +42,9 @@ export async function GET(request: NextRequest) {
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false });
 
-    const status = searchParams.get('status');
+    // Validate enum-typed querystring against the DB enum so an invalid
+    // ?status=foo is silently dropped rather than crashing Postgres.
+    const status = parseEnum(searchParams.get('status'), Constants.public.Enums.project_status);
     if (status) query = query.eq('status', status);
 
     const { data: projects, error } = await query;

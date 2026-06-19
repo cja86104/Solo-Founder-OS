@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import type { TablesUpdate } from '@/types/db-helpers';
 import { Resend } from 'resend';
 import { replaceVariables, replaceVariablesInObject } from './variables';
 import type {
@@ -132,7 +133,7 @@ async function executeUpdateContact(
 
   const { error } = await supabase
     .from('contacts')
-    .update(config.fields)
+    .update(config.fields as TablesUpdate<'contacts'>)
     .eq('id', contactId);
 
   if (error) throw error;
@@ -229,7 +230,6 @@ async function executeCreateDeal(
   const { error } = await supabase.from('deals').insert({
     workspace_id: workspaceId,
     name: config.name,
-    pipeline_id: config.pipeline_id,
     stage_id: config.stage_id,
     value: config.value || 0,
     contact_id: contactId || null,
@@ -248,7 +248,7 @@ async function executeUpdateDeal(
 
   const { error } = await supabase
     .from('deals')
-    .update(config.fields)
+    .update(config.fields as TablesUpdate<'deals'>)
     .eq('id', dealId);
 
   if (error) throw error;
