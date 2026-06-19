@@ -8,7 +8,6 @@ import type { Profile, Subscription } from "@/types/database";
 import {
   User as UserIcon,
   Settings,
-  Users,
   LogOut,
   Shield,
   Sparkles,
@@ -36,6 +35,10 @@ interface UserMenuProps {
   subscription: Subscription | null;
 }
 
+// Workspace/Team management has been moved out of this user-scoped menu —
+// workspace switching, member management, and workspace settings now live
+// in the WorkspaceSwitcher dropdown in the sidebar, which is the single
+// canonical entry point for workspace-scoped actions.
 export function UserMenu({ user, profile, subscription: _subscription }: UserMenuProps) {
   const router = useRouter();
   const supabase = createClient();
@@ -106,12 +109,6 @@ export function UserMenu({ user, profile, subscription: _subscription }: UserMen
             <Link href="/settings/profile">
               <UserIcon className="mr-2 h-4 w-4" />
               Profile
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/settings/workspace">
-              <Users className="mr-2 h-4 w-4" />
-              Team
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

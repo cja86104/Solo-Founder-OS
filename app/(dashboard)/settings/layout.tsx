@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   User,
-  Building2,
   CreditCard,
   Download,
   Bell,
@@ -14,6 +13,11 @@ import {
   Plug,
 } from 'lucide-react';
 
+// Workspace settings intentionally NOT listed here — workspace-scoped
+// configuration (general, preferences, billing, members, danger zone) lives
+// at /workspaces/[id]/settings and is reached via the WorkspaceSwitcher
+// dropdown in the sidebar. /settings/workspace exists only as a legacy
+// redirect to that canonical surface.
 const settingsNavItems = [
   {
     title: 'Profile',
@@ -26,12 +30,6 @@ const settingsNavItems = [
     href: '/settings/account',
     icon: Shield,
     description: 'Account security',
-  },
-  {
-    title: 'Workspace',
-    href: '/settings/workspace',
-    icon: Building2,
-    description: 'Workspace configuration',
   },
   {
     title: 'Billing',

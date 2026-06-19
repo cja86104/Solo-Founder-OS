@@ -24,7 +24,11 @@ import {
   Users,
 } from 'lucide-react';
 
-export function WorkspaceSwitcher() {
+interface WorkspaceSwitcherProps {
+  collapsed?: boolean;
+}
+
+export function WorkspaceSwitcher({ collapsed = false }: WorkspaceSwitcherProps) {
   const router = useRouter();
   const {
     workspaces,
@@ -36,6 +40,13 @@ export function WorkspaceSwitcher() {
   const [open, setOpen] = useState(false);
 
   if (isLoading) {
+    if (collapsed) {
+      return (
+        <div className="flex justify-center">
+          <Skeleton className="h-8 w-8 rounded-md" />
+        </div>
+      );
+    }
     return (
       <div className="flex items-center gap-2 px-2">
         <Skeleton className="h-8 w-8 rounded-md" />
@@ -45,10 +56,23 @@ export function WorkspaceSwitcher() {
   }
 
   if (!currentWorkspace) {
+    if (collapsed) {
+      return (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-10 w-10"
+          onClick={() => router.push('/workspaces/new')}
+          aria-label="Create workspace"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      );
+    }
     return (
       <Button
         variant="outline"
-        className="justify-start gap-2"
+        className="w-full justify-start gap-2"
         onClick={() => router.push('/workspaces/new')}
       >
         <Plus className="h-4 w-4" />
@@ -80,12 +104,12 @@ export function WorkspaceSwitcher() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full justify-between gap-2 px-2 hover:bg-accent"
-          aria-label="Switch workspace"
-        >
-          <div className="flex items-center gap-2 truncate">
+        {collapsed ? (
+          <Button
+            variant="ghost"
+            className="h-10 w-10 p-0 hover:bg-accent"
+            aria-label={`Workspace: ${currentWorkspace.name}. Click to switch.`}
+          >
             <Avatar className="h-8 w-8 rounded-md">
               {currentWorkspace.logo_url ? (
                 <AvatarImage
@@ -97,23 +121,43 @@ export function WorkspaceSwitcher() {
                 {getInitials(currentWorkspace.name)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col items-start truncate">
-              <span className="truncate text-sm font-medium">
-                {currentWorkspace.name}
-              </span>
-              <span className="truncate text-xs text-muted-foreground capitalize">
-                {currentWorkspace.plan} plan
-              </span>
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            className="w-full justify-between gap-2 px-2 hover:bg-accent"
+            aria-label="Switch workspace"
+          >
+            <div className="flex items-center gap-2 truncate">
+              <Avatar className="h-8 w-8 rounded-md">
+                {currentWorkspace.logo_url ? (
+                  <AvatarImage
+                    src={currentWorkspace.logo_url}
+                    alt={currentWorkspace.name}
+                  />
+                ) : null}
+                <AvatarFallback className="rounded-md bg-primary/10 text-primary text-xs font-medium">
+                  {getInitials(currentWorkspace.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start truncate">
+                <span className="truncate text-sm font-medium">
+                  {currentWorkspace.name}
+                </span>
+                <span className="truncate text-xs text-muted-foreground capitalize">
+                  {currentWorkspace.plan} plan
+                </span>
+              </div>
             </div>
-          </div>
-          <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+            <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-[280px]"
         align="start"
-        side="bottom"
-        sideOffset={4}
+        side={collapsed ? 'right' : 'bottom'}
+        sideOffset={collapsed ? 8 : 4}
       >
         <DropdownMenuLabel className="text-xs text-muted-foreground">
           Workspaces

@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { FoundersHelmIcon } from "@/components/founders-helm-icon";
+import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -101,6 +102,16 @@ export function Sidebar({
               <X className="h-4 w-4" />
             </Button>
           )}
+        </div>
+
+        {/* Workspace Switcher */}
+        <div
+          className={cn(
+            "border-b p-2",
+            collapsed && "flex justify-center px-1"
+          )}
+        >
+          <WorkspaceSwitcher collapsed={collapsed} />
         </div>
 
         {/* Navigation */}
