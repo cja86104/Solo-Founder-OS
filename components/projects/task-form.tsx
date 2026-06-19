@@ -54,18 +54,24 @@ const taskFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   project_id: z.string().optional(),
-  status: z.enum(['todo', 'in_progress', 'in_review', 'done', 'cancelled']),
+  status: z.enum(['todo', 'in_progress', 'review', 'done']),
   priority: z.enum(['low', 'medium', 'high', 'urgent']),
   due_date: z.date().optional(),
-  start_date: z.date().optional(),
   estimated_hours: z.number().min(0).optional(),
   tags: z.array(z.string()),
 });
 
 type TaskFormValues = z.infer<typeof taskFormSchema>;
 
-const STATUSES: TaskStatus[] = ['todo', 'in_progress', 'in_review', 'done', 'cancelled'];
+const STATUSES: TaskStatus[] = ['todo', 'in_progress', 'review', 'done'];
 const PRIORITIES: TaskPriority[] = ['low', 'medium', 'high', 'urgent'];
+// Radix Select forbids empty string values (those are reserved for
+// clearing the selection). We use a sentinel for the "No Project"
+// option and convert it back to undefined before submission so the
+// API receives no project_id field at all (which the route handler
+// then maps to NULL on insert).
+const NO_PROJECT_SENTINEL = '__no_project__';
+
 
 interface TaskFormProps {
   task?: Task | null;
@@ -93,11 +99,10 @@ export function TaskForm({
     defaultValues: {
       title: task?.title || '',
       description: task?.description || '',
-      project_id: task?.project_id || defaultProjectId || '',
+      project_id: task?.project_id || defaultProjectId || NO_PROJECT_SENTINEL,
       status: task?.status || 'todo',
       priority: task?.priority || 'medium',
       due_date: task?.due_date ? new Date(task.due_date) : undefined,
-      start_date: task?.start_date ? new Date(task.start_date) : undefined,
       estimated_hours: task?.estimated_hours || undefined,
       tags: task?.tags || [],
     },
@@ -124,11 +129,13 @@ export function TaskForm({
     await onSubmit({
       title: data.title,
       description: data.description,
-      project_id: data.project_id || undefined,
+      project_id:
+        data.project_id && data.project_id !== NO_PROJECT_SENTINEL
+          ? data.project_id
+          : undefined,
       status: data.status,
       priority: data.priority,
       due_date: data.due_date?.toISOString(),
-      start_date: data.start_date?.toISOString(),
       estimated_hours: data.estimated_hours,
       tags: data.tags,
     });
@@ -186,7 +193,7 @@ export function TaskForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="">No Project</SelectItem>
+                    <SelectItem value={NO_PROJECT_SENTINEL}>No Project</SelectItem>
                     {projects.map((project) => (
                       <SelectItem key={project.id} value={project.id}>
                         {project.icon} {project.name}
@@ -253,78 +260,41 @@ export function TaskForm({
           />
         </div>
 
-        {/* Dates */}
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="start_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Start Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-start text-left font-normal',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {field.value ? format(field.value, 'PPP') : 'Pick date'}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="due_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Due Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-start text-left font-normal',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {field.value ? format(field.value, 'PPP') : 'Pick date'}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        {/* Due Date */}
+        <FormField
+          control={form.control}
+          name="due_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Due Date</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'w-full justify-start text-left font-normal',
+                        !field.value && 'text-muted-foreground'
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {field.value ? format(field.value, 'PPP') : 'Pick date'}
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         {/* Estimated Hours */}
         <FormField

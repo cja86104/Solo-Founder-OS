@@ -4,7 +4,7 @@
 // ============================================================================
 
 export type ProjectStatus = 'active' | 'on_hold' | 'completed' | 'archived';
-export type TaskStatus = 'todo' | 'in_progress' | 'in_review' | 'done' | 'cancelled';
+export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface Project {
@@ -42,14 +42,12 @@ export interface Task {
   id: string;
   workspace_id: string;
   project_id: string | null;
-  parent_id: string | null;
   title: string;
   description: string | null;
   status: TaskStatus;
   priority: TaskPriority;
   assignee_id: string | null;
   due_date: string | null;
-  start_date: string | null;
   completed_at: string | null;
   estimated_hours: number | null;
   tags: string[];
@@ -133,12 +131,10 @@ export interface CreateTaskInput {
   title: string;
   description?: string;
   project_id?: string;
-  parent_id?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
   assignee_id?: string;
   due_date?: string;
-  start_date?: string;
   estimated_hours?: number;
   tags?: string[];
 }
@@ -200,9 +196,8 @@ export function getStatusColor(status: TaskStatus): string {
   const colors: Record<TaskStatus, string> = {
     todo: 'bg-gray-500',
     in_progress: 'bg-blue-500',
-    in_review: 'bg-purple-500',
+    review: 'bg-purple-500',
     done: 'bg-green-500',
-    cancelled: 'bg-red-500',
   };
   return colors[status];
 }
@@ -211,9 +206,8 @@ export function getStatusLabel(status: TaskStatus): string {
   const labels: Record<TaskStatus, string> = {
     todo: 'To Do',
     in_progress: 'In Progress',
-    in_review: 'In Review',
+    review: 'Review',
     done: 'Done',
-    cancelled: 'Cancelled',
   };
   return labels[status];
 }

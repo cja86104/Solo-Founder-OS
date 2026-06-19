@@ -147,12 +147,15 @@ export default function ProjectsPage() {
       (t) =>
         t.due_date &&
         new Date(t.due_date) < new Date() &&
-        t.status !== 'done' &&
-        t.status !== 'cancelled'
+        t.status !== 'done'
     ).length,
   };
 
   // Handlers
+  // Note: handlers below intentionally DO NOT re-throw caught errors —
+  // the dialog wrapper has no error boundary, so rethrowing here would
+  // crash the whole /projects route via the dashboard error.tsx.
+  // Toast the API-supplied message instead.
   const handleCreateTask = async (data: CreateTaskInput) => {
     if (!currentWorkspace) return;
 
@@ -166,14 +169,21 @@ export default function ProjectsPage() {
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to create task');
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const message =
+          (body && (body.message || body.error)) ||
+          `Failed to create task (HTTP ${response.status})`;
+        toast.error(message);
+        return;
+      }
 
       toast.success('Task created');
       setTaskFormOpen(false);
       fetchData();
     } catch (error) {
-      toast.error('Failed to create task');
-      throw error;
+      console.error('Create task network/parse error:', error);
+      toast.error('Network error — please check your connection and try again.');
     }
   };
 
@@ -190,14 +200,21 @@ export default function ProjectsPage() {
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to update task');
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const message =
+          (body && (body.message || body.error)) ||
+          `Failed to update task (HTTP ${response.status})`;
+        toast.error(message);
+        return;
+      }
 
       toast.success('Task updated');
       setEditingTask(null);
       fetchData();
     } catch (error) {
-      toast.error('Failed to update task');
-      throw error;
+      console.error('Update task network/parse error:', error);
+      toast.error('Network error — please check your connection and try again.');
     }
   };
 
@@ -228,18 +245,30 @@ export default function ProjectsPage() {
     if (!taskToDelete) return;
 
     try {
-      const response = await fetch(`/api/projects/tasks/${taskToDelete.id}`, {
-        method: 'DELETE',
-      });
+      // DELETE handler at /api/projects/tasks/route.ts reads task_id
+      // from the querystring; there is no /api/projects/tasks/[id]
+      // dynamic-segment route, so passing the id in the path 404s.
+      const response = await fetch(
+        `/api/projects/tasks?task_id=${encodeURIComponent(taskToDelete.id)}`,
+        { method: 'DELETE' },
+      );
 
-      if (!response.ok) throw new Error('Failed to delete task');
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const message =
+          (body && (body.message || body.error)) ||
+          `Failed to delete task (HTTP ${response.status})`;
+        toast.error(message);
+        return;
+      }
 
       toast.success('Task deleted');
       setDeleteDialogOpen(false);
       setTaskToDelete(null);
       fetchData();
-    } catch {
-      toast.error('Failed to delete task');
+    } catch (error) {
+      console.error('Delete task network/parse error:', error);
+      toast.error('Network error — please check your connection and try again.');
     }
   };
 
@@ -406,7 +435,7 @@ export default function ProjectsPage() {
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="todo">To Do</SelectItem>
                 <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="in_review">In Review</SelectItem>
+                <SelectItem value="review">Review</SelectItem>
                 <SelectItem value="done">Done</SelectItem>
               </SelectContent>
             </Select>

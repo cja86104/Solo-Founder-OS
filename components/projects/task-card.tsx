@@ -62,8 +62,7 @@ export function TaskCard({
   const isOverdue =
     task.due_date &&
     isPast(new Date(task.due_date)) &&
-    task.status !== 'done' &&
-    task.status !== 'cancelled';
+    task.status !== 'done';
   const isDueToday = task.due_date && isToday(new Date(task.due_date));
   const isDone = task.status === 'done';
 
