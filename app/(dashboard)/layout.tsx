@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppShell } from "@/components/layout/app-shell";
+import { HelpDrawerProvider } from "@/components/layout/help-drawer";
 import { WorkspaceProvider } from "@/lib/workspace-context";
 import { SubscriptionProvider } from "@/lib/subscription-context";
 import type { Database } from "@/types/database";
@@ -57,13 +58,15 @@ export default async function DashboardLayout({
   return (
     <WorkspaceProvider subscription={activeSubscription}>
       <SubscriptionProvider subscription={activeSubscription}>
-        <AppShell
-          user={user}
-          profile={profile}
-          subscription={activeSubscription}
-        >
-          {children}
-        </AppShell>
+        <HelpDrawerProvider>
+          <AppShell
+            user={user}
+            profile={profile}
+            subscription={activeSubscription}
+          >
+            {children}
+          </AppShell>
+        </HelpDrawerProvider>
       </SubscriptionProvider>
     </WorkspaceProvider>
   );

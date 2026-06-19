@@ -58,7 +58,7 @@ const contactFormSchema = z.object({
   phone: z.string().optional(),
   company: z.string().optional(),
   job_title: z.string().optional(),
-  status: z.enum(['active', 'unsubscribed', 'bounced', 'spam', 'archived']),
+  status: z.enum(['active', 'inactive', 'archived']),
   tags: z.array(z.string()),
 });
 
@@ -242,7 +242,7 @@ export function ContactForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {(['active', 'unsubscribed', 'bounced', 'spam', 'archived'] as const).map(
+                  {(['active', 'inactive', 'archived'] as const).map(
                     (status) => (
                       <SelectItem key={status} value={status}>
                         {getStatusLabel(status)}

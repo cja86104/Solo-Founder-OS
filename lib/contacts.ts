@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Constants } from '@/types/database';
 import { parseEnum } from '@/lib/validation/parse-enum';
+import type { ContactStats, ContactSource } from '@/types/contacts';
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -14,16 +15,6 @@ export interface ContactFilters {
 export interface ContactSort {
   field: string;
   direction: 'asc' | 'desc';
-}
-
-export interface ContactStats {
-  total: number;
-  active: number;
-  unsubscribed: number;
-  bySource: Record<string, number>;
-  byTag: { tag: string; count: number }[];
-  recentlyAdded: number;
-  recentlyActive: number;
 }
 
 export function buildContactQuery(
@@ -89,10 +80,16 @@ export async function getContactStats(
   });
 
   const active = byStatus['active'] || 0;
-  const unsubscribed = byStatus['unsubscribed'] || 0;
+  const inactive = byStatus['inactive'] || 0;
 
   // Count by source
-  const bySource: Record<string, number> = {};
+  const bySource: Record<ContactSource, number> = {
+    manual: 0,
+    import: 0,
+    landing_page: 0,
+    api: 0,
+    integration: 0,
+  };
   contacts?.forEach((c) => {
     if (c.source) {
       bySource[c.source] = (bySource[c.source] || 0) + 1;
@@ -129,7 +126,7 @@ export async function getContactStats(
   return {
     total,
     active,
-    unsubscribed,
+    inactive,
     bySource,
     byTag,
     recentlyAdded,

@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { CommandMenu } from "@/components/layout/command-menu";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { HelpDrawerHeaderTrigger } from "@/components/layout/help-drawer";
 
 interface HeaderProps {
   user: User;
@@ -50,6 +51,9 @@ export function Header({ user, profile, subscription, onMenuClick }: HeaderProps
 
         {/* Theme Toggle */}
         <ThemeToggle />
+
+        {/* Help (Operations Manual) */}
+        <HelpDrawerHeaderTrigger />
 
         {/* Notifications */}
         <NotificationBell />

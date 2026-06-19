@@ -23,7 +23,7 @@
   11. Projects & Tasks
   12. Automations
   13. AI Advisor
-  14. Insights
+  14. Analytics
   15. Settings
   16. Roles & Permissions
   17. Keyboard Shortcuts
@@ -46,7 +46,7 @@ tools, you get everything in one place:
   - Landing Pages     Build web pages to capture leads.
   - Feedback          Embed feedback widgets and collect user input.
   - Automations       Set up workflows that run automatically.
-  - Insights          Revenue, growth, and productivity at a glance.
+  - Analytics         Track visitors, traffic, and conversions.
   - Command Center    See your SaaS metrics (MRR, churn, etc.).
   - Code Vault        Save and organize code snippets and prompts.
   - AI Advisor        Get AI-powered business advice.
@@ -55,13 +55,11 @@ tools, you get everything in one place:
 CREATING YOUR ACCOUNT
 ---------------------
   1. Go to the Founders Helm website and click "Sign Up."
-  2. Enter your full name and email, then choose a password and
-     confirm it.
+  2. Enter your email address and choose a password.
   3. Click "Create Account."
   4. Check your email inbox for a verification link and click it.
-  5. Once verified, you'll be taken to the app. A default workspace
-     is created for you automatically -- you can rename it or add
-     more from the workspace switcher in the sidebar (see Section 3).
+  5. Once verified, you'll be taken to the app where you can create
+     your first workspace.
 
 
 LOGGING IN
@@ -84,14 +82,8 @@ Once logged in, you'll see a layout with three main areas:
 SIDEBAR (LEFT SIDE)
 -------------------
 The sidebar is your main navigation menu. It's always visible on desktop
-and can be opened with the menu icon on mobile.
-
-At the top, just under the Founders Helm logo, is the WORKSPACE
-SWITCHER -- click it to switch between workspaces, open Workspace
-Settings or Manage Members, see All Workspaces, or create a new one.
-Every workspace-scoped action is reached from here (see Section 3).
-
-Below the switcher, navigation is organized into three groups:
+and can be opened with the menu icon on mobile. It's organized into
+three groups:
 
   OVERVIEW
     - Dashboard         Your home screen with an overview of all tools.
@@ -106,10 +98,10 @@ Below the switcher, navigation is organized into three groups:
     - Projects          Manage projects and tasks.
     - Automations       Set up automated workflows.
     - AI Advisor        Chat with an AI business advisor.
-    - Insights          Revenue, growth, and productivity at a glance.
+    - Analytics         View website traffic and engagement data.
 
   ACCOUNT
-    - Settings          Manage your profile, billing, notifications, integrations, and API keys.
+    - Settings          Manage your profile, workspace, billing, and more.
 
   TIP: You can collapse the sidebar to just icons by clicking the
   "Collapse" button at the bottom. This gives you more screen space.
@@ -119,33 +111,10 @@ HEADER (TOP BAR)
 ----------------
 The top bar contains:
   - Breadcrumbs       Shows where you are (e.g., Dashboard > CRM > Deal).
-  - Command Menu      Quick search/action bar (press Ctrl+K, or
-                      Cmd+K on Mac, to open).
+  - Command Menu      Quick search/action bar (press Ctrl+K to open).
   - Theme Toggle      Switch between light and dark mode.
-  - Notification Bell See your latest notifications. Unread count
-                      shown as a badge; Mark All Read clears it.
-  - User Menu         Access your Profile, the Settings hub, Admin
-                      Settings (admin users only), and Sign Out.
-                      Workspace switching and team management live
-                      in the workspace switcher in the sidebar.
-
-On smaller screens (mobile/tablet), the header also shows:
-  - Menu button       Opens the sidebar drawer.
-  - Search button     Quick access to the Command Menu.
-
-
-TRIAL BANNER
-------------
-A banner appears above the header when your workspace is on a trial
-or has an expired subscription:
-
-  - Trialing          Orange banner showing days remaining on your
-                      trial. Disappears when you upgrade.
-  - Trial expired     Red banner: "Your trial has expired -- you
-                      are in read-only mode" with an Upgrade Now
-                      button. Write actions across the app are
-                      blocked until you upgrade.
-  - Active / Lifetime No banner shown.
+  - Notification Bell See your latest notifications.
+  - User Menu         Access profile, team settings, and sign out.
 
 
 MAIN CONTENT AREA
@@ -169,11 +138,8 @@ workspaces for each one.
 CREATING A WORKSPACE
 --------------------
   1. Click your workspace name in the sidebar (top area).
-  2. Click "Create Workspace" from the dropdown -- this opens a
-     dedicated new-workspace page.
-  3. Enter a name (e.g., "My SaaS Company"). A URL slug is
-     auto-generated from the name; you can edit it. The page
-     checks slug availability as you type.
+  2. Click "Create Workspace" from the dropdown.
+  3. Enter a name for your workspace (e.g., "My SaaS Company").
   4. Click Create.
 
 
@@ -181,22 +147,15 @@ SWITCHING BETWEEN WORKSPACES
 -----------------------------
 If you have multiple workspaces, click the workspace name in the sidebar
 to see a dropdown list. Click any workspace to switch to it. A checkmark
-shows which one is currently active. Each workspace in the list shows
-its plan badge (trial, pro, or lifetime) so you can tell paid
-workspaces from trial ones at a glance.
+shows which one is currently active.
 
 
 INVITING TEAM MEMBERS
 ---------------------
   1. Click your workspace name and select "Manage Members."
   2. Click "Invite Member."
-  3. Enter their email address and choose a role. Available roles
-     depend on your own role: owners can pick Admin, Editor, or
-     Viewer; admins can pick Editor or Viewer only (admins cannot
-     invite other admins).
+  3. Enter their email address and choose a role (Admin, Editor, or Viewer).
   4. Click Send Invite.
-  5. After sending, the dialog shows an invite link you can copy
-     and share manually as a backup to email delivery.
 
 
 TEAM ROLES EXPLAINED
@@ -220,33 +179,6 @@ TEAM ROLES EXPLAINED
   +----------+------------------------------------------------------------+
 
 
-MANAGING ALL WORKSPACES
------------------------
-From the workspace switcher dropdown, click "All Workspaces" to open
-a dedicated page listing every workspace you belong to. Each card
-shows the workspace name, your role, its plan, and a checkmark if
-it's the active one. Click any card to switch, or use the per-card
-Settings and Members buttons to jump straight to that workspace's
-configuration.
-
-
-WORKSPACE SETTINGS
-------------------
-Open the workspace switcher and click "Workspace Settings" to reach
-the settings page for the current workspace. Admin/owner only.
-Settings are organized into four tabs:
-
-  - General           Workspace name, URL slug, and logo.
-  - Preferences       Timezone, date format, and currency for
-                      everyone in the workspace.
-  - Billing & Plan    Current plan, plan limits, and a link to the
-                      Stripe portal for subscription changes.
-                      Owner only -- see Section 15 for plan details.
-  - Danger Zone       Delete this workspace permanently. Requires
-                      typing the workspace name to confirm. Owner
-                      only.
-
-
 ================================================================================
   4. DASHBOARD (HOME SCREEN)
 ================================================================================
@@ -254,20 +186,12 @@ Settings are organized into four tabs:
 The Dashboard is the first screen you see when you log in. It gives you
 a bird's-eye view of your entire business:
 
-  - Key Metrics     Four cards at the top: Monthly Revenue, Contacts,
-                    Open Deals, and Active Projects.
+  - Quick Links     Cards for each tool (Code Vault, Landing Pages,
+                    Feedback, etc.) with descriptions. Click any card
+                    to jump to that tool.
 
-  - Your Tools      A grid of cards, one per product (Code Vault,
-                    Landing Pages, Feedback, Command Center, CRM,
-                    Content Engine, Projects, AI Advisor,
-                    Automations, and Insights). Click any card to
-                    jump to that tool.
-
-  - Getting Started An onboarding checklist with a progress bar:
-                    create your account, add a code snippet, create
-                    a landing page, add a CRM contact, create your
-                    first deal. Items mark themselves complete as
-                    you do them.
+  - Key Metrics     Revenue, active subscribers, growth trends, and
+                    activity summaries at a glance.
 
 Think of the Dashboard as your business "home base." From here, you can
 quickly get to anything you need.
@@ -287,13 +211,11 @@ SAVING A NEW ITEM
   1. Go to Code Vault in the sidebar.
   2. Click "New Item" (or the + button).
   3. Give it a title (e.g., "Login Form Component").
-  4. Choose the type: Snippet, Prompt, Component, Template, or Note.
+  4. Choose the type: Code Snippet, Prompt, Component, or Template.
   5. Select the programming language (e.g., JavaScript, Python).
   6. Paste your code or content into the editor.
-  7. Optionally add a description, tags, and assign to a collection.
-  8. Toggle "Public" if you want a shareable read-only link;
-     leave off to keep the item private.
-  9. Click Save.
+  7. Optionally add a description and assign to a collection.
+  8. Click Save.
 
 
 ORGANIZING WITH COLLECTIONS
@@ -303,16 +225,13 @@ Collections are like folders. Create collections such as
 
   1. Go to Code Vault > Collections.
   2. Click "New Collection."
-  3. Give it a name, pick a color and icon, and choose whether the
-     collection is public (shareable read-only) or private.
+  3. Give it a name, pick a color and icon.
   4. Click Create.
 
 
 FINDING ITEMS
 -------------
-  - Search            Full-text search across title, description,
-                      and content. Supports quoted phrases for
-                      exact-match (e.g., "login form").
+  - Search            Use the search bar to find items by name.
   - Filter by Type    Show only snippets, prompts, components, or templates.
   - Filter by Language  Show only items in a specific language.
   - Filter by Collection  Show only items in a specific collection.
@@ -335,22 +254,8 @@ CREATING A LANDING PAGE
      - Title         The main heading visitors see.
      - Slug          The URL path (e.g., "my-product" becomes /p/my-product).
      - Description   A short summary for search engines.
-     - Template      Pick a starting template (see list below).
-  4. Click Create. You'll land in the page editor where you build
-     the page out with section blocks (hero, features, pricing, etc.).
-
-  Templates available: Blank, SaaS Product, Waitlist, eBook /
-  Lead Magnet, Webinar / Event, Portfolio, Agency / Freelancer,
-  Mobile App.
-
-
-ADVANCED PAGE SETTINGS
-----------------------
-Inside the page editor's Settings panel:
-  - SEO meta title and meta description
-  - Social share image (og:image) URL
-  - Custom CSS for fine-grained styling
-  - Password protection to gate the published page
+     - Content       Your page content (hero text, features, etc.).
+  4. Click Create.
 
 
 PUBLISHING YOUR PAGE
@@ -391,19 +296,13 @@ CREATING A FEEDBACK WIDGET
   2. Click "New Widget."
   3. Configure your widget:
      - Name             Internal name (e.g., "Homepage Feedback").
-     - Slug             URL identifier used in the embed code.
      - Title            What users see (e.g., "Send us feedback").
-     - Description      Short helper text shown above the form.
      - Theme            Light, dark, or auto.
      - Color            Your brand color for the widget.
-     - Position         Where the button appears: bottom-right,
-                        bottom-left, top-right, or top-left.
-     - Placeholder      Placeholder text in the message field.
-     - Success Message  Confirmation shown after submission.
+     - Position         Where the button appears (bottom-right, etc.).
      - Categories       Types of feedback (bug, feature, question, other).
      - Require Email    Whether users must give their email.
      - Show Emoji Rating  Let users rate with emojis.
-     - Allow Attachments  Let users include file attachments.
   4. Click Create.
 
 
@@ -416,13 +315,8 @@ closing </body> tag. The feedback button will appear automatically.
 
 MANAGING SUBMISSIONS
 --------------------
-When users submit feedback, it appears in the Submissions tab. At
-the top of the tab, badges show counts of New, In Review, and
-Resolved submissions so you can see your queue at a glance.
-
-For each submission you can:
-  - Change status     Mark as New, Under Review, Planned, In
-                      Progress, Completed, or Declined.
+When users submit feedback, it appears in the Submissions tab. You can:
+  - Change status     Mark as New, In Review, Resolved, or Archived.
   - Set priority      Low, Medium, High, or Urgent.
   - Add internal notes  Notes only your team can see.
   - Assign to a team member  Route feedback to the right person.
@@ -432,8 +326,7 @@ For each submission you can:
 FILTERING FEEDBACK
 ------------------
 Use filters at the top to narrow down by:
-  - Status            New, Under Review, Planned, In Progress,
-                      Completed, Declined.
+  - Status            New, In Review, Resolved, Archived.
   - Type/Category     Bug, Feature, Question, Other.
   - Widget            Which widget the feedback came from.
   - Search            Find by content or email.
@@ -455,12 +348,6 @@ OVERVIEW TAB
   - Churn Rate                         % of customers who cancelled.
   - Growth Rate                        How fast revenue is growing.
   - MRR Chart                          Visual graph of revenue over time.
-  - MRR Breakdown                      MRR split by plan/segment.
-  - Churn vs Growth                    Side-by-side comparison chart.
-  - At-Risk Customers                  Customers who may cancel soon.
-
-A date-range selector at the top of the page filters every tab
-(Overview, Customers, Revenue) by the chosen period.
 
 
 CUSTOMERS TAB
@@ -468,14 +355,10 @@ CUSTOMERS TAB
   - A table of all customers with name, email, plan, status, and
     lifetime value.
   - At-Risk Customers -- customers who might cancel soon.
-  - Click any customer to open a detail page with their subscription
-    history and Stripe metadata.
 
 
 REVENUE TAB
 -----------
-  - Revenue Overview    Total revenue and trend over the selected
-                        date range.
   - Revenue by Plan     How much each plan contributes.
   - Recent Events       Subscriptions, upgrades, downgrades, cancellations.
 
@@ -485,11 +368,8 @@ SYNC TAB
   - Shows when data was last synced from Stripe.
   - You can trigger a manual sync for fresh data.
 
-  NOTE: Stripe is configured by your administrator through environment
-  variables -- there's no in-app Stripe connection screen. To check
-  the connection status, go to Settings > Integrations. The Command
-  Center populates automatically once Stripe is connected and you
-  have subscriptions.
+  NOTE: The Command Center requires a Stripe integration. If you haven't
+  connected Stripe, go to Settings > Billing.
 
 
 ================================================================================
@@ -504,16 +384,14 @@ CONTACTS
 Contacts are people you do business with -- customers, leads, partners.
 
   Adding a Contact:
-    1. Go to CRM in the sidebar.
+    1. Go to CRM (or Contacts) in the sidebar.
     2. Click "New Contact."
-    3. Fill in: Name, Email, Phone, Company, Job Title, Status, Tags.
+    3. Fill in: Name, Email, Phone, Company, Status, Tags.
     4. Click Create.
 
   Finding Contacts:
     - Search           By name, email, or company.
-    - Filter by Status Active, Inactive, or Archived.
-    - Filter by Source Manual, Import, Landing Page, API, or
-                       Integration.
+    - Filter by Status Lead, Active, Inactive, or Churned.
     - Filter by Tags   Show contacts with specific tags.
 
 
@@ -527,14 +405,12 @@ columns are stages, and deals are cards you drag between them.
     Qualified     Confirmed good fit.
     Proposal      Sent a proposal or quote.
     Negotiation   Working out final details.
-    Closed Won    Deal closed successfully!
-    Closed Lost   Deal didn't work out.
+    Won           Deal closed successfully!
+    Lost          Deal didn't work out.
 
   Creating a Deal:
     1. On the CRM page, click "New Deal."
-    2. Fill in the basics: Name, Value, Stage, and Contact.
-       Optional fields include currency, expected close date,
-       probability, owner, description (notes), and tags.
+    2. Fill in: Name, Value ($), Stage, Contact, Notes.
     3. Click Create.
 
   Moving a Deal:
@@ -545,16 +421,10 @@ columns are stages, and deals are cards you drag between them.
 CRM STATS
 ---------
 At the top of the CRM page:
-  - Total Deals              All deals, open and closed.
-  - Open Deals               Deals still in play.
-  - Deals Won                How many deals you've closed.
-  - Deals Lost               How many deals you've lost.
-  - Total Pipeline Value     Sum of value across all open deals.
-  - Won Value                Total value of all won deals.
-  - Win Rate                 % of deals that ended in "Closed Won."
+  - Total Pipeline Value    Sum of all open deals.
+  - Deals Won               How many deals you've closed.
+  - Win Rate                 % of deals that ended in "Won."
   - Average Deal Value       Average dollar amount of deals.
-  - Last 30 Days             Won and revenue earned in the trailing
-                             30-day window.
 
 
 ================================================================================
@@ -567,16 +437,11 @@ and more -- with built-in AI assistance.
 
 CONTENT TYPES
 -------------
-  - Post             Short-form content for social media.
-  - Article          Long-form articles for your website or blog.
-  - Thread           Multi-part social media threads.
+  - Blog Post        Long-form articles for your website.
+  - Social Post      Short-form content for social media.
   - Newsletter       Email content for subscribers.
   - Video Script     Scripts for video content.
-  - Podcast Notes    Show notes for podcast episodes.
-
-Different content types open different editors -- threads use a
-multi-segment editor for chained posts; articles use a full
-rich-text editor; posts use a compact editor.
+  - Thread           Multi-part social media threads.
 
 
 CREATING CONTENT
@@ -588,8 +453,7 @@ CREATING CONTENT
   5. Write in the rich text editor (supports bold, italic, headings,
      lists, images, code blocks).
   6. Add tags to categorize your content.
-  7. Select platforms to publish to (Twitter, LinkedIn, Facebook,
-     Instagram, and other connected channels).
+  7. Select platforms to publish to (Twitter, LinkedIn, Blog, etc.).
   8. Click Save as Draft or Publish.
 
 
@@ -627,11 +491,8 @@ CREATING A PROJECT
   1. Go to Projects in the sidebar.
   2. Click "New Project."
   3. Enter a name and optional description.
-  4. Pick a color for visual identification.
-  5. Set start date and due date if applicable.
-  6. For client-billing use cases, optionally set an hourly rate
-     and a budget for the project.
-  7. Click Create.
+  4. Set start date and due date if applicable.
+  5. Click Create.
 
 
 MANAGING TASKS
@@ -645,9 +506,9 @@ Each project contains tasks -- individual items of work.
        Status (To Do/In Progress/Review/Done), Due Date, Assignee.
     4. Click Create.
 
-  Task View:
-    Tasks appear in a list with filter chips at the top for
-    project, status, and assignee.
+  Task Views:
+    - List View     Tasks in a simple list.
+    - Board View    Tasks as cards on a Kanban board (columns = statuses).
 
 
 TIME TRACKING
@@ -757,8 +618,8 @@ STARTING A CONVERSATION
 -----------------------
   1. Go to AI Advisor in the sidebar.
   2. Click "New Conversation."
-  3. Choose a topic (General, Growth, Strategy, Marketing, Sales,
-     Product, Operations, Finance, Hiring, or Fundraising).
+  3. Choose a topic (Growth, Marketing, Product, Sales, Operations,
+     Finance, or General).
   4. Type your question or describe your situation.
   5. The AI responds with tailored advice.
 
@@ -774,42 +635,49 @@ Filter by topic to find specific conversations.
 
 
 ================================================================================
-  14. INSIGHTS
+  14. ANALYTICS
 ================================================================================
 
-Business-analytics view of your workspace -- revenue, deals, contacts,
-growth, and team productivity in one place. (Not website analytics:
-for landing page traffic see Landing Pages > Analytics.)
+Track website traffic, user behavior, and conversion metrics.
 
 
-TABS
-----
-Insights is organized into four tabs:
-
-  - Overview      Top-line cards (Total Revenue, Active Deals,
-                  Total Contacts), a revenue trend chart, recent
-                  activity, and key business metrics.
-
-  - Revenue       Revenue stats, a revenue-over-time chart, and a
-                  per-month breakdown including deals closed.
-
-  - Growth        Contact and pipeline growth metrics over the
-                  selected date range.
-
-  - Productivity  Task throughput and team activity metrics.
+OVERVIEW
+--------
+  - Total Visitors              Unique people who visited.
+  - Page Views                  Total pages viewed.
+  - Bounce Rate                 % who left after one page.
+  - Average Session Duration    How long visitors stay.
+  - Visitor Chart               Traffic over time.
 
 
-DATE RANGE
+TRAFFIC
+-------
+  - Top Pages         Which pages get the most visits.
+  - Top Referrers     Where visitors come from (Google, Twitter, etc.).
+
+
+ENGAGEMENT
 ----------
-A date-range selector at the top filters every tab. Choose Today,
-Last 7 Days, Last 30 Days, Last 90 Days, or Last Year.
+  - Device Breakdown     Desktop vs. Mobile vs. Tablet.
+  - Geographic Breakdown Which countries visitors are from.
+
+
+CONVERSIONS
+-----------
+  - Conversion tracking   Measure desired actions.
+  - Goal tracking         Set and track specific goals.
+
+
+TIME PERIODS
+------------
+Use the dropdown to change the range: Today, Last 7 Days, Last 30 Days,
+Last 90 Days, or Last Year.
 
 
 EXPORTING DATA
 --------------
-Insights itself is read-only. To export your raw business data
-(contacts, deals, content, etc.) in CSV or JSON, go to Settings >
-Data Export (see Section 15).
+Click the Download button to export analytics data for spreadsheets
+or reports.
 
 
 ================================================================================
@@ -823,14 +691,21 @@ PROFILE SETTINGS
 ----------------
   - Full Name        Your display name.
   - Avatar           Upload a profile photo.
-  - Email            Your login email. Changing it triggers a
-                     re-verification email sent to the new address.
+  - Email            Your login email (read-only).
 
 
 ACCOUNT SETTINGS
 ----------------
   - Change Password  Update your login password.
   - Delete Account   Permanently remove your account and all data.
+
+
+WORKSPACE SETTINGS (Admin/Owner only)
+--------------------------------------
+  - Workspace Name   Change the name.
+  - Workspace Slug   Change the URL identifier.
+  - Logo             Upload a workspace logo.
+  - Team Members     View and manage members.
 
 
 BILLING (Owner only)
@@ -846,35 +721,9 @@ Generate API keys for external integrations. Keep these secret --
 anyone with your key can access your data.
 
 
-NOTIFICATIONS
--------------
-Per-category toggles for how you want to be notified:
-  - Email or in-app notifications for Invoices, Payments, Team
-    activity, and Projects.
-Each category has independent email and in-app switches.
-
-
-INTEGRATIONS (Admin/Owner only)
--------------------------------
-View the status of connected services and copy webhook
-configuration:
-  - Stripe Connection  Read-only status indicator. Stripe is
-                       configured via environment variables by the
-                       administrator (not in-app).
-  - Webhook Configuration  Endpoint URL and signing secret for
-                       receiving external events.
-
-
-DATA EXPORT
------------
-Export your workspace data in CSV or JSON format. Pick what to
-export:
-  - Contacts
-  - Landing Pages
-  - Code Vault items
-  - Activities
-  - All (combined dump of everything)
-
+EXPORT
+------
+Export all data (contacts, deals, content, etc.) in CSV or JSON format.
 Useful for backups or migration.
 
 
@@ -907,18 +756,12 @@ Useful for backups or migration.
   | Export data                              |  No    |  No    |  Yes  |  Yes  |
   +------------------------------------------+--------+--------+-------+-------+
 
-Beyond these role-based defaults, admins and owners can grant or
-revoke access to individual products per member (e.g., give a viewer
-access to Code Vault but not CRM). Adjust per-product permissions
-from Manage Members.
-
 
 ================================================================================
   17. KEYBOARD SHORTCUTS
 ================================================================================
 
-  Ctrl+K     Open the Command Menu (Cmd+K on Mac). Quick search
-             & navigation.
+  Ctrl+K     Open the Command Menu (quick search & navigation).
 
 The Command Menu lets you quickly jump to any page, search for contacts
 or deals, and perform actions without using the mouse.
@@ -936,11 +779,9 @@ A: Yes. Founders Helm is fully responsive. On mobile, tap the menu
    icon (three horizontal lines) in the top-left to open the sidebar.
 
 Q: How do I connect Stripe?
-A: Stripe is configured by your administrator through environment
-   variables -- there's no in-app Stripe connection screen. To check
-   the connection status, go to Settings > Integrations. The Command
-   Center populates automatically once Stripe is connected and you
-   have subscriptions.
+A: Go to Settings > Billing. Your Stripe integration is configured
+   through environment variables by your administrator. Once connected,
+   the Command Center automatically displays your metrics.
 
 Q: Can I have multiple workspaces?
 A: Yes. Create as many as you need. Each workspace is completely
@@ -969,11 +810,9 @@ A: Create a page, change its status to "Published." It will be live
    at /p/your-slug.
 
 Q: Can team members see each other's data?
-A: For most products (CRM, content, projects, feedback, automations),
-   all workspace members see all data. The role system controls
-   what actions they can take (view vs. edit vs. delete), not what
-   data they see. Code Vault and Landing Pages are personal --
-   those items are not shared between team members.
+A: Yes, within the same workspace all members see all data. The role
+   system controls what actions they can take (view vs. edit vs.
+   delete), not what data they see.
 
 Q: How do automations work with webhooks?
 A: When you create a webhook-triggered automation, the system generates

@@ -339,8 +339,8 @@ export default function ContactsPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Unsubscribed</p>
-                  <p className="text-2xl font-bold">{stats.unsubscribed}</p>
+                  <p className="text-sm text-muted-foreground">Inactive</p>
+                  <p className="text-2xl font-bold">{stats.inactive}</p>
                 </div>
                 <UserX className="h-8 w-8 text-yellow-500" />
               </div>
@@ -369,8 +369,7 @@ export default function ContactsPage() {
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="unsubscribed">Unsubscribed</SelectItem>
-                <SelectItem value="bounced">Bounced</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
                 <SelectItem value="archived">Archived</SelectItem>
               </SelectContent>
             </Select>
@@ -381,10 +380,10 @@ export default function ContactsPage() {
               <SelectContent>
                 <SelectItem value="all">All Sources</SelectItem>
                 <SelectItem value="manual">Manual</SelectItem>
-                <SelectItem value="landing_page">Landing Page</SelectItem>
-                <SelectItem value="crm">CRM</SelectItem>
-                <SelectItem value="feedback">Feedback</SelectItem>
                 <SelectItem value="import">Import</SelectItem>
+                <SelectItem value="landing_page">Landing Page</SelectItem>
+                <SelectItem value="api">API</SelectItem>
+                <SelectItem value="integration">Integration</SelectItem>
               </SelectContent>
             </Select>
           </div>

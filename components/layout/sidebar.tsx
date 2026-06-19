@@ -15,12 +15,15 @@ import {
   Brain,
   LineChart,
   Settings,
+  BookOpen,
   ChevronLeft,
   ChevronRight,
   X,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { FoundersHelmIcon } from "@/components/founders-helm-icon";
 import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
+import { useHelpDrawer } from "@/components/layout/help-drawer";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -39,6 +42,9 @@ interface SidebarProps {
   isMobile?: boolean;
 }
 
+// Two upper groups are pure-link navigation. The Account group is rendered
+// separately at the bottom because it now mixes a Link (Settings) with an
+// action button (Operations Manual) — the renderer below handles both.
 const navigation = [
   {
     title: "Overview",
@@ -61,13 +67,65 @@ const navigation = [
       { name: "Insights", href: "/analytics", icon: LineChart },
     ],
   },
-  {
-    title: "Account",
-    items: [
-      { name: "Settings", href: "/settings", icon: Settings },
-    ],
-  },
 ];
+
+// Shared className for any sidebar row (link or button) so the Settings
+// Link and the Operations Manual button stay visually identical.
+function rowClasses(
+  isActive: boolean,
+  collapsed: boolean,
+): string {
+  return cn(
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors w-full",
+    isActive
+      ? "bg-primary text-primary-foreground"
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+    collapsed && "justify-center px-2",
+  );
+}
+
+interface RowProps {
+  name: string;
+  icon: LucideIcon;
+  collapsed: boolean;
+  isMobile?: boolean;
+  onClose?: () => void;
+}
+
+// Manual trigger row — looks the same as a nav link but fires the drawer
+// instead of routing.
+function OperationsManualRow({ name, icon: Icon, collapsed, isMobile, onClose }: RowProps) {
+  const { openHelp } = useHelpDrawer();
+
+  const handleClick = () => {
+    if (isMobile) onClose?.();
+    openHelp();
+  };
+
+  const content = (
+    <button
+      type="button"
+      onClick={handleClick}
+      className={rowClasses(false, collapsed)}
+      aria-label={name}
+    >
+      <Icon className="h-5 w-5 flex-shrink-0" />
+      {!collapsed && <span className="truncate text-left">{name}</span>}
+    </button>
+  );
+
+  if (collapsed) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent side="right" sideOffset={10}>
+          {name}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+  return content;
+}
 
 export function Sidebar({
   collapsed,
@@ -77,6 +135,8 @@ export function Sidebar({
   isMobile,
 }: SidebarProps) {
   const pathname = usePathname();
+  const settingsActive =
+    pathname === "/settings" || pathname.startsWith("/settings/");
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -134,15 +194,9 @@ export function Sidebar({
                       <Link
                         href={item.href}
                         onClick={() => isMobile && onClose?.()}
-                        className={cn(
-                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          isActive
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                          collapsed && "justify-center px-2"
-                        )}
+                        className={rowClasses(isActive, collapsed)}
                       >
-                        <item.icon className={cn("h-5 w-5 flex-shrink-0")} />
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
                         {!collapsed && <span className="truncate">{item.name}</span>}
                       </Link>
                     );
@@ -163,6 +217,51 @@ export function Sidebar({
                 </div>
               </div>
             ))}
+
+            {/* Account group — hand-rendered because it mixes a Link
+                (Settings) with an action button (Operations Manual). */}
+            <div>
+              {!collapsed && (
+                <h4 className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Account
+                </h4>
+              )}
+              <div className="space-y-1">
+                {/* Settings link */}
+                {(() => {
+                  const settingsLink = (
+                    <Link
+                      href="/settings"
+                      onClick={() => isMobile && onClose?.()}
+                      className={rowClasses(settingsActive, collapsed)}
+                    >
+                      <Settings className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && <span className="truncate">Settings</span>}
+                    </Link>
+                  );
+                  if (collapsed) {
+                    return (
+                      <Tooltip>
+                        <TooltipTrigger asChild>{settingsLink}</TooltipTrigger>
+                        <TooltipContent side="right" sideOffset={10}>
+                          Settings
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  }
+                  return <div>{settingsLink}</div>;
+                })()}
+
+                {/* Operations Manual — opens the help drawer */}
+                <OperationsManualRow
+                  name="Operations Manual"
+                  icon={BookOpen}
+                  collapsed={collapsed}
+                  isMobile={isMobile}
+                  onClose={onClose}
+                />
+              </div>
+            </div>
           </nav>
         </ScrollArea>
 

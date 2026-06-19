@@ -3,21 +3,18 @@
 // Unified contact system across all products
 // ============================================================================
 
+// Matches DB enum contact_source. App-side aliases like 'crm', 'feedback',
+// 'form' were removed — those values cannot be persisted (DB enum constraint).
 export type ContactSource =
   | 'manual'
-  | 'landing_page'
-  | 'crm'
-  | 'feedback'
   | 'import'
+  | 'landing_page'
   | 'api'
-  | 'form';
+  | 'integration';
 
-export type ContactStatus =
-  | 'active'
-  | 'unsubscribed'
-  | 'bounced'
-  | 'spam'
-  | 'archived';
+// Matches DB enum contact_status. The earlier 5-value app type allowed
+// 'unsubscribed', 'bounced', 'spam' which the DB would reject on write.
+export type ContactStatus = 'active' | 'inactive' | 'archived';
 
 export interface Contact {
   id: string;
@@ -223,7 +220,7 @@ export interface ContactExportOptions {
 export interface ContactStats {
   total: number;
   active: number;
-  unsubscribed: number;
+  inactive: number;
   bySource: Record<ContactSource, number>;
   byTag: { tag: string; count: number }[];
   recentlyAdded: number; // Last 7 days
@@ -248,12 +245,10 @@ export function getContactInitials(contact: Contact): string {
 export function getSourceLabel(source: ContactSource): string {
   const labels: Record<ContactSource, string> = {
     manual: 'Manual Entry',
-    landing_page: 'Landing Page',
-    crm: 'CRM',
-    feedback: 'Feedback Widget',
     import: 'Import',
+    landing_page: 'Landing Page',
     api: 'API',
-    form: 'Form',
+    integration: 'Integration',
   };
   return labels[source];
 }
@@ -261,9 +256,7 @@ export function getSourceLabel(source: ContactSource): string {
 export function getStatusColor(status: ContactStatus): string {
   const colors: Record<ContactStatus, string> = {
     active: 'bg-green-500',
-    unsubscribed: 'bg-yellow-500',
-    bounced: 'bg-red-500',
-    spam: 'bg-red-700',
+    inactive: 'bg-yellow-500',
     archived: 'bg-gray-500',
   };
   return colors[status];
@@ -272,9 +265,7 @@ export function getStatusColor(status: ContactStatus): string {
 export function getStatusLabel(status: ContactStatus): string {
   const labels: Record<ContactStatus, string> = {
     active: 'Active',
-    unsubscribed: 'Unsubscribed',
-    bounced: 'Bounced',
-    spam: 'Spam',
+    inactive: 'Inactive',
     archived: 'Archived',
   };
   return labels[status];
