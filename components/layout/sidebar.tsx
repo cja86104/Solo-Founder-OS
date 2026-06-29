@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  type LucideIcon,
   LayoutDashboard,
   Code2,
   FileText,
@@ -20,7 +21,6 @@ import {
   ChevronRight,
   X,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { FoundersHelmIcon } from "@/components/founders-helm-icon";
 import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import { useHelpDrawer } from "@/components/layout/help-drawer";

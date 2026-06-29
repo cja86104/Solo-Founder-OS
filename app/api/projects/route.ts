@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import type { Database } from '@/types/database';
-import { Constants } from '@/types/database';
+import { Constants, type Database } from '@/types/database';
 import { parseEnum } from '@/lib/validation/parse-enum';
 import { requireActiveSubscription } from '@/lib/supabase/subscription';
 

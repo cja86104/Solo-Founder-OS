@@ -45,44 +45,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Not a member' }, { status: 403 });
     }
 
-    // Get stages
-    const { data, error } = await supabase
+    // Get stages (read-only — default seeding lives in POST to keep GET pure)
+    const { data: stages, error } = await supabase
       .from('pipeline_stages')
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('position', { ascending: true });
 
-    let stages = data;
-
     if (error) throw error;
-
-    // If no stages exist, create defaults
-    if (!stages || stages.length === 0) {
-      const defaultStages = [
-        { name: 'Lead', color: '#6366f1', position: 0 },
-        { name: 'Qualified', color: '#8b5cf6', position: 1 },
-        { name: 'Proposal', color: '#a855f7', position: 2 },
-        { name: 'Negotiation', color: '#d946ef', position: 3 },
-        { name: 'Won', color: '#22c55e', position: 4, is_won: true },
-        { name: 'Lost', color: '#ef4444', position: 5, is_lost: true },
-      ];
-
-      for (const stage of defaultStages) {
-        await supabase.from('pipeline_stages').insert({
-          workspace_id: workspaceId,
-          ...stage,
-        });
-      }
-
-      // Fetch again
-      const { data: newStages } = await supabase
-        .from('pipeline_stages')
-        .select('*')
-        .eq('workspace_id', workspaceId)
-        .order('position', { ascending: true });
-
-      stages = newStages;
-    }
 
     return NextResponse.json({ stages: stages || [] });
   } catch (error) {
@@ -95,8 +65,17 @@ export async function GET(request: NextRequest) {
 }
 
 // ============================================================================
-// POST /api/crm/stages - Create stage
+// POST /api/crm/stages - Create stage (also handles seed_defaults action)
 // ============================================================================
+
+const DEFAULT_STAGES = [
+  { name: 'Lead', color: '#6366f1', position: 0, is_won: false, is_lost: false },
+  { name: 'Qualified', color: '#8b5cf6', position: 1, is_won: false, is_lost: false },
+  { name: 'Proposal', color: '#a855f7', position: 2, is_won: false, is_lost: false },
+  { name: 'Negotiation', color: '#d946ef', position: 3, is_won: false, is_lost: false },
+  { name: 'Won', color: '#22c55e', position: 4, is_won: true, is_lost: false },
+  { name: 'Lost', color: '#ef4444', position: 5, is_won: false, is_lost: true },
+];
 
 export async function POST(request: NextRequest) {
   try {
@@ -108,11 +87,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { workspace_id, name, color, position, is_won, is_lost } = body;
+    const { workspace_id, name, color, position, is_won, is_lost, seed_defaults } = body;
 
-    if (!workspace_id || !name) {
+    if (!workspace_id) {
       return NextResponse.json(
-        { error: 'workspace_id and name are required' },
+        { error: 'workspace_id is required' },
         { status: 400 }
       );
     }
@@ -127,6 +106,41 @@ export async function POST(request: NextRequest) {
 
     if (!membership || membership.role === 'viewer') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+    }
+
+    // Seed defaults action — idempotent: only inserts when no stages exist yet
+    if (seed_defaults === true) {
+      const { count } = await supabase
+        .from('pipeline_stages')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', workspace_id);
+
+      if ((count ?? 0) === 0) {
+        const rows = DEFAULT_STAGES.map((stage) => ({
+          workspace_id,
+          ...stage,
+        }));
+        const { error: seedError } = await supabase
+          .from('pipeline_stages')
+          .insert(rows);
+        if (seedError) throw seedError;
+      }
+
+      const { data: stages, error: fetchError } = await supabase
+        .from('pipeline_stages')
+        .select('*')
+        .eq('workspace_id', workspace_id)
+        .order('position', { ascending: true });
+      if (fetchError) throw fetchError;
+
+      return NextResponse.json({ stages: stages || [] }, { status: 200 });
+    }
+
+    if (!name) {
+      return NextResponse.json(
+        { error: 'name is required' },
+        { status: 400 }
+      );
     }
 
     // Get max position if not provided

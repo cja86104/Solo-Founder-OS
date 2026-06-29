@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
+// OAuth callback must be a GET handler — the auth provider (Supabase / OAuth
+// upstream) redirects users here with a single-use `code` query parameter, so
+// this endpoint cannot be a POST. The profile/subscription side effects below
+// only run after `exchangeCodeForSession` succeeds, which requires a valid,
+// unforged, unexpired Supabase-issued code. Prefetching by a third party can't
+// produce such a code, so the standard CSRF concern that static analyzers
+// (e.g. React Doctor's `nextjs-no-side-effect-in-get-handler`) flag here does
+// not apply. The inserts are also idempotent (they check for an existing
+// profile first) and serve as a defensive fallback for the `handle_new_user`
+// DB trigger.
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");

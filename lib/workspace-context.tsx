@@ -18,7 +18,6 @@ import {
   CreateWorkspaceInput,
   UpdateWorkspaceInput,
   PLAN_LIMITS,
-  generateSlug,
   canManageMembers,
   canManageSettings,
   canManageBilling,
@@ -29,9 +28,57 @@ import type { Database, Subscription, Json } from '@/types/database';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-type WorkspaceInsert = Database["public"]["Tables"]["workspaces"]["Insert"];
-type WorkspaceMemberInsert = Database["public"]["Tables"]["workspace_members"]["Insert"];
 type WorkspaceUpdate = Database["public"]["Tables"]["workspaces"]["Update"];
+
+// ----------------------------------------------------------------------------
+// Server-side workspace creation
+//
+// Workspace + workspace_members rows carry authorization fields (owner_id,
+// role, permissions). Those MUST be set by a trusted server route that derives
+// them from the authenticated session, NOT by the client. We POST to
+// /api/workspaces and let the server own the authz fields.
+// ----------------------------------------------------------------------------
+
+interface CreateWorkspaceResponse {
+  workspace: Workspace;
+  role: WorkspaceRole;
+  permissions: ProductPermissions;
+}
+
+async function createWorkspaceViaApi(input: {
+  name: string;
+  slug?: string;
+}): Promise<{ data: CreateWorkspaceResponse | null; error: string | null }> {
+  try {
+    const response = await fetch('/api/workspaces', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      workspace?: Workspace;
+      role?: WorkspaceRole;
+      permissions?: ProductPermissions;
+      error?: string;
+    };
+    if (!response.ok || !payload.workspace || !payload.role || !payload.permissions) {
+      return { data: null, error: payload.error || 'Failed to create workspace' };
+    }
+    return {
+      data: {
+        workspace: payload.workspace,
+        role: payload.role,
+        permissions: payload.permissions,
+      },
+      error: null,
+    };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Network error',
+    };
+  }
+}
 
 // ============================================================================
 // Context Types
@@ -161,70 +208,40 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
           stripe_subscription_id: m.workspaces!.stripe_subscription_id ?? subscription?.stripe_subscription_id ?? null,
         })) as WorkspaceWithRole[];
       // Auto-create a workspace if the user has none (handles the case where
-      // the handle_new_user trigger failed or was skipped).
+      // the handle_new_user trigger failed or was skipped). Authz fields
+      // (owner_id, role, permissions) are set server-side by /api/workspaces
+      // — the client only supplies a display name + suggested slug.
       if (workspaceList.length === 0) {
         const displayName =
           user.user_metadata?.full_name ||
           user.user_metadata?.name ||
           user.email?.split('@')[0] ||
           'My';
-        const slug =
-          displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-') +
+        const suggestedSlug =
+          displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') +
           '-' +
           user.id.substring(0, 8);
 
-        const newWorkspaceInsert: WorkspaceInsert = {
+        const { data: created, error: createApiError } = await createWorkspaceViaApi({
           name: `${displayName}'s Workspace`,
-          slug,
-          owner_id: user.id,
-        };
-        const { data: newWs, error: wsError } = await supabase
-          .from('workspaces')
-          .insert(newWorkspaceInsert)
-          .select()
-          .single();
+          slug: suggestedSlug,
+        });
 
-        if (newWs && !wsError) {
-          const memberInsert: WorkspaceMemberInsert = {
-            workspace_id: newWs.id,
-            user_id: user.id,
-            role: 'owner',
-            permissions: {
-              landing_pages: true,
-              code_vault: true,
-              crm: true,
-              content: true,
-              feedback: true,
-              projects: true,
-              command: true,
-              advisor: true,
-              analytics: true,
-              automations: true,
-            },
-          };
-          await supabase.from('workspace_members').insert(memberInsert);
-
+        if (created) {
           workspaceList.push({
-            ...newWs,
-            role: 'owner' as WorkspaceRole,
-            permissions: {
-              landing_pages: true,
-              code_vault: true,
-              crm: true,
-              content: true,
-              feedback: true,
-              projects: true,
-              command: true,
-              advisor: true,
-              analytics: true,
-              automations: true,
-            },
+            ...created.workspace,
+            role: created.role,
+            permissions: created.permissions,
             joined_at: new Date().toISOString(),
             plan,
             plan_limits: planLimits,
-            stripe_customer_id: subscription?.stripe_customer_id ?? null,
-            stripe_subscription_id: subscription?.stripe_subscription_id ?? null,
+            stripe_customer_id:
+              created.workspace.stripe_customer_id ?? subscription?.stripe_customer_id ?? null,
+            stripe_subscription_id:
+              created.workspace.stripe_subscription_id ?? subscription?.stripe_subscription_id ?? null,
           } as unknown as WorkspaceWithRole);
+        } else if (createApiError) {
+          console.error('Workspace auto-create failed:', createApiError);
         }
       }
 
@@ -267,70 +284,29 @@ export function WorkspaceProvider({ children, subscription }: WorkspaceProviderP
         return null;
       }
 
-      // Generate slug if not provided
-      const slug = input.slug || generateSlug(input.name);
+      // Delegate to the server route — it owns owner_id, role, and permissions
+      // so the client cannot tamper with those authz fields.
+      const { data: created, error: apiError } = await createWorkspaceViaApi({
+        name: input.name,
+        slug: input.slug,
+      });
 
-      // Check if slug is available
-      const { data: existing } = await supabase
-        .from('workspaces')
-        .select('id')
-        .eq('slug', slug)
-        .single();
-
-      if (existing) {
-        toast.error('This workspace URL is already taken');
+      if (!created) {
+        toast.error(apiError || 'Failed to create workspace');
         return null;
-      }
-
-      // Create workspace
-      const { data: newWorkspace, error: createError } = await supabase
-        .from('workspaces')
-        .insert({
-          name: input.name,
-          slug,
-          owner_id: user.id,
-        })
-        .select()
-        .single();
-
-      if (createError) throw createError;
-
-      // Create owner membership
-      const { error: memberError } = await supabase
-        .from('workspace_members')
-        .insert({
-          workspace_id: newWorkspace.id,
-          user_id: user.id,
-          role: 'owner',
-          permissions: {
-            landing_pages: true,
-            code_vault: true,
-            crm: true,
-            content: true,
-            feedback: true,
-            projects: true,
-            command: true,
-            advisor: true,
-            analytics: true,
-            automations: true,
-          },
-        });
-
-      if (memberError) {
-        console.error('Error creating workspace membership:', memberError);
       }
 
       toast.success('Workspace created successfully');
       await fetchWorkspaces();
 
       // Switch to the new workspace
-      const workspace = workspaces.find(w => w.id === newWorkspace.id);
+      const workspace = workspaces.find(w => w.id === created.workspace.id);
       if (workspace) {
         setCurrentWorkspace(workspace);
-        setStoredWorkspaceId(newWorkspace.id);
+        setStoredWorkspaceId(created.workspace.id);
       }
 
-      return newWorkspace as unknown as Workspace;
+      return created.workspace;
     } catch (err) {
       console.error('Error creating workspace:', err);
       toast.error(err instanceof Error ? err.message : 'Failed to create workspace');

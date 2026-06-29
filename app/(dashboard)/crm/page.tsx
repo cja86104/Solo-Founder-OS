@@ -99,13 +99,31 @@ export default function CRMPage() {
 
     setIsLoading(true);
     try {
-      // Fetch stages
+      // Fetch stages; if none exist, seed defaults via POST and re-read
       const stagesRes = await fetch(
         `/api/crm/stages?workspace_id=${currentWorkspace.id}`
       );
       if (stagesRes.ok) {
         const data = await stagesRes.json();
-        setStages(data.stages || []);
+        const initial = (data.stages || []) as typeof stages;
+        if (initial.length === 0) {
+          const seedRes = await fetch('/api/crm/stages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              workspace_id: currentWorkspace.id,
+              seed_defaults: true,
+            }),
+          });
+          if (seedRes.ok) {
+            const seeded = await seedRes.json();
+            setStages(seeded.stages || []);
+          } else {
+            setStages(initial);
+          }
+        } else {
+          setStages(initial);
+        }
       }
 
       // Fetch deals

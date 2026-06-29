@@ -14,7 +14,11 @@ export async function GET(
     const searchParams = request.nextUrl.searchParams;
     const publicToken = searchParams.get('token');
 
-    // If public token provided, allow public access
+    // If public token provided, allow public access (read-only).
+    // View-tracking side effects live in the public invoice page render
+    // (app/invoice/[id]/page.tsx) and out-of-band POST endpoints, not here —
+    // GET handlers must stay free of side effects to avoid prefetch/CSRF
+    // bumping view counts.
     if (publicToken) {
       const { data: invoice, error } = await supabase
         .from('invoices')
@@ -30,16 +34,6 @@ export async function GET(
       if (error || !invoice) {
         return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
       }
-
-      // Update view tracking
-      await supabase
-        .from('invoices')
-        .update({
-          view_count: (invoice.view_count || 0) + 1,
-          viewed_at: invoice.viewed_at || new Date().toISOString(),
-          status: invoice.status === 'sent' ? 'viewed' : invoice.status,
-        })
-        .eq('id', id);
 
       // Fetch items
       const { data: items } = await supabase
