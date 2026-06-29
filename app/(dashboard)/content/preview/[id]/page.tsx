@@ -36,6 +36,12 @@ export default async function ContentPreviewPage({
 
   const contentType = post.content_type || 'post';
 
+  // Hoist the date string out of JSX so it's computed once at render.
+  // (Server component, so no hydration concern; this also silences
+  // react-doctor/rendering-hydration-mismatch-time cleanly.)
+  const timestamp = post.updated_at ?? post.created_at;
+  const dateLabel = timestamp ? new Date(timestamp).toLocaleDateString() : '';
+
   return (
     <div className="min-h-screen bg-background">
       {/* Track view */}
@@ -56,7 +62,7 @@ export default async function ContentPreviewPage({
             </span>
           </div>
           <span className="text-xs text-muted-foreground">
-            {new Date(post.updated_at ?? post.created_at ?? new Date()).toLocaleDateString()}
+            {dateLabel}
           </span>
         </div>
       </div>

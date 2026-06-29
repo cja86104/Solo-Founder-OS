@@ -259,7 +259,7 @@ export function LandingPageEditor({ page: initialPage }: LandingPageEditorProps)
                 ) : (
                   <div className="space-y-4">
                     {content.sections
-                      .sort((a, b) => a.order - b.order)
+                      .toSorted((a, b) => a.order - b.order)
                       .map((section, index) => (
                         <SectionEditor
                           key={section.id}

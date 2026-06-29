@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -61,6 +61,11 @@ export function VaultItemView({ item, isOwner }: VaultItemViewProps) {
   const router = useRouter();
   const supabase = createClient();
   const [isFavorite, setIsFavorite] = useState(item.is_favorite);
+  // Keep optimistic favorite state in sync if the parent re-renders
+  // with a fresher item.is_favorite (e.g. after a server refetch).
+  useEffect(() => {
+    setIsFavorite(item.is_favorite);
+  }, [item.is_favorite]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 

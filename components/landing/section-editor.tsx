@@ -53,65 +53,7 @@ export function SectionEditor({
   const [isOpen, setIsOpen] = useState(false);
   const template = SECTION_TEMPLATES[section.type as keyof typeof SECTION_TEMPLATES];
 
-  const renderFieldEditor = (key: string, value: unknown) => {
-    if (typeof value === "string") {
-      if (key.toLowerCase().includes("description") || key.toLowerCase().includes("content")) {
-        return (
-          <Textarea
-            value={value}
-            onChange={(e) => onUpdate({ [key]: e.target.value })}
-            className="min-h-[80px]"
-          />
-        );
-      }
-      return (
-        <Input
-          value={value}
-          onChange={(e) => onUpdate({ [key]: e.target.value })}
-        />
-      );
-    }
-
-    if (typeof value === "boolean") {
-      return (
-        <input
-          type="checkbox"
-          checked={value}
-          onChange={(e) => onUpdate({ [key]: e.target.checked })}
-          className="h-4 w-4"
-        />
-      );
-    }
-
-    if (typeof value === "number") {
-      return (
-        <Input
-          type="number"
-          value={value}
-          onChange={(e) => onUpdate({ [key]: parseInt(e.target.value) })}
-        />
-      );
-    }
-
-    // For arrays and objects, show as JSON (simplified for demo)
-    if (Array.isArray(value) || typeof value === "object") {
-      return (
-        <Textarea
-          value={JSON.stringify(value, null, 2)}
-          onChange={(e) => {
-            try {
-              onUpdate({ [key]: JSON.parse(e.target.value) });
-            } catch {
-              // Invalid JSON, ignore
-            }
-          }}
-          className="font-mono text-xs min-h-[100px]"
-        />
-      );
-    }
-
-    return null;
-  };
+  // renderFieldEditor was extracted to the FieldEditor component below
 
   const formatFieldName = (key: string) => {
     return key
@@ -181,7 +123,7 @@ export function SectionEditor({
             {Object.entries(section.props).map(([key, value]) => (
               <div key={key} className="space-y-2">
                 <Label>{formatFieldName(key)}</Label>
-                {renderFieldEditor(key, value)}
+                <FieldEditor fieldKey={key} value={value} onUpdate={onUpdate} />
               </div>
             ))}
           </CardContent>
@@ -189,4 +131,76 @@ export function SectionEditor({
       </Collapsible>
     </Card>
   );
+}
+
+// ----------------------------------------------------------------------------
+// FieldEditor — extracted from an inline render function inside SectionEditor.
+// Inline render functions don't preserve component identity across re-renders,
+// which can drop input state mid-typing if the returned element is stateful.
+// A named component fixes that and satisfies react-doctor/no-render-in-render.
+// ----------------------------------------------------------------------------
+interface FieldEditorProps {
+  fieldKey: string;
+  value: unknown;
+  onUpdate: (props: Record<string, unknown>) => void;
+}
+
+function FieldEditor({ fieldKey, value, onUpdate }: FieldEditorProps) {
+  if (typeof value === "string") {
+    if (fieldKey.toLowerCase().includes("description") || fieldKey.toLowerCase().includes("content")) {
+      return (
+        <Textarea
+          value={value}
+          onChange={(e) => onUpdate({ [fieldKey]: e.target.value })}
+          className="min-h-[80px]"
+        />
+      );
+    }
+    return (
+      <Input
+        value={value}
+        onChange={(e) => onUpdate({ [fieldKey]: e.target.value })}
+      />
+    );
+  }
+
+  if (typeof value === "boolean") {
+    return (
+      <input
+        type="checkbox"
+        checked={value}
+        onChange={(e) => onUpdate({ [fieldKey]: e.target.checked })}
+        className="h-4 w-4"
+      />
+    );
+  }
+
+  if (typeof value === "number") {
+    return (
+      <Input
+        type="number"
+        value={value}
+        onChange={(e) => onUpdate({ [fieldKey]: parseInt(e.target.value) })}
+      />
+    );
+  }
+
+  // For arrays and objects, show as JSON (simplified for demo)
+  if (Array.isArray(value) || typeof value === "object") {
+    return (
+      <Textarea
+        value={JSON.stringify(value, null, 2)}
+        onChange={(e) => {
+          try {
+            onUpdate({ [fieldKey]: JSON.parse(e.target.value) });
+          } catch {
+            // Invalid JSON, ignore
+          }
+        }}
+        className="font-mono text-xs min-h-[100px]"
+      />
+    );
+  }
+
+  return null;
 }

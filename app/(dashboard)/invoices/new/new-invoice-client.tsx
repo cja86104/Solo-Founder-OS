@@ -28,6 +28,13 @@ export function NewInvoiceClient() {
   const prefilledProjectId = searchParams.get('project_id');
 
   useEffect(() => {
+    // AbortController guards in-flight fetches against:
+    //   1. The effect re-running while a previous fetch is in flight
+    //      (currentWorkspace change) — stale results would overwrite
+    //      newer ones without it.
+    //   2. Component unmount during in-flight requests.
+    const controller = new AbortController();
+
     const fetchData = async () => {
       if (!currentWorkspace) return;
 
@@ -35,29 +42,33 @@ export function NewInvoiceClient() {
       try {
         // Fetch contacts
         const contactsRes = await fetch(
-          `/api/contacts?workspace_id=${currentWorkspace.id}&limit=100`
+          `/api/contacts?workspace_id=${currentWorkspace.id}&limit=100`,
+          { signal: controller.signal },
         );
         if (contactsRes.ok) {
           const data = await contactsRes.json();
-          setContacts(data.contacts || []);
+          if (!controller.signal.aborted) setContacts(data.contacts || []);
         }
 
         // Fetch projects
         const projectsRes = await fetch(
-          `/api/projects?workspace_id=${currentWorkspace.id}`
+          `/api/projects?workspace_id=${currentWorkspace.id}`,
+          { signal: controller.signal },
         );
         if (projectsRes.ok) {
           const data = await projectsRes.json();
-          setProjects(data.projects || []);
+          if (!controller.signal.aborted) setProjects(data.projects || []);
         }
       } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
         console.error('Error fetching data:', error);
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     };
 
     fetchData();
+    return () => controller.abort();
   }, [currentWorkspace]);
 
   const handleSubmit = async (data: CreateInvoiceInput) => {

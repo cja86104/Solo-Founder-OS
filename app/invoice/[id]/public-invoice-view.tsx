@@ -1,4 +1,5 @@
 'use client';
+import { useEffect, useState } from 'react';
 
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -77,6 +78,14 @@ export function PublicInvoiceView({ invoice, items, workspace }: PublicInvoiceVi
   const accentColor = invoice.accent_color || '#6366f1';
   const logoUrl = invoice.logo_url || workspace?.logo_url;
   const balanceDue = Math.max(0, invoice.total - invoice.amount_paid);
+
+  // Defer the 'Generated on' date to client-only render to avoid SSR
+  // hydration mismatch (the rendered date can drift between server
+  // and browser by minutes or timezone-edge dates).
+  const [generatedDate, setGeneratedDate] = useState<string>('');
+  useEffect(() => {
+    setGeneratedDate(format(new Date(), 'MMMM d, yyyy'));
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -409,7 +418,7 @@ export function PublicInvoiceView({ invoice, items, workspace }: PublicInvoiceVi
 
       {/* Print Footer */}
       <div className="hidden print:block mt-8 text-center text-xs text-muted-foreground">
-        Generated on {format(new Date(), 'MMMM d, yyyy')}
+        {generatedDate ? `Generated on ${generatedDate}` : null}
       </div>
     </div>
   );
