@@ -323,3 +323,277 @@
     color: black !important;
   }
 }
+
+
+/* ==========================================================================
+   FOUNDERS HELM — LANDING PAGE (ported from the Vite design source)
+   --------------------------------------------------------------------------
+   Source of truth for the design: Desktop/FOUNDERS-HELM-REDESIGN/src/index.css
+   That project is a DESIGN SOURCE ONLY. It is not built or deployed. If you
+   change the landing's appearance, change it there first, then mirror here.
+
+   SCOPING CONTRACT — read before editing.
+   The design source is a standalone SPA, so its rules were global (`html`,
+   `body`, `*`, `:focus-visible`, `::selection`, scrollbars). This app also
+   serves ~40 dashboard routes off the same stylesheet, so every one of those
+   global rules is re-scoped to `.helm-landing` here. Do NOT "simplify" these
+   back to bare selectors — that restyles the entire authenticated app.
+
+   THE `--font-jetbrains` OVERRIDE IS DELIBERATE.
+   tailwind.config.ts maps `font-mono` -> var(--font-jetbrains). The landing
+   uses `font-mono` in 57 places and must render IBM Plex Mono, not JetBrains.
+   Redefining the variable on `.helm-landing` achieves that without editing a
+   single className — which matters, because the landing's className strings
+   are design-locked. Same idea for the body font via `font-family` below.
+   ========================================================================== */
+
+/* ---------- 1. Self-hosted faces (public/fonts/, byte-identical to source) ---------- */
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2074, U+20AC, U+2122, U+2212;
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif-400-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/bricolage-grotesque-variable.woff2') format('woff2-variations');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/ibm-plex-mono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/ibm-plex-mono-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- 2. Metric-adjusted fallbacks (kill the swap reflow) ----------
+   Additive: if the local() source is absent the face fails and the browser
+   falls through to the next name in the stack. Cannot break rendering. */
+@font-face {
+  font-family: 'Instrument Serif Fallback';
+  src: local('Georgia'), local('Times New Roman'), local('Times');
+  size-adjust: 96%;
+  ascent-override: 88%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque Fallback';
+  src: local('Helvetica Neue'), local('Helvetica'), local('Arial');
+  size-adjust: 101%;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'IBM Plex Mono Fallback';
+  src: local('Menlo'), local('Consolas'), local('DejaVu Sans Mono'), local('Courier New');
+  size-adjust: 96%;
+  ascent-override: 90%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+}
+
+/* ---------- 3. Tokens (all `--helm-` prefixed; no collision with app tokens) ---------- */
+:root {
+  --helm-black: #0a0a0a;
+  --helm-char: #141414;
+  --helm-cream: #f5f5f0;
+  --helm-muted: #a8a8a8;
+  --helm-orange: #f97316;
+  --helm-font-display: 'Instrument Serif', 'Instrument Serif Fallback', Georgia, serif;
+  --helm-font-sans: 'Bricolage Grotesque', 'Bricolage Grotesque Fallback', Helvetica Neue, Arial, sans-serif;
+  --helm-font-mono: 'IBM Plex Mono', 'IBM Plex Mono Fallback', ui-monospace, monospace;
+}
+
+/* ---------- 4. Landing root — was `body` in the design source ---------- */
+.helm-landing {
+  background-color: var(--helm-black);
+  color: var(--helm-cream);
+  font-family: var(--helm-font-sans);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  /* see SCOPING CONTRACT: routes `font-mono` to IBM Plex Mono, landing only */
+  --font-jetbrains: 'IBM Plex Mono', 'IBM Plex Mono Fallback', ui-monospace;
+}
+
+.helm-landing * {
+  -webkit-tap-highlight-color: rgba(249, 115, 22, 0.18);
+}
+
+/* overflow-x and page background only take effect on the scrolling elements,
+   so they are matched via :has() rather than moved onto .helm-landing */
+html:has(.helm-landing) {
+  background-color: var(--helm-black);
+  -webkit-text-size-adjust: 100%;
+  /* the design source set this via <html class="scroll-smooth"> in index.html;
+     scoped here so the dashboard routes keep their default scrolling */
+  scroll-behavior: smooth;
+}
+body:has(.helm-landing) {
+  background-color: var(--helm-black);
+  overflow-x: hidden;
+}
+
+/* ---------- 5. Focus + selection (scoped; app keeps its own ring) ---------- */
+.helm-landing :focus-visible {
+  outline: 2px solid var(--helm-orange);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.helm-landing ::selection {
+  background: rgba(249, 115, 22, 0.32);
+  color: #fff;
+}
+
+/* ---------- 6. Scrollbar (scoped via :has so the dashboard keeps its own) ---------- */
+@media (min-width: 1024px) {
+  html:has(.helm-landing) ::-webkit-scrollbar {
+    width: 10px;
+  }
+  html:has(.helm-landing) ::-webkit-scrollbar-track {
+    background: var(--helm-black);
+  }
+  html:has(.helm-landing) ::-webkit-scrollbar-thumb {
+    background: #262626;
+    border-radius: 99px;
+    border: 3px solid var(--helm-black);
+  }
+  html:has(.helm-landing) ::-webkit-scrollbar-thumb:hover {
+    background: var(--helm-orange);
+  }
+}
+
+/* ---------- 7. Component-layer classes ----------
+   In @layer components so Tailwind's layer order (base < components <
+   utilities) guarantees a utility always wins a specificity tie — e.g.
+   `absolute` on an element that also has `helm-photo-wrap` must win, or the
+   photo renders at its natural aspect-ratio height instead of filling its
+   container. */
+@layer components {
+  .helm-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+    z-index: 3;
+  }
+
+  .helm-grain-fixed {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.28;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n2)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+
+  .helm-duotone {
+    filter: grayscale(1) contrast(1.18) brightness(0.62);
+  }
+  .helm-photo-wrap {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .helm-photo-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(200deg, rgba(249, 115, 22, 0.42) 0%, rgba(120, 45, 8, 0.18) 42%, rgba(10, 10, 10, 0.92) 100%);
+    mix-blend-mode: color;
+  }
+  .helm-photo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 15% 10%, rgba(249, 115, 22, 0.18), transparent 55%),
+      linear-gradient(to top, rgba(10, 10, 10, 0.96), rgba(10, 10, 10, 0.15) 65%);
+  }
+
+  @keyframes helm-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  .helm-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: helm-marquee var(--helm-marquee-duration, 38s) linear infinite;
+  }
+  .helm-marquee-track[data-dir='reverse'] {
+    animation-direction: reverse;
+  }
+  .helm-marquee:hover .helm-marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes helm-caret {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+  .helm-caret {
+    display: inline-block;
+    width: 0.5ch;
+    background: var(--helm-orange);
+    animation: helm-caret 1s step-end infinite;
+  }
+
+  .helm-hair {
+    background-image: linear-gradient(to right, transparent, rgba(245, 245, 240, 0.16), transparent);
+  }
+}
+
+/* ---------- 8. Reduced motion (scoped) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html:has(.helm-landing) {
+    scroll-behavior: auto;
+  }
+  .helm-landing .helm-marquee-track,
+  .helm-landing .helm-caret {
+    animation: none !important;
+  }
+  .helm-landing *,
+  .helm-landing *::before,
+  .helm-landing *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -76,6 +76,15 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         mono: ["var(--font-jetbrains)", "monospace"],
+        // Landing page only (app/page.tsx). `font-display` is used 24x there
+        // and 0x in the rest of the app, so adding it globally is inert
+        // everywhere else. See the SCOPING CONTRACT in app/globals.css.
+        display: [
+          '"Instrument Serif"',
+          '"Instrument Serif Fallback"',
+          "Georgia",
+          "serif",
+        ],
       },
       keyframes: {
         "accordion-down": {
