@@ -1,16 +1,15 @@
 "use client";
 
-import React from "react";
-import { m, type Easing, type Variants } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { m, useInView, type Easing, type Variants } from "framer-motion";
 import { useReducedMotion, ease } from "@/lib/marketing/motion";
 
 export type RevealKind = "up" | "slideLeft" | "slideRight" | "mask" | "scale" | "blur";
-export type RevealTag = "div" | "section" | "article" | "ul" | "li" | "p" | "span";
 
 /**
  * Intentionally varied reveal techniques so the page never reads as one
  * fade-up template repeated. `kind` picks the technique.
- * Uses the minimal `m` primitives (see LazyMotion in the page shell).
+ * Uses the minimal `m` primitives (see LazyMotion in LandingShell).
  */
 const variants: Record<RevealKind, Variants> = {
   up: { hidden: { opacity: 0, y: 34 }, show: { opacity: 1, y: 0 } },
@@ -28,7 +27,6 @@ interface RevealProps {
   duration?: number;
   curve?: Easing;
   amount?: number;
-  as?: RevealTag;
   className?: string;
 }
 
@@ -39,28 +37,50 @@ export default function Reveal({
   duration = 0.7,
   curve = ease.out,
   amount = 0.35,
-  as = "div",
   className = "",
 }: RevealProps) {
   const reduced = useReducedMotion();
+  const ref = useRef<HTMLDivElement | null>(null);
+  const inView = useInView(ref, { once: true, amount });
+  const [scrolledPast, setScrolledPast] = useState(false);
+
+  /**
+   * SAFETY — why this is not a plain `whileInView`.
+   *
+   * A `once` reveal only ever fires on an intersection. If the element is
+   * already ABOVE the viewport when it mounts, IntersectionObserver never
+   * reports it entering, so the reveal stays at its hidden state — opacity 0 /
+   * clipPath inset(0 0 100% 0) — permanently. The content sits in the DOM and
+   * in view-source but is never painted.
+   *
+   * That is not theoretical: it took out the 01 - Command Center copy on the
+   * live site after a mid-session prefers-reduced-motion change remounted the
+   * element below the fold.
+   *
+   * So: if the element is already past the top of the viewport at mount, show
+   * it immediately. The animation itself is untouched — same variants, same
+   * durations, same easing, still once-only.
+   */
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (el.getBoundingClientRect().bottom < 0) setScrolledPast(true);
+  }, []);
 
   if (reduced) {
-    const Tag: React.ElementType = as;
-    return <Tag className={className}>{children}</Tag>;
+    return <div className={className}>{children}</div>;
   }
 
-  const MotionTag = m[as];
-
   return (
-    <MotionTag
+    <m.div
+      ref={ref}
       className={className}
       initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount }}
+      animate={inView || scrolledPast ? "show" : "hidden"}
       variants={variants[kind]}
       transition={{ duration, delay, ease: curve }}
     >
       {children}
-    </MotionTag>
+    </m.div>
   );
 }

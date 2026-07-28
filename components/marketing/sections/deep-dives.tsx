@@ -30,11 +30,11 @@ interface VisualProps {
 function Visual({ item, index }: VisualProps) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end 20%"] });
   // Per-dive drift and tilt — not an index % 2 flip, which would just be the
   // same alternation expressed in motion instead of layout.
-  const drift = [[52, -34], [26, -62], [64, -18]][index % 3];
-  const tilt = [[4.5, -2], [-3, 1.5], [1.6, -4.2]][index % 3];
+  const drift = [[96, -72], [58, -116], [118, -44]][index % 3];
+  const tilt = [[9, -4], [-6.5, 3.5], [3.6, -9]][index % 3];
   const y = useTransform(scrollYProgress, [0, 1], drift);
   const rotate = useTransform(scrollYProgress, [0, 1], tilt);
 
@@ -117,7 +117,7 @@ export default function DeepDives() {
                 className={`grid gap-10 lg:grid-cols-12 lg:gap-12 ${layout.row} ${layout.gap}`}
               >
                 <div className={layout.copy}>
-                  <Reveal kind={revealFor[item.reveal]} duration={0.85} curve={ease.out}>
+                  <Reveal kind={revealFor[item.reveal]} duration={1.15} amount={0.25} curve={ease.out}>
                     <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#f97316]">{item.kicker}</p>
                     <h3 className="mt-4 font-display text-[clamp(2rem,7.4vw,2.6rem)] leading-[0.96] tracking-[-0.02em] text-[#F5F5F0] sm:text-5xl">
                       {item.title}{" "}
