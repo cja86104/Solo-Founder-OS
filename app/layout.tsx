@@ -108,6 +108,30 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} ${figtree.variable}`}
     >
+      <head>
+        {/*
+          NO-JS FALLBACK FOR THE LANDING REVEALS.
+
+          Framer Motion server-renders every `initial` state as an inline style,
+          so the reveal sections ship as `opacity:0` (and `clip-path:inset(...)`,
+          `filter:blur(...)`, `transform:translate(...)`) and only become visible
+          once JS hydrates. A visitor with JS off — or one whose hydration fails —
+          sees the hero, the footer, and a page of blank between them.
+
+          This lives in <noscript>, which is the whole point: the browser only
+          parses it when scripting is disabled, so it is physically incapable of
+          reaching the animated path. Nothing here runs for a normal visitor.
+
+          `!important` is required — these are author rules competing with inline
+          styles, which otherwise win. Scoped to `.helm-landing` so the ~40
+          dashboard routes are untouched, and `:not([aria-hidden="true"])` keeps
+          decorative glows (which are scroll-driven, not reveals) from being
+          forced to full strength.
+        */}
+        <noscript>
+          <style>{`.helm-landing [style*="opacity:0"]:not([aria-hidden="true"]){opacity:1!important;transform:none!important;clip-path:none!important;filter:none!important;}`}</style>
+        </noscript>
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider
           attribute="class"

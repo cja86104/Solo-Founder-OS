@@ -32,6 +32,24 @@ import Footer from "@/components/marketing/sections/footer";
 export default function HomePage() {
   return (
     <LandingShell>
+      {/*
+        Instrument Serif 400 is the face behind the hero headline — the largest
+        above-fold text on the page — and it is declared in globals.css, so the
+        browser only discovers it after the stylesheet parses. React hoists this
+        into <head>, restoring the preload the design source's index.html had.
+
+        Deliberately on the page and not in app/layout.tsx: the root layout is
+        shared with every dashboard route, none of which render this face.
+        crossOrigin is required — font fetches are always CORS-mode, and without
+        it the preload is discarded and refetched.
+      */}
+      <link
+        rel="preload"
+        href="/fonts/instrument-serif-400.woff2"
+        as="font"
+        type="font/woff2"
+        crossOrigin="anonymous"
+      />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-full focus:bg-[#f97316] focus:px-5 focus:py-2 focus:text-sm focus:font-semibold focus:text-black"

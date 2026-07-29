@@ -97,9 +97,15 @@ export interface Faq {
   a: string;
 }
 
+export interface FooterLink {
+  label: string;
+  /** In-page anchor (`#advisor`) or an app route (`/terms`). Never empty. */
+  href: string;
+}
+
 export interface FooterColumn {
   title: string;
-  links: string[];
+  links: FooterLink[];
 }
 
 export interface Footer {
@@ -384,15 +390,32 @@ export const footer: Footer = {
   columns: [
     {
       title: 'Platform',
-      links: ['CRM', 'Landing Pages', 'Automations', 'AI Advisor', 'Insights']
+      links: [
+        { label: 'CRM', href: '#advisor' },
+        { label: 'Landing Pages', href: '#advisor' },
+        { label: 'Automations', href: '#advisor' },
+        { label: 'AI Advisor', href: '#advisor' },
+        { label: 'Insights', href: '#advisor' }
+      ]
     },
     {
       title: 'More',
-      links: ['Code Vault', 'Content Engine', 'Projects', 'Feedback', 'Command Center']
+      links: [
+        { label: 'Code Vault', href: '#advisor' },
+        { label: 'Content Engine', href: '#advisor' },
+        { label: 'Projects', href: '#advisor' },
+        { label: 'Feedback', href: '#advisor' },
+        { label: 'Command Center', href: '#advisor' }
+      ]
     },
     {
+      /** About / Changelog / Blog removed: no routes exist for them. Re-add
+       *  here the moment those pages ship. */
       title: 'Company',
-      links: ['About', 'Changelog', 'Blog', 'Terms', 'Privacy']
+      links: [
+        { label: 'Terms', href: '/terms' },
+        { label: 'Privacy', href: '/privacy' }
+      ]
     }
   ]
 };

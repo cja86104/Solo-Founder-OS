@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -8,9 +8,15 @@ import Logo from "@/components/marketing/logo";
 import { navLinks } from "@/lib/marketing/content";
 import { ease, scrollToId } from "@/lib/marketing/motion";
 
+/** Everything the browser will hand focus to via Tab. */
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 90);
@@ -26,6 +32,64 @@ export default function Nav() {
     };
   }, [open]);
 
+  /**
+   * FOCUS TRAP.
+   *
+   * The open menu covers the page and locks body scroll, so it behaves as a
+   * modal — but the sections behind it are still in the tab order, which lets a
+   * keyboard user tab straight out of the menu into content they cannot see.
+   *
+   * Focus is confined to the header (toggle + panel) while open, Escape closes
+   * and hands focus back to the toggle that opened it, and the first item is
+   * focused on open. Elements hidden at this breakpoint report no offsetParent
+   * and are skipped, so the desktop links never enter the mobile cycle.
+   */
+  useEffect(() => {
+    if (!open) return undefined;
+    const root = headerRef.current;
+    if (!root) return undefined;
+
+    const items = () =>
+      Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el === toggleRef.current || el.offsetParent !== null
+      );
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        toggleRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = items();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      const inside = active !== null && root.contains(active);
+
+      if (event.shiftKey) {
+        if (!inside || active === first) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (!inside || active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  /** Move focus into the panel as it opens, so the trap starts from inside. */
+  const onPanelMount = useCallback((node: HTMLDivElement | null) => {
+    node?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+  }, []);
+
   const go = (href: string) => {
     setOpen(false);
     scrollToId(href);
@@ -33,6 +97,7 @@ export default function Nav() {
 
   return (
     <header
+      ref={headerRef}
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
         scrolled
           ? "border-b border-white/[0.07] bg-[#0A0A0A]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#0A0A0A]/60"
@@ -75,6 +140,7 @@ export default function Nav() {
         </div>
 
         <button
+          ref={toggleRef}
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
@@ -89,6 +155,7 @@ export default function Nav() {
       <AnimatePresence>
         {open && (
           <m.div
+            ref={onPanelMount}
             id="mobile-nav"
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}

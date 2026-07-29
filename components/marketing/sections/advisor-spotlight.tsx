@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { m } from "framer-motion";
 import { CornerDownLeft, Lock } from "lucide-react";
 import Kicker from "@/components/marketing/kicker";
@@ -108,12 +109,16 @@ export default function AdvisorSpotlight() {
                     >
                       {advisorChat.actions.map((a) => (
                         <li key={a}>
-                          <button
-                            type="button"
-                            className="rounded-full border border-white/15 px-3.5 py-2 text-[12px] text-[#F5F5F0]/85 transition-colors duration-300 hover:border-[#f97316] hover:text-[#f97316]"
+                          {/* These are the Advisor's suggested follow-ups in a
+                              static mock. They cannot run against a workspace
+                              that does not exist yet, so they route to signup
+                              rather than sitting on the page as dead controls. */}
+                          <Link
+                            href="/signup"
+                            className="inline-block rounded-full border border-white/15 px-3.5 py-2 text-[12px] text-[#F5F5F0]/85 transition-colors duration-300 hover:border-[#f97316] hover:text-[#f97316]"
                           >
                             {a}
-                          </button>
+                          </Link>
                         </li>
                       ))}
                     </m.ul>

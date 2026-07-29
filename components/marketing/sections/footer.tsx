@@ -33,14 +33,29 @@ export default function Footer() {
                 <h2 className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#f97316]">{col.title}</h2>
                 <ul className="mt-4 space-y-2.5">
                   {col.links.map((link) => (
-                    <li key={link}>
-                      <Link
-                        href="/"
-                        onClick={() => scrollToId("product")}
-                        className="text-[14px] text-[#A8A8A8] transition-colors duration-300 hover:text-[#F5F5F0]"
-                      >
-                        {link}
-                      </Link>
+                    <li key={link.label}>
+                      {link.href.startsWith("#") ? (
+                        /* Same-page anchor: a real href so it works without JS
+                           and survives copy-link, with scrollToId only taking
+                           over the scroll behaviour. */
+                        <a
+                          href={link.href}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            scrollToId(link.href);
+                          }}
+                          className="text-[14px] text-[#A8A8A8] transition-colors duration-300 hover:text-[#F5F5F0]"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          className="text-[14px] text-[#A8A8A8] transition-colors duration-300 hover:text-[#F5F5F0]"
+                        >
+                          {link.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
