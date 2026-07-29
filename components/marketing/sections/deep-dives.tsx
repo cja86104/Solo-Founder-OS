@@ -34,7 +34,8 @@ function Visual({ item, index }: VisualProps) {
   // Per-dive drift and tilt — not an index % 2 flip, which would just be the
   // same alternation expressed in motion instead of layout.
   const drift = [[96, -72], [58, -116], [118, -44]][index % 3];
-  const tilt = [[9, -4], [-6.5, 3.5], [3.6, -9]][index % 3];
+  // row 03 (Ship the page) rotates the opposite way to rows 01/02 - deliberate
+  const tilt = [[9, -4], [-6.5, 3.5], [-3.6, 9]][index % 3];
   const y = useTransform(scrollYProgress, [0, 1], drift);
   const rotate = useTransform(scrollYProgress, [0, 1], tilt);
 
@@ -85,7 +86,7 @@ const layouts: DeepDiveLayout[] = [
     gap: "mt-24 sm:mt-32 lg:mt-56",
     row: "lg:items-start",
     copy: "lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:mt-36",
-    visual: "lg:col-span-8 lg:col-start-1 lg:row-start-1 lg:-ml-[14%] lg:w-[114%]",
+    visual: "lg:col-span-8 lg:col-start-1 lg:row-start-1 lg:-ml-[14%] lg:w-[114%] lg:mt-44",
   },
   {
     // 03 — no bleed at all. Small mock held high right, copy dropped low left,
@@ -93,7 +94,7 @@ const layouts: DeepDiveLayout[] = [
     gap: "mt-24 sm:mt-36 lg:mt-28",
     row: "lg:items-start",
     copy: "lg:col-span-5 lg:col-start-2 lg:row-start-1 lg:mt-48",
-    visual: "lg:col-span-5 lg:col-start-8 lg:row-start-1",
+    visual: "lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:mt-48",
   },
 ];
 

@@ -14,6 +14,8 @@ export interface Brand {
   subhead: string;
   trustRow: string[];
   builtOn: string;
+  creditHref: string;
+  creditLabel: string;
 }
 
 export interface NavLink {
@@ -124,10 +126,13 @@ export const brand: Brand = {
   subhead:
     'Founders Helm replaces your scattered stack of SaaS tools with one integrated platform — built for how solo founders actually work, at a price that makes sense.',
   trustRow: ['14-day free trial', 'no credit card', 'cancel anytime'],
-  builtOn: 'Built on Next.js · Supabase · Stripe · Vercel.'
+  builtOn: 'Designed, developed and built by Chris Allen · Allen Code Co.',
+  creditHref: 'https://allencodeco.com',
+  creditLabel: 'allencodeco.com'
 };
 
 export const navLinks: NavLink[] = [
+  { label: 'Home', href: '#top' },
   { label: 'Product', href: '#product' },
   { label: 'The AI', href: '#advisor' },
   { label: 'Pricing', href: '#pricing' },

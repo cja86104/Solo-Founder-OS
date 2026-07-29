@@ -53,7 +53,17 @@ export default function Footer() {
           <p className="font-mono text-[11px] text-[#5f5f5f]">
             © {year} {brand.name}. All rights reserved.
           </p>
-          <p className="font-mono text-[11px] text-[#5f5f5f]">{brand.builtOn}</p>
+          <p className="font-mono text-[11px] text-[#5f5f5f]">
+            {brand.builtOn}{" "}
+            <a
+              href={brand.creditHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#A8A8A8] transition-colors duration-300 hover:text-[#f97316]"
+            >
+              {brand.creditLabel}
+            </a>
+          </p>
         </div>
       </div>
     </footer>
